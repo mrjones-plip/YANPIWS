@@ -40,11 +40,11 @@ function cleanseData($data)
  */
 function saveArrayToCsv($path, $file, $array)
 {
-    if (is_dir($path) && is_writable($path . '/' . $file) && is_array($array) && sizeof($array) > 0) {
+    if (is_dir($path) && is_array($array) && sizeof($array) > 0) {
         echo 'It\'s ' . $array[2] . ' at ID ' . $array[1] . " - data written to " . $path . '/' . $file ."\n";
         file_put_contents($path . '/' . $file, implode(',' , $array) . "\n",FILE_APPEND);
     } else {
-        echo "failed to write to $path - not a dir, not writable or invalid/empty array passed :(";
+        echo "failed to write to {$path}/{$file} - not a dir, not writable or invalid/empty array passed :(";
     }
 }
 
