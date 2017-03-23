@@ -3,21 +3,21 @@ Yet Another Pi Weather Station (YANPIWS)- My explorations in getting a Rasberry 
 
 ## Background
 
-With a daily workflow that invoves checking out a repo, making
+With a daily workflow that involves checking out a repo, making
 commits, and the stopping work, it only made sense that I'd
 do the same for my efforts to write a little weather app for my
-Pi. This habbit means my work is always backed up and ready
-for others to review.
+Pi. This habit means my work is always backed up and ready
+for others to review or for me to load up on the another computer.
 
 Goals for this project are:
 
+* Show live weather from local, wireless sensors
+* Show past weather from local, wireless sensors
 * Show current time
 * Show sunset/sunrise times
 * Show moonrise/moonset times
 * Show weather forecast from some provider
 * Show show current weather from some provider
-* Show live weather from local, wireless sensors
-* Show past weather from local, wireless sensors
 
 ## Hardware
 
@@ -33,11 +33,11 @@ we'll use the USB SDR dongle to read the temps from the sensors
 with a a call like this:
 
 ```
-rtl_433 -C customary -F json -q | parse.php
+rtl_433 -C customary -F json -q | php -f parse_and_save.php
 ```
 
-And then, since I'm a PHP guy, we'll have that parse.php, be, 
-you know php, that parses it, but my proof of concept looks
+And then, since I'm a PHP guy, we'll have that ``parse_and_save.php``, 
+be, you know php, that parses it, but my proof of concept looks
 like this (thanks 
 http://stackoverflow.com/a/11968298):
 
@@ -46,11 +46,11 @@ http://stackoverflow.com/a/11968298):
 <?php
 
 while($f = fgets(STDIN)){
-        parseJson($f);
+    parseJson($f);
 }
 
 function parseJson($jsonLine){
-        print_r(json_decode($jsonLine));
+    print_r(json_decode($jsonLine));
 } 
 ```
 
@@ -63,14 +63,23 @@ use an existing LAMP set up or do LAMP on the pi like so:
 sudo apt-get install apache2 php5 php5-mysql mysql-server
 ```
 
-And then some nice charts via something like http://canvasjs.com/html5-javascript-dynamic-chart/
+And then show the data in some nice charts via something like http://canvasjs.com/html5-javascript-dynamic-chart/
 
 Finally, use chrome to show it full screen:
 
 * autoboot chrome full screen https://blog.gordonturner.com/2016/12/29/raspberry-pi-full-screen-browser-raspbian-november-2016/
 * add --incognito to remove errors https://superuser.com/questions/461035/disable-google-chrome-session-restore-functionality#618972
 
-## Conclusion
+## data
 
-Not a lot of stuff here now - but sit tight - i'll try and 
-impress you!
+currently we're writting it in CSV to the ``data`` folder:
+
+```csv
+DATE,ID,TEMP,HUMIDITY
+2017-03-22 23:26:22,109,57.92,25
+2017-03-22 23:26:55,211,72.5,34
+```
+
+## Version History
+
+0.1 - Mar 22, 2017 - parsing data, writing to CSV, crude readme, no html output
