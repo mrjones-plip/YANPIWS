@@ -1,6 +1,8 @@
 # YANPIWS
 Yet Another Pi Weather Station (YANPIWS) - My explorations in getting a Rasberry Pi showing local time and weather
 
+![](./screenshot.png)
+
 ## Background
 
 With a daily workflow that involves checking out a repo, making
@@ -18,10 +20,6 @@ Goals for this project are:
 * Show moonrise/moonset times
 * Show weather forecast from some provider
 * Show show current weather from some provider
-
-## Screenshot
-
-![](./screenshot.png)
 
 ## Hardware
 
