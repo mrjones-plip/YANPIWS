@@ -74,7 +74,7 @@ Finally, use chrome to show it full screen:
 
 ## data
 
-currently we're writting it in CSV to the ``data`` folder:
+currently we're writing it in CSV to the ``data`` folder:
 
 ```csv
 DATE,ID,TEMP,HUMIDITY
