@@ -65,6 +65,11 @@ sudo apt-get install apache2 php5 php5-mysql mysql-server
 
 And then some nice charts via something like http://canvasjs.com/html5-javascript-dynamic-chart/
 
+Finally, use chrome to show it full screen:
+
+* autoboot chrome full screen https://blog.gordonturner.com/2016/12/29/raspberry-pi-full-screen-browser-raspbian-november-2016/
+* add --incognito to remove errors https://superuser.com/questions/461035/disable-google-chrome-session-restore-functionality#618972
+
 ## Conclusion
 
 Not a lot of stuff here now - but sit tight - i'll try and 
