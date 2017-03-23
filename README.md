@@ -1,5 +1,7 @@
 # YANPIWS
-Yet Another Pi Weather Station (YANPIWS)- My explorations in getting a Rasberry Pi showing local time and weather
+Yet Another Pi Weather Station (YANPIWS) - My explorations in getting a Rasberry Pi showing local time and weather
+
+![](./screenshot.png)
 
 ## Background
 
@@ -81,5 +83,5 @@ DATE,ID,TEMP,HUMIDITY
 ```
 
 ## Version History
-
-0.1 - Mar 22, 2017 - parsing data, writing to CSV, crude readme, no html output
+* 0.2 - Mar 23, 2017 - reading CSV, super basic HTML output
+* 0.1 - Mar 22, 2017 - parsing data, writing to CSV, crude readme, no html output
