@@ -56,13 +56,14 @@ function getTempHtml($tempLine){
     } else {
         $label = "ID $key";
     }
-    return "<div class='temp'><strong>{$tempLine[2]}°</strong> $label </div>\n";
+    $temp = number_format($tempLine[2],0);
+    return "<div class='temp'><strong>{$temp}°</strong> $label </div>\n";
 }
 
 function getSunriseTime(){
     global $YANPIWS;
     return date(
-        'g:iA',
+        'g:i A',
         date_sunrise(
             time(),
             SUNFUNCS_RET_TIMESTAMP,
@@ -76,7 +77,7 @@ function getSunriseTime(){
 function getSunsetTime(){
     global $YANPIWS;
     return date(
-        'g:iA',
+        'g:i A',
         date_sunset(
             time(),
             SUNFUNCS_RET_TIMESTAMP,
@@ -105,21 +106,27 @@ function getDarkSkyData(){
     return $data;
 }
 
-function getDailyForecastHtml($daily){
+function getDailyForecastHtml($daily = null){
     $html = '';
     $js = '';
-    foreach ($daily->data as $day){
-        $rand = rand(99999,999999999999);
-        $today = substr(date('D',$day->time),0,1);
-        $html .= "<div class='forecastday'>";
-        $html .= $today;
-        $html .= " <canvas id='$today.$rand' width='32' height='32'></canvas>";
-        $html .= ' H ' . number_format($day->temperatureMax,0) .'°';
-        $html .= ' L ' .number_format($day->temperatureMin,0).'°';
-        $html .= ' ' .number_format($day->windSpeed,0) . 'mph';
-        $html .= '</div>';
+    if ($daily == null){
+        // show rain for error
+        $html .= "<canvas id='W.112035303696' width='100' height='100'></canvas>";
+        $js .= "skycons.add('W.112035303696', 'sleet');\n";
+    } else {
+        foreach ($daily->data as $day) {
+            $rand = rand(99999, 999999999999);
+            $today = substr(date('D', $day->time), 0, 1);
+            $html .= "<div class='forecastday'>";
+            $html .= $today;
+            $html .= " <canvas id='$today.$rand' width='32' height='32'></canvas>";
+            $html .= ' H ' . number_format($day->temperatureMax, 0) . '°';
+            $html .= ' L ' . number_format($day->temperatureMin, 0) . '°';
+            $html .= ' ' . number_format($day->windSpeed, 0) . 'mph';
+            $html .= '</div>';
 
-        $js .= "skycons.add('$today.$rand', '$day->icon');\n";
+            $js .= "skycons.add('$today.$rand', '$day->icon');\n";
+        }
     }
     $html .= "
         <script src='skycons/skycons.js'></script>
