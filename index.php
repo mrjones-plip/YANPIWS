@@ -25,9 +25,13 @@ $forecast = getDarkSkyData();
 $forecastHtml = getDailyForecastHtml($forecast->daily);
 ?>
 
-
-<p><?php echo $date ?> - <?php echo $time ?></p>
-<p style="clear:both;"><?php echo $sunrise ?> - <?php echo $sunset ?></p>
-<p><?php echo $currentTempHtml ?></p>
-<p  style="clear:both;"><?php echo $forecastHtml ?></p>
-
+<div class="col">
+    <div class="row"><?php echo $date ?></div>
+    <div class="row"><?php echo $time ?></div>
+    <div class="row"><?php echo $sunrise ?></div>
+    <div class="row"><?php echo $sunset ?></div>
+    <div class="row"><?php echo $currentTempHtml ?></div>
+</div>
+<div class="col rigthtCol">
+    <?php echo $forecastHtml ?>
+</div>
