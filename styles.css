@@ -7,17 +7,18 @@ body {
     font-family: sans-serif;
 }
 .forecastday {
-    padding-top: 10px;
+    padding-bottom: 15px;
 }
 .temp {
-    padding-right:0px;
-    padding-bottom:18px;
+    padding-bottom:10px;
+    padding-top:20px;
     font-size: 37pt;
 }
 .col {
     float:left;
 }
 .rigthtCol{
+    margin-left:100px;
     padding-left:30px;
     padding-top:10px;
 }
