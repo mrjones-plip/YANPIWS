@@ -41,7 +41,11 @@ function getMostRecentTemp($id, $date = null){
         $date = date('Y-m-d', time());
     }
     $allData = getData($YANPIWS['dataPath'] . $date);
-    return array_pop($allData[$id]);
+    if (isset($allData[$id])) {
+        return array_pop($allData[$id]);
+    } else {
+        return array('NA','NA','NA','NA','NA');
+    }
 }
 
 function getTempHtml($tempLine){
@@ -86,8 +90,19 @@ function getSunsetTime(){
 
 function getDarkSkyData(){
     global $YANPIWS;
-    return json_decode(file_get_contents('https://api.darksky.net/forecast/' .
-        $YANPIWS['darksky'] . '/' . $YANPIWS['lat'] . ',' . $YANPIWS['lon']));
+    $path = $YANPIWS['dataPath'];
+    $cache = $path.'/darksky.cahce';
+    $hourAgo = time() - (60*60);
+    $url = 'https://api.darksky.net/forecast/' .$YANPIWS['darksky'] . '/' . $YANPIWS['lat'] . ',' . $YANPIWS['lon'];
+    if ((!is_file($cache) || filectime($cache) < $hourAgo) && is_writable($path)){
+        $data = json_decode(file_get_contents($url));
+        file_put_contents($cache,serialize($data));
+    } elseif (is_file($cache)){
+        $data = unserialize(file_get_contents($cache));
+    } else {
+        $data = json_decode(file_get_contents($url));
+    }
+    return $data;
 }
 
 function getDailyForecastHtml($daily){

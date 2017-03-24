@@ -3,13 +3,24 @@ body {
     padding: 10px;
     background-color: black;
     color: white;
-    font-size: 20pt;
+    font-size: 22pt;
     font-family: sans-serif;
 }
 .forecastday {
     padding-top: 10px;
 }
 .temp {
+    padding-right:0px;
+    padding-bottom:18px;
+    font-size: 37pt;
+}
+.col {
     float:left;
-    padding-right:20px;
+}
+.rigthtCol{
+    padding-left:30px;
+    padding-top:10px;
+}
+.row {
+    padding-bottom: 20px;
 }
