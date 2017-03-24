@@ -1,7 +1,7 @@
 # YANPIWS
 Yet Another Pi Weather Station (YANPIWS) - My explorations in getting a Rasberry Pi showing local time and weather
 
-![](./screenshot.png)
+![](./screenshot2.png)
 
 ## Background
 
@@ -17,9 +17,7 @@ Goals for this project are:
 * Show past weather from local, wireless sensors
 * Show current time
 * Show sunset/sunrise times
-* Show moonrise/moonset times
-* Show weather forecast from some provider
-* Show show current weather from some provider
+* Show weather forecast from Dark Sky API https://darksky.net/dev/
 
 ## Hardware
 
@@ -83,5 +81,6 @@ DATE,ID,TEMP,HUMIDITY
 ```
 
 ## Version History
+* 0.3 - Mar 23, 2017 - forecast if you have a darksky API
 * 0.2 - Mar 23, 2017 - reading CSV, super basic HTML output
 * 0.1 - Mar 22, 2017 - parsing data, writing to CSV, crude readme, no html output
