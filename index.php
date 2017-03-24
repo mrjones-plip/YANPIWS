@@ -1,27 +1,33 @@
+
+<link rel="stylesheet" type="text/css" href="styles.css" />
 <?php
+if(is_file('config.php')){
+    require_once ("config.php");
+} else {
+    die ('config.php not found :(');
+}
+
 require_once ("get_data.php");
 $today = date('Y-m-d', time());
 $time = date('h:i:s A', time());
-$date = date('l jS \of F Y', time());
+$date = date('D j, F Y', time());
 $allData = getData("./data/" . $today);
 
-$labels = array(
-    '211' => 'Inside',
-    '109' => 'Outside',
-);
-
 $currentTempHtml = '';
-foreach (array_keys($allData) as $key){
-    $temp = array_pop($allData[$key])[2];
-    $label = $labels[$key];
-    $currentTempHtml .= "<strong>{$temp}°</strong> $label <br />\n";
+foreach ($YANPIWS['labels'] as $id => $label){
+    $tempLine = getMostRecentTemp($id);
+    $currentTempHtml .= getTempHtml($tempLine);
 }
+$sunrise = 'Sunrise ' . getSunriseTime();
+$sunset = 'Sunset ' . getSunsetTime();
 
+$forecast = getDarkSkyData();
+$forecastHtml = getDailyForecastHtml($forecast->daily);
 ?>
 
-<link rel="stylesheet" type="text/css" href="styles.css" />
 
-<p><?php echo $date ?></p>
-<p><?php echo $time ?></p>
+<p><?php echo $date ?> - <?php echo $time ?></p>
+<p style="clear:both;"><?php echo $sunrise ?> - <?php echo $sunset ?></p>
 <p><?php echo $currentTempHtml ?></p>
+<p  style="clear:both;"><?php echo $forecastHtml ?></p>
 

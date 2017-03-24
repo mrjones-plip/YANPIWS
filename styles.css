@@ -6,3 +6,10 @@ body {
     font-size: 20pt;
     font-family: sans-serif;
 }
+.forecastday {
+    padding-top: 10px;
+}
+.temp {
+    float:left;
+    padding-right:20px;
+}
