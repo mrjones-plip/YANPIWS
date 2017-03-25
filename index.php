@@ -42,7 +42,7 @@ $forecastHtml = getDailyForecastHtml($forecast->daily);
         <div class=" time"><?php echo $time ?></div>
         <div class="date"><?php echo $date ?></div>
     </div>
-    <div class="row"><?php echo $sunrise ?><?php echo $sunset ?></div>
+    <div class="row suntimes"><?php echo $sunrise ?><?php echo $sunset ?></div>
 </div>
 <div class="col rigthtCol">
     <?php echo $forecastHtml ?>

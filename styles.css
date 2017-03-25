@@ -34,7 +34,7 @@ body {
     padding-top:20px;
 }
 .row {
-    padding-bottom: 20px;
+    padding-bottom: 5px;
     clear:both;
     width: 100%;
 }
@@ -62,4 +62,7 @@ body {
 }
 .wind {
     font-size:12pt;
+}
+.suntimes {
+    padding-top: 20px;
 }
