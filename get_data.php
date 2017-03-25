@@ -146,7 +146,7 @@ function getDailyForecastHtml($daily = null){
         <script>
           var skycons = new Skycons({'color': 'white'});
           $js
-//          skycons.play();
+          skycons.play();
         </script>
     ";
     return $html;
