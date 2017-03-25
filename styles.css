@@ -7,9 +7,9 @@ body {
     font-family: sans-serif;
 }
 .forecastday {
-    width:15%;
-    margin-left: 35px;
+    width:20%;
     float:left;
+    text-align: center;
 }
 .temp {
     padding-bottom:10px;

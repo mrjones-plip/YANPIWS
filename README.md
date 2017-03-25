@@ -82,6 +82,7 @@ DATE,ID,TEMP,HUMIDITY
 ```
 
 ## Version History
+* 0.6 - Mar 25, 2017 - horizontal layout, moon and sun icons instead of text, bigger forecast icons
 * 0.5 - Mar 24, 2017 - simplified layout, improve readme, better error handling of missing config.php
 * 0.4 - Mar 24, 2017 - cache darksky API calls, implement layout for 800x480 screen
 * 0.3 - Mar 23, 2017 - forecast if you have a darksky API
