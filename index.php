@@ -19,17 +19,18 @@ if(is_file('config.php')){
 }
 
 $today = date('Y-m-d', time());
-$time = date('h:i A', time());
-$date = date('D j, F Y', time());
+$time = date('g:i A', time());
+$date = date('D M j', time());
 $allData = getData("./data/" . $today);
 
 $currentTempHtml = '';
+$count = 1;
 foreach ($YANPIWS['labels'] as $id => $label){
     $tempLine = getMostRecentTemp($id);
-    $currentTempHtml .= getTempHtml($tempLine);
+    $currentTempHtml .= getTempHtml($tempLine, $count++);
 }
-$sunrise = 'Sunrise ' . getSunriseTime();
-$sunset = 'Sunset ' . getSunsetTime();
+$sunrise = '<img src="sun.svg" class="sun" /> ' . getSunriseTime();
+$sunset = '<img src="moon.svg" class="moon" />  ' . getSunsetTime();
 
 $forecast = getDarkSkyData();
 $forecastHtml = getDailyForecastHtml($forecast->daily);
@@ -37,10 +38,11 @@ $forecastHtml = getDailyForecastHtml($forecast->daily);
 
 <div class="col">
     <div class="row"><?php echo $currentTempHtml ?></div>
-    <div class="row"><?php echo $date ?></div>
-    <div class="row"><?php echo $time ?></div>
-    <div class="row"><?php echo $sunrise ?></div>
-    <div class="row"><?php echo $sunset ?></div>
+    <div class="row ">
+        <div class=" time"><?php echo $time ?></div>
+        <div class="date"><?php echo $date ?></div>
+    </div>
+    <div class="row"><?php echo $sunrise ?><?php echo $sunset ?></div>
 </div>
 <div class="col rigthtCol">
     <?php echo $forecastHtml ?>
