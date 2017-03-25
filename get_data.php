@@ -48,7 +48,7 @@ function getMostRecentTemp($id, $date = null){
     }
 }
 
-function getTempHtml($tempLine){
+function getTempHtml($tempLine, $id=1){
     global $YANPIWS;
     $key = $tempLine[1];
     if (isset($YANPIWS['labels'][$key])){
@@ -56,8 +56,13 @@ function getTempHtml($tempLine){
     } else {
         $label = "ID $key";
     }
-    $temp = number_format($tempLine[2],0);
-    return "<div class='temp'><strong>{$temp}°</strong> $label </div>\n";
+    if (isset($tempLine[2])) {
+        $temp = number_format($tempLine[2], 0);
+    } else {
+        $temp = 'NA';
+    }
+    return "<div class='temp temp{$id}'><span class='degrees'>{$temp}°</span>" .
+        "<span class='label'>$label</span></div>\n";
 }
 
 function getSunriseTime(){
@@ -114,18 +119,26 @@ function getDailyForecastHtml($daily = null){
         $html .= "<canvas id='W.112035303696' width='100' height='100'></canvas>";
         $js .= "skycons.add('W.112035303696', 'sleet');\n";
     } else {
+        $count = 1;
         foreach ($daily->data as $day) {
             $rand = rand(99999, 999999999999);
-            $today = substr(date('D', $day->time), 0, 1);
+            if ($count == 1) {
+                $today = "Today";
+            } elseif($count > 5) {
+                break;
+            } else {
+                $today = substr(date('D', $day->time), 0, 3);
+            }
             $html .= "<div class='forecastday'>";
-            $html .= $today;
-            $html .= " <canvas id='$today.$rand' width='32' height='32'></canvas>";
-            $html .= ' H ' . number_format($day->temperatureMax, 0) . '°';
-            $html .= ' L ' . number_format($day->temperatureMin, 0) . '°';
-            $html .= ' ' . number_format($day->windSpeed, 0) . 'mph';
+            $html .= "<div class='forcastDay'>$today</div>";
+            $html .= "<canvas id='$today.$rand' width='70' height='70'></canvas>";
+            $html .= '<div class="hight spreadtemp">' . number_format($day->temperatureMax, 0) . '°</div>';
+            $html .= '<div class="lowt spreadtemp">' . number_format($day->temperatureMin, 0) . '°</div>';
+            $html .= '<div class="wind"> ' . number_format($day->windSpeed, 0) .  ' mph</div>';
             $html .= '</div>';
 
             $js .= "skycons.add('$today.$rand', '$day->icon');\n";
+            $count++;
         }
     }
     $html .= "
@@ -133,6 +146,7 @@ function getDailyForecastHtml($daily = null){
         <script>
           var skycons = new Skycons({'color': 'white'});
           $js
+//          skycons.play();
         </script>
     ";
     return $html;

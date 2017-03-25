@@ -7,21 +7,59 @@ body {
     font-family: sans-serif;
 }
 .forecastday {
-    padding-bottom: 15px;
+    width:15%;
+    margin-left: 40px;
+    float:left;
 }
 .temp {
     padding-bottom:10px;
     padding-top:20px;
-    font-size: 37pt;
+    font-size: 50pt;
+    float: left;
+}
+.temp2 {
+    float:right;
+}
+.label {
+    text-transform: uppercase;
+}
+.degrees {
+    font-weight: bold;
 }
 .col {
     float:left;
+    width: 100%;
 }
 .rigthtCol{
-    margin-left:100px;
-    padding-left:30px;
-    padding-top:10px;
+    padding-top:20px;
 }
 .row {
     padding-bottom: 20px;
+    clear:both;
+    width: 100%;
+}
+.sun {
+    width:33px;
+}
+.moon {
+    width:25px;
+    padding-left:20px;
+}
+.date, .time, .label {
+    font-size:35pt;
+}
+.date, .time {
+    float: left;
+}
+.date {
+    padding-left: 20px;
+}
+.lowt {
+    color: #476b6b;
+}
+.spreadtemp {
+    font-size:18pt;
+}
+.wind {
+    font-size:12pt;
 }
