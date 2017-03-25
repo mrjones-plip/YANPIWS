@@ -2,7 +2,7 @@
 Yet Another Pi Weather Station (YANPIWS) - My explorations in getting a Rasberry Pi 
 showing local time and weather:
 
-![](./screenshot2.png)
+![](./YANPIWS.gif)
 
 ## Background
 
