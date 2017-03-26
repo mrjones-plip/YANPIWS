@@ -99,7 +99,7 @@ of creating your own config file.  Here we see ID 153:
 on the Pi's web server.  Thanks
 to [blog.gordonturner.com](https://blog.gordonturner.com/2016/12/29/raspberry-pi-full-screen-browser-raspbian-november-2016/)
 and [superuser.com](https://superuser.com/questions/461035/disable-google-chrome-session-restore-functionality#618972)
- pagea for the howto:
+ pages for the howto:
     ```
     @lxpanel --profile LXDE-pi
     @pcmanfm --desktop --profile LXDE-pi
@@ -120,11 +120,11 @@ and [superuser.com](https://superuser.com/questions/461035/disable-google-chrome
    rm www/index.html
    git clone https://github.com/Ths2-9Y-LqJt6/YANPIWS.git html
    cd html
-   cp config.dis.php config.php
+   cp config.dist.php config.php
    ```
-1. Edit your newly created ``config.php`` to have the correct values.  
-Specifically, your latitude (lat),
-longitude (lon), time zone (gmt_offset) and labels which you 
+1. Edit your newly created ``config.php`` to have the correct values. 
+Specifically, your latitude (``lat``),
+longitude (``lon``), time zone (``gmt_offset``) and labels which you 
 got in the step above running ``rtl_433 -q``. As well, you'll need to sign up for an API key
 on [Dark Sky](https://darksky.net/dev/register). Be sure to keep the other lines, specifically
 the line that declares the ``$YANPIWS`` variable a global, untouched.  Here's a sample:
@@ -147,11 +147,15 @@ the line that declares the ``$YANPIWS`` variable a global, untouched.  Here's a 
     rtl_433 -f 433820000 -C customary -F json -q | php -f parse_and_save.php&
     It's 74.3 at ID 153 - data written to ./data/2017-03-25
     ```
-    This step will need some improvement as the process can die and your temps will stop
+    This step will need some improvement as the ``rtl_433`` process can die and your temps will stop
     being updated :( Stay tuned!
 
 Whew that's it!  Enjoy your new weather station. Let me know which awesome case you
  build for it and report any bugs here!
+ 
+ 
+![](./product.jpg)
+
 
 ## Version History
 * 0.7 - Mar 25, 2017 - Add Install Steps, tweak sun icon, full path in config, 
