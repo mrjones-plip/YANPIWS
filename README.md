@@ -4,82 +4,88 @@ showing local time and weather:
 
 ![](./YANPIWS.gif)
 
-## Background
+## Overview
 
-With a daily workflow that involves checking out a repo, making
-commits, and the stopping work, it only made sense that I'd
-do the same for my efforts to write a little weather app for my
-Pi. This habit means my work is always backed up and ready
-for others to review or for me to load up on the another computer.
+For a while I've had a [wireless weather station](http://amzn.to/2nAxo3L).  And for as long as I've 
+had it, it's never quite worked right.  Certainly the part about 
+"Equipped with an atomic clock, time is set automatically via radio" has *never* worked.  As 
+well, maybe the sunset/sunrise times were accurate once or twice.  The only thing 
+that worked pretty well was the indoor and outdoor temperatures.  I stumbled upon the
+[rtl_433](https://github.com/merbanan/rtl_433) project and I was super stoked
+to DIY a weather station.  
 
 Goals for this project are:
 
+* Use cheap hardware (e.g. Rasberry Pi)
 * Show live weather from local, wireless sensors
 * Show time
 * Show today's sunset/sunrise times
-* Show weather forecast from Dark Sky API https://darksky.net/dev/
+* Show weather forecast from [Dark Sky API](https://darksky.net/dev/)
 
 ## Hardware
 
-* [433 MHz SDR USB dongle](http://amzn.to/2nc5MhX)
-* [Wireless Temperature sensor](http://amzn.to/2lVdhJ6)
-* [5" 800x480 screen](http://amzn.to/2mRjWYT)
-* [pi and power](http://amzn.to/2nklto3)
+Here's the parts I used and prices at time of publishing:
 
-## Software
+* $20 - [433 MHz SDR USB dongle](http://amzn.to/2nc5MhX)
+* $13 - [Wireless Temperature sensor](http://amzn.to/2lVdhJ6)
+* $40 - [5" 800x480 screen](http://amzn.to/2mRjWYT)
+* $43 - [Rasberry Pi 3 Model B and Power Adapter](http://amzn.to/2nklto3)
+* $11 - [8GB Micro SD card](http://amzn.to/2nRE9Pt)
 
-We'll be using [rtl_433](https://github.com/merbanan/rtl_433) 
-to talk to the USB SDR dongle which will read the temperatures from the sensors
-with a a call like this:
+Total for this is $127, so, erm, not that cheap.  Ideally you'd have a lot of 
+parts around you could re-use for this project. As well, you could reduce the price by going with a 
+3.5" screen ([only $17](http://amzn.to/2mCIxlg)) and Pi B+ ([only $30](http://amzn.to/2n5nioJ))
+. For the B+ you'd have to use ethernet or bring your own USB WiFi 
+adapter.  I knew I'd have use for a 5" HDMI monitor, so I was happy to pay the premium.
 
-```
-rtl_433 -C customary -F json -q | php -f parse_and_save.php
-```
+Caveat Emptor - You'd probably be better off spending even more (ok, not so cheap here any more ;)
+on a less janky wireless setup like [z-wave](http://amzn.to/2n3RFLn). I found out the hard way that
+the IDs of the $13 sensors change every time your batteries die/are changed. As well, the Pi WiFi 
+seems to interfere with the USB SDR.  I'm inspiring confidence, yeah?! 
 
-And then, since I'm a PHP guy, we'll have that ``parse_and_save.php``, 
-be, you know php, that parses it, but my proof of concept looks
-like this (thanks [stackoverflow](http://stackoverflow.com/a/11968298)!):
+## Install steps
 
-```php
-#!/usr/bin/php
-<?php
+These steps assume some competency in building computers and using the command line and such. As
+much as possible I'll try and link to detailed install guides:
 
-while($f = fgets(STDIN)){
-    parseJson($f);
-}
+1. Gather all the hardware above 
+1. Get your Pi 
+[installed and booting](https://www.raspberrypi.org/documentation/installation/installing-images/README.md). 
+1. Get your [Pi online](https://www.raspberrypi.org/documentation/configuration/wireless/README.md)
+1. Ensure you can [SSH to your Pi](https://www.raspberrypi.org/documentation/remote-access/ssh/README.md)
+1. Update your Pi to be current;
+   ```
+   sudo apt-get update&& sudo apt-get upgrade
+   ```
+1. Install git, apache, php, compile utils for rtl, chrome and chrome utils for doing 
+full screen(some of which may be installed already):
 
-function parseJson($jsonLine){
-    print_r(json_decode($jsonLine));
-} 
-```
-
-And while I thought it'd be hot to use influx db and grafana 
-like all the cools kids 
-(see [giatro.me](http://giatro.me/2015/09/30/install-influxdb-and-grafana-on-raspberry-pi.html)) 
-that's really hard.  I'll KISS and either
-use an existing LAMP set up or do LAMP on the pi like so:
-
-```
-sudo apt-get install apache2 php5 php5-mysql mysql-server
-```
-
-And then show the data in basic text.  Later, possibly via something like 
-[canvasjs](http://canvasjs.com/html5-javascript-dynamic-chart/).
-
-Finally, use chrome to show it full screen:
-
-* autoboot chrome full screen https://blog.gordonturner.com/2016/12/29/raspberry-pi-full-screen-browser-raspbian-november-2016/
-* add --incognito to remove errors https://superuser.com/questions/461035/disable-google-chrome-session-restore-functionality#618972
-
-## data
-
-Currently we're writing it in a 4 column CSV to the ``data`` folder:
-
-```csv
-DATE,ID,TEMP,HUMIDITY
-2017-03-22 23:26:22,109,57.92,25
-2017-03-22 23:26:55,211,72.5,34
-```
+   ```
+   sudo apt-get install -y curl git mercurial make binutils bison gcc build-essential chromium-browser ttf-mscorefonts-installer unclutter x11-xserver-utils apache2 php5
+   ```
+1. Download, compile and install [rtl_433](https://github.com/merbanan/rtl_433)
+1. With your wireless sensor(s) powered up and the USB Dongle attached, make sure your 
+sensors are read with rtl_433:
+   ```
+   root@raspberrypi:/var/www/html# rtl_433 -q
+   
+   Found Rafael Micro R820T tuner
+   Exact sample rate is: 250000.000414 Hz
+   Sample rate set to 250000.
+   Bit detection level set to 0 (Auto).
+   Tuner gain set to Auto.
+   Tuned to 433920000 Hz.
+   2017-03-25 17:07:21 :   Fine Offset Electronics, WH2 Temperature/Humidity sensor
+           ID:      153
+           Temperature:     25.5 C
+           Humidity:        36 %
+   ```
+1. As root, clone this repo into /var/www/html:
+   ```
+   sudo su - 
+   cd /var/html/www
+   git clone https://github.com/merbanan/rtl_433.git
+   ```
 
 ## Version History
 * 0.6 - Mar 25, 2017 - horizontal layout, moon and sun icons instead of text, bigger forecast icons
