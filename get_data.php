@@ -44,7 +44,7 @@ function getMostRecentTemp($id, $date = null){
     if (isset($allData[$id])) {
         return array_pop($allData[$id]);
     } else {
-        return array('NA','NA','NA','NA','NA');
+        return array('NA','No Data Found',null ,'NA','NA');
     }
 }
 
@@ -54,15 +54,15 @@ function getTempHtml($tempLine, $id=1){
     if (isset($YANPIWS['labels'][$key])){
         $label = $YANPIWS['labels'][$key];
     } else {
-        $label = "ID $key";
+        $label = "#$key";
     }
-    if (isset($tempLine[2])) {
+    if (isset($tempLine[2]) && $tempLine != null) {
         $temp = number_format($tempLine[2], 0);
+        return "<div class='temp temp{$id}'><span class='degrees'>{$temp}°</span>" .
+            "<span class='label'>$label</span></div>\n";
     } else {
-        $temp = 'NA';
+        return "<div class='temp temp{$id}'>No Temp Data</div>\n";
     }
-    return "<div class='temp temp{$id}'><span class='degrees'>{$temp}°</span>" .
-        "<span class='label'>$label</span></div>\n";
 }
 
 function getSunriseTime(){
@@ -97,16 +97,19 @@ function getSunsetTime(){
 function getDarkSkyData(){
     global $YANPIWS;
     $path = $YANPIWS['dataPath'];
-    $cache = $path.'/darksky.cahce';
+    $cache = $path.'darksky.cache';
     $hourAgo = time() - (60*60);
+    $data = null;
     $url = 'https://api.darksky.net/forecast/' .$YANPIWS['darksky'] . '/' . $YANPIWS['lat'] . ',' . $YANPIWS['lon'];
-    if ((!is_file($cache) || filectime($cache) < $hourAgo) && is_writable($path)){
-        $data = json_decode(file_get_contents($url));
-        file_put_contents($cache,serialize($data));
-    } elseif (is_file($cache)){
-        $data = unserialize(file_get_contents($cache));
-    } else {
-        $data = json_decode(file_get_contents($url));
+    if($YANPIWS['darksky'] != null ) {
+        if ((!is_file($cache) || filectime($cache) < $hourAgo) && is_writable($path)) {
+            $data = json_decode(file_get_contents($url));
+            file_put_contents($cache, serialize($data));
+        } elseif (is_file($cache)) {
+            $data = unserialize(file_get_contents($cache));
+        } else {
+            $data = json_decode(file_get_contents($url));
+        }
     }
     return $data;
 }
@@ -116,7 +119,10 @@ function getDailyForecastHtml($daily = null){
     $js = '';
     if ($daily == null){
         // show rain for error
-        $html .= "<canvas id='W.112035303696' width='100' height='100'></canvas>";
+
+        $html .= "<div class='forecastday'>";
+        $html .= "<canvas id='W.112035303696' width='100' height='100'></canvas> No Dark Sky Data for forcast";
+        $html .= "</div>";
         $js .= "skycons.add('W.112035303696', 'sleet');\n";
     } else {
         $count = 1;

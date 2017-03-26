@@ -1,5 +1,6 @@
 #!/usr/bin/php
 <?php
+require_once("config.php");
 
 $knownKeys = array(
     'time',
@@ -18,7 +19,7 @@ while($f = fgets(STDIN)){
     }
 
     $today = date('Y-m-d', time());
-    saveArrayToCsv($path, $today, $saveMeArray);
+    saveArrayToCsv($YANPIWS['dataPath'], $today, $saveMeArray);
 }
 
 /**
