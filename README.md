@@ -154,7 +154,7 @@ Whew that's it!  Enjoy your new weather station. Let me know which awesome case 
  build for it and report any bugs here!
  
  
-!(./product.jpg)
+![](./product.jpg)
 
 
 ## Version History
