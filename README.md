@@ -51,12 +51,12 @@ and CSS to work in an 800x480 screen or greater. If you use a cheaper, lower res
 
 ## Install steps
 
-1. Gather all the hardware above and get your Pi 
+These steps assume you already have your Pi 
 [installed and booting](https://www.raspberrypi.org/documentation/installation/installing-images/README.md),
  [online](https://www.raspberrypi.org/documentation/configuration/wireless/README.md) 
  and [accessible via SSH](https://www.raspberrypi.org/documentation/remote-access/ssh/README.md). 
- I recommend using a normal monitor for the install instead of the 5". It's easier this way. After it's 
- installed, update your Pi to be current;
+ I recommend using a normal monitor for the install instead of the 5". It's easier this way. 
+1. Ensure your Pi is current;
     ```
     sudo apt-get update&& sudo apt-get upgrade
     ```
@@ -146,12 +146,11 @@ the line that declares the ``$YANPIWS`` variable a global, untouched.  Here's a 
     );
     ```
 1. Reboot your Pi so the browser starts loading the configured YANPIWS app.
-1. start your data collection in the background and ensure you start seeing 'It's 74.3 at ID ...":
+1. [Add a cronjob](https://www.raspberrypi.org/documentation/linux/usage/cron.md) 
+to run every 5 minutes to ensure temperature collection is happening:
     ```
-    sudo su -
-    cd /var/www/html
-    rtl_433 -f 433820000 -C customary -F json -q | php -f parse_and_save.php&
-    It's 74.3 at ID 153 - data written to ./data/2017-03-25
+    */5 * * * * /var/www/html/start.sh >> /var/www/html/data/cron.log
+
     ```
     This step will need some improvement as the ``rtl_433`` process can die and your temps will stop
     being updated :( Stay tuned!
@@ -164,6 +163,8 @@ Whew that's it!  Enjoy your new weather station. Let me know which awesome case 
 
 
 ## Version History
+* 0.8 - Mar 26, 2017 - Use cron to ensure temperature collection happens, omg - pgrep where have you been
+all my life?!
 * 0.7 - Mar 25, 2017 - Add Install Steps, tweak sun icon, full path in config, 
 better handle empty config file
 * 0.6 - Mar 25, 2017 - horizontal layout, moon and sun icons instead of text, bigger forecast icons
