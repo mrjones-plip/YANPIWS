@@ -41,7 +41,13 @@ adapter.  I knew I'd have use for a 5" HDMI monitor, so I was happy to pay the p
 Caveat Emptor - You'd probably be better off spending even more (ok, not so cheap here any more ;)
 on a less janky wireless setup like [z-wave](http://amzn.to/2n3RFLn). I found out the hard way that
 the IDs of the $13 sensors change every time the sensor batteries die/are changed. As well, the Pi WiFi 
-seems to interfere with the USB SDR.  I'm inspiring confidence, yeah?! 
+seems to interfere with the USB SDR (I'm inspiring confidence, yeah?!) As well, I coded the HTML
+and CSS to work in an 800x480 screen or greater. If you use a cheaper, lower resolution screen, 
+ you'll need to edit the index.php to uncomment the ``style-mini.css`` which tries to shrink
+ everything down to fit:
+```
+<!--<link rel="stylesheet" type="text/css" href="styles-mini.css" />-->
+```
 
 ## Install steps
 

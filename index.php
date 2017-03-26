@@ -7,6 +7,7 @@
 </head>
 <body>
 <link rel="stylesheet" type="text/css" href="styles.css" />
+<!--<link rel="stylesheet" type="text/css" href="styles-mini.css" />-->
 <?php
 require_once ("get_data.php");
 if(is_file('config.php')){
