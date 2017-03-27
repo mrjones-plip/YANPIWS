@@ -58,6 +58,10 @@ These steps assume you already have your Pi
  [online](https://www.raspberrypi.org/documentation/configuration/wireless/README.md) 
  and [accessible via SSH](https://www.raspberrypi.org/documentation/remote-access/ssh/README.md). 
  I recommend using a normal monitor for the install instead of the 5". It's easier this way. 
+ 
+All steps are done as the *Pi User* - be sure you've changed this user's password
+from "raspberry" ;)
+
 1. Ensure your Pi is current;
     ```
     sudo apt-get update&& sudo apt-get upgrade
@@ -173,15 +177,19 @@ Check out this repo, ``cd`` into and start a web server:
 sudo php -S  localhost:8000
 ```
 
-The rtl_433 works great on Ubuntu for desktop/laptop development.
+The rtl_433 works great on Ubuntu for desktop/laptop development.  Manually kick off the input 
+script and leave it running while you code to gather live temps:
 
-Alternately, you can just load this on to your Pi and remotely edit the files.
+```
+rtl_433 -f 433820000 -C customary -F json -q | php -f parse_and_save.php
+```
 
-Copy the sample data example.data to today's date in "data".  It uses IDs 211 
-and 109 which are the ones in config.dist.php.
+If you don't want to deal with running the rtl-433 script, copy the sample data 
+``example.data`` to today's date (YEAR-MONTH-DAY) into the ``data`` directory.  It has IDs 211 
+and 109 which are the ones already in config.dist.php.
 
 Use your IDE of choice to edit and point your browser at ``localhost:8000`` 
-(or the IP of your Pi).
+(or the IP of your Pi) and away you go.
 
 PRs and Issues welcome!
 
