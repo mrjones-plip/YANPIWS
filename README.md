@@ -125,8 +125,10 @@ and [superuser.com](https://superuser.com/questions/461035/disable-google-chrome
    ```
    cd /var/html/
    sudo rm www/index.html
-   git clone https://github.com/Ths2-9Y-LqJt6/YANPIWS.git html
+   sudo git clone https://github.com/Ths2-9Y-LqJt6/YANPIWS.git html
    cd html
+   chown -R pi .
+   chgrp -R www-data .
    cp config.dist.php config.php
    ```
 1. Edit your newly created ``config.php`` to have the correct values. 
@@ -171,7 +173,17 @@ Check out this repo, ``cd`` into and start a web server:
 sudo php -S  localhost:8000
 ```
 
-Alternately
+The rtl_433 works great on Ubuntu for desktop/laptop development.
+
+Alternately, you can just load this on to your Pi and remotely edit the files.
+
+Copy the sample data example.data to today's date in "data".  It uses IDs 211 
+and 109 which are the ones in config.dist.php.
+
+Use your IDE of choice to edit and point your browser at ``localhost:8000`` 
+(or the IP of your Pi).
+
+PRs and Issues welcome!
 
 ## Version History
 * 0.8 - Mar 26, 2017 - Use cron to ensure temperature collection happens, omg - pgrep where have you been
