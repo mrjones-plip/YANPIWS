@@ -10,19 +10,12 @@
 <!--<link rel="stylesheet" type="text/css" href="styles-mini.css" />-->
 <?php
 require_once ("get_data.php");
-if(is_file('config.php')){
-    require_once ("config.php");
-} else {
-    die (
-        '<h3>Error</h3><p>no config.php!  Copy config.dist.php to config.php</p>'.
-        getDailyForecastHtml()
-    );
-}
+getConfigOrDie();
 
 $today = date('Y-m-d', time());
 $time = date('g:i A', time());
 $date = date('D M j', time());
-$allData = getData("./data/" . $today);
+$allData = getData($YANPIWS['dataPath'] . $today);
 
 $currentTempHtml = '';
 $count = 1;
@@ -30,8 +23,8 @@ foreach ($YANPIWS['labels'] as $id => $label){
     $tempLine = getMostRecentTemp($id);
     $currentTempHtml .= getTempHtml($tempLine, $count++);
 }
-$sunrise = '<img src="sun.svg" class="sun" /> ' . getSunriseTime();
-$sunset = '<img src="moon.svg" class="moon" />  ' . getSunsetTime();
+$sunset=  getSunsetHtml(getSunsetTime());
+$sunrise  =  getSunriseHtml(getSunriseTime());
 
 $forecast = getDarkSkyData();
 $forecastHtml = getDailyForecastHtml($forecast->daily);
