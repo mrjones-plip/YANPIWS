@@ -194,7 +194,7 @@ Use your IDE of choice to edit and point your browser at ``localhost:8000``
 PRs and Issues welcome!
 
 ## Version History
-* 0.9 - Mar 26, 2017 - get feedback from @jamcole (thanks!), add developer section, add getConfigOrDie(), 
+* 0.9 - Mar 26, 2017 - get feedback from [@jamcole](https://github.com/jamcole) (thanks!), add developer section, add getConfigOrDie(), 
 simplify index.php, add better logging for debugging
 * 0.8 - Mar 26, 2017 - Use cron to ensure temperature collection happens, omg - pgrep where have you been
 all my life?!
