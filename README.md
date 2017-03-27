@@ -40,9 +40,11 @@ adapter.  I knew I'd have use for a 5" HDMI monitor, so I was happy to pay the p
 
 Caveat Emptor - You'd probably be better off spending even more (ok, not so cheap here any more ;)
 on a less janky wireless setup like [z-wave](http://amzn.to/2n3RFLn). I found out the hard way that
-the IDs of the $13 sensors change every time the sensor batteries die/are changed. As well, the Pi WiFi 
-seems to interfere with the USB SDR (I'm inspiring confidence, yeah?!) As well, I coded the HTML
-and CSS to work in an 800x480 screen or greater. If you use a cheaper, lower resolution screen, 
+the IDs of the $13 sensors change every time the sensor batteries die/are changed. ~~As well, the Pi WiFi 
+seems to interfere with the USB SDR (I'm inspiring confidence, yeah?!)~~ Turns out I just needed to move
+the antenna further away from the Pi! Finally, I coded the HTML
+and CSS to work in an 800x480 screen or greater. If you use the cheaper, 
+lower resolution screen (480x320), 
  you'll need to edit the index.php to uncomment the ``style-mini.css`` which tries to shrink
  everything down to fit:
 ```
@@ -118,12 +120,11 @@ and [superuser.com](https://superuser.com/questions/461035/disable-google-chrome
     @xset -dpms
      ```
      Upon reboot you should see the default apache page, full screen, with no menu bar at the top.
-1. As root, remove the default ``index.html``, clone this repo into ``/var/www/html`` and create your own 
+1. Remove the default ``index.html``, clone this repo into ``/var/www/html`` and create your own 
 ``config.php``:
    ```
-   sudo su - 
    cd /var/html/
-   rm www/index.html
+   sudo rm www/index.html
    git clone https://github.com/Ths2-9Y-LqJt6/YANPIWS.git html
    cd html
    cp config.dist.php config.php
@@ -147,7 +148,7 @@ the line that declares the ``$YANPIWS`` variable a global, untouched.  Here's a 
     ```
 1. Reboot your Pi so the browser starts loading the configured YANPIWS app.
 1. [Add a cronjob](https://www.raspberrypi.org/documentation/linux/usage/cron.md) 
-to run every 5 minutes to ensure temperature collection is happening:
+for the Pi user to run every 5 minutes to ensure temperature collection is happening:
     ```
     */5 * * * * /var/www/html/start.sh >> /var/www/html/data/cron.log
 
@@ -161,6 +162,16 @@ Whew that's it!  Enjoy your new weather station. Let me know which awesome case 
  
 ![](./product.jpg)
 
+
+## Development
+
+Check out this repo, ``cd`` into and start a web server:
+
+```
+sudo php -S  localhost:8000
+```
+
+Alternately
 
 ## Version History
 * 0.8 - Mar 26, 2017 - Use cron to ensure temperature collection happens, omg - pgrep where have you been

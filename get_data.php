@@ -16,6 +16,16 @@
  * @param string $file where CSV data is
  * @return array of formatted CSV data
  */
+function getConfigOrDie(){
+    if(is_file('config.php')){
+        require_once ("config.php");
+    } else {
+        die (
+            '<h3>Error</h3><p>no config.php!  Copy config.dist.php to config.php</p>'.
+            getDailyForecastHtml()
+        );
+    }
+}
 
 function getData($file){
     if (is_file($file) && is_readable($file)){
@@ -92,6 +102,12 @@ function getSunsetTime(){
             $YANPIWS['gmt_offset']
         )
     );
+}
+function getSunsetHtml($time){
+    return '<img src="moon.svg" class="moon" /> '. $time;
+}
+function getSunriseHtml($time){
+    return '<img src="sun.svg" class="sun" /> '. $time;
 }
 
 function getDarkSkyData(){
