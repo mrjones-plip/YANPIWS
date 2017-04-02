@@ -6,6 +6,22 @@ body {
     font-size: 22pt;
     font-family: sans-serif;
 }
+a {
+    color: white;
+}
+.homeLink {
+    font-size:29pt;
+}
+.YANPIWS a {
+    color: darkgreen;
+    text-decoration: none;
+    font-size:20pt;
+}
+.YANPIWS {
+    position: fixed;
+    z-index: 10000;
+    left: 42%;
+}
 .forecastday {
     width:20%;
     float:left;
@@ -13,7 +29,6 @@ body {
 }
 .temp {
     padding-bottom:10px;
-    padding-top:20px;
     font-size: 50pt;
     float: left;
 }

@@ -68,13 +68,23 @@ function getTempHtml($tempLine, $id=1){
     }
     if (isset($tempLine[2]) && $tempLine != null) {
         $temp = number_format($tempLine[2], 0);
-        return "<div class='temp temp{$id}'><span class='degrees'>{$temp}°</span>" .
-            "<span class='label'>$label</span></div>\n";
+        return "<span class='degrees'>{$temp}°</span>" .
+            "<span class='label'>$label</span>\n";
     } else {
-        return "<div class='temp temp{$id}'>No Temp Data</div>\n";
+        return "No Data\n";
     }
 }
 
+function getTempLastHtml($tempLine){
+    if ($tempLine[0] == "NA"){
+        return "<li>$label: $age ". implode(" - ",$tempLine) . "</li>";
+    } else {
+        $lineEpoch = strtotime($tempLine[0]);
+        $age = getHumanTime(time() - $lineEpoch);
+        $temp = "{$tempLine[2]}°";
+        return "<li>$label: $temp $age ago</li>";
+    }
+}
 function getSunriseTime(){
     global $YANPIWS;
     return date(
@@ -137,13 +147,11 @@ function getDailyForecastHtml($daily = null){
         // show rain for error
 
         $html .= "<div class='forecastday'>";
-        $html .= "<canvas id='W.112035303696' width='100' height='100'></canvas> No Dark Sky Data for forcast";
+        $html .= "<img src=''./skycons/rain.png' width='100' height='100'></img> No Dark Sky Data for forcast";
         $html .= "</div>";
-        $js .= "skycons.add('W.112035303696', 'sleet');\n";
     } else {
         $count = 1;
         foreach ($daily->data as $day) {
-            $rand = rand(99999, 999999999999);
             if ($count == 1) {
                 $today = "Today";
             } elseif($count > 5) {
@@ -153,23 +161,34 @@ function getDailyForecastHtml($daily = null){
             }
             $html .= "<div class='forecastday'>";
             $html .= "<div class='forcastDay'>$today</div>";
-            $html .= "<canvas id='$today.$rand' width='70' height='70'></canvas>";
+            $html .= "<img src='./skycons/{$day->icon}.png' width='70' height='70'></img>";
             $html .= '<div class="hight spreadtemp">' . number_format($day->temperatureMax, 0) . '°</div>';
             $html .= '<div class="lowt spreadtemp">' . number_format($day->temperatureMin, 0) . '°</div>';
             $html .= '<div class="wind"> ' . number_format($day->windSpeed, 0) .  ' mph</div>';
             $html .= '</div>';
 
-            $js .= "skycons.add('$today.$rand', '$day->icon');\n";
             $count++;
         }
     }
-    $html .= "
-        <script src='skycons/skycons.js'></script>
-        <script>
-          var skycons = new Skycons({'color': 'white'});
-          $js
-          skycons.play();
-        </script>
-    ";
     return $html;
+}
+
+// thanks http://www.kavoir.com/2010/09/php-get-human-readable-time-from-seconds.html
+function getHumanTime($s) {
+    $m = $s / 60;
+    $h = $s / 3600;
+    $d = $s / 86400;
+    if ($m > 1) {
+        if ($h > 1) {
+            if ($d > 1) {
+                return (int)$d.' days';
+            } else {
+                return (int)$h.' hours';
+            }
+        } else {
+            return (int)$m.' minutes';
+        }
+    } else {
+        return (int)$s.' seconds';
+    }
 }
