@@ -24,6 +24,12 @@ foreach ($YANPIWS['labels'] as $id => $label){
         $count++;
 }
 ?>
+<div class="YANPIWS"><a href="/stats.php">YANPIWS</a></div>
+<div class="col">
+    <div class="row"><?php echo $currentTempHtml ?></div>
+    <div class="row ">
+        <div class=" time"><?php echo $time ?></div>
+        <div class="date"><?php echo $date ?></div>
     </div>
     <div class="row " id="datetime">
     </div>
