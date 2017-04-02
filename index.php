@@ -29,7 +29,7 @@ $sunrise  =  getSunriseHtml(getSunriseTime());
 $forecast = getDarkSkyData();
 $forecastHtml = getDailyForecastHtml($forecast->daily);
 ?>
-
+<div class="YANPIWS"><a href="/stats.php">YANPIWS</a></div>
 <div class="col">
     <div class="row"><?php echo $currentTempHtml ?></div>
     <div class="row ">

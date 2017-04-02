@@ -24,7 +24,7 @@ Goals for this project are:
 
 ## Hardware
 
-Here's the parts I used and prices at time of publishing:
+Here's the parts I used and prices at time of publishing (March 2017):
 
 * $20 - [433 MHz SDR USB dongle](http://amzn.to/2nc5MhX)
 * $13 - [Wireless Temperature sensor](http://amzn.to/2lVdhJ6)
