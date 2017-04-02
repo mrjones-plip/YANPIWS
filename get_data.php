@@ -71,10 +71,20 @@ function getTempHtml($tempLine, $id=1){
         return "<div class='temp temp{$id}'><span class='degrees'>{$temp}°</span>" .
             "<span class='label'>$label</span></div>\n";
     } else {
-        return "<div class='temp temp{$id}'>No Temp Data</div>\n";
+        return "<div class='temp temp{$id}'>No Data</div>\n";
     }
 }
 
+function getTempLastHtml($tempLine){
+    if ($tempLine[0] == "NA"){
+        return "<li>$label: $age ". implode(" - ",$tempLine) . "</li>";
+    } else {
+        $lineEpoch = strtotime($tempLine[0]);
+        $age = getHumanTime(time() - $lineEpoch);
+        $temp = "{$tempLine[2]}°";
+        return "<li>$label: $temp $age ago</li>";
+    }
+}
 function getSunriseTime(){
     global $YANPIWS;
     return date(
@@ -172,4 +182,24 @@ function getDailyForecastHtml($daily = null){
         </script>
     ";
     return $html;
+}
+
+// thanks http://www.kavoir.com/2010/09/php-get-human-readable-time-from-seconds.html
+function getHumanTime($s) {
+    $m = $s / 60;
+    $h = $s / 3600;
+    $d = $s / 86400;
+    if ($m > 1) {
+        if ($h > 1) {
+            if ($d > 1) {
+                return (int)$d.' days';
+            } else {
+                return (int)$h.' hours';
+            }
+        } else {
+            return (int)$m.' minutes';
+        }
+    } else {
+        return (int)$s.' seconds';
+    }
 }

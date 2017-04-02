@@ -11,18 +11,12 @@ require_once ("get_data.php");
 getConfigOrDie();
 
 $today = date('M j, Y, g:i a', time());
-$time = date('g:i A', time());
-$date = date('D M j', time());
 $allData = getData($YANPIWS['dataPath'] . $today);
 
 $currentTempHtml = '<ul>';
-$count = 1;
-
 foreach ($YANPIWS['labels'] as $id => $label){
     $tempLine = getMostRecentTemp($id);
-    $lineEpoch = strtotime($tempLine[0]);
-    $age = date("F j, Y, g:i a", $lineEpoch);
-    $currentTempHtml .= "<li>$label: $age (". implode(" - ",$tempLine) . ")</li>";
+    $currentTempHtml .= getTempLastHtml($tempLine);
 }
 $currentTempHtml .= '</ul>';
 
@@ -35,13 +29,12 @@ if (isset($_SERVER['SERVER_ADDR'])){
 ?>
 <div class="col">
     <div class="row">
-        <a href="/" class="homeLink"><-  Weather</a> - Current time: <?php echo $today?><br />
+        <p>
+            <a href="/" class="homeLink"><-  Weather</a>
+        </p>
         <a href="https://github.com/Ths2-9Y-LqJt6/YANPIWS">YANPIS 0.9</a> - Released Mar 26, 2017<br />
         <a href="https://darksky.net/poweredby/">Powered by Dark Sky</a><br />
-        <p>
-        Last Sensor Info:<br />
         <?php echo $currentTempHtml ?>
-        </p>
         IP: <?php echo $address ?>
     </div>
 </div>
