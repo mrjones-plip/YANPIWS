@@ -37,3 +37,7 @@ function refeshDateTime(){
 function refreshTemp(id, id2){
     loadXMLDoc('./ajax.php?content=temp&id=' + id, 'temp' + id2 );
 }
+
+function refreshCurrentWind(){
+    loadXMLDoc('./ajax.php?content=wind_now', 'wind_now');
+}

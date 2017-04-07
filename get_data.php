@@ -131,7 +131,7 @@ function getDarkSkyData(){
     global $YANPIWS;
     $path = $YANPIWS['dataPath'];
     $cache = $path.'darksky.cache';
-    $hourAgo = time() - (60*60);
+    $hourAgo = time() - (60*15); // 15 minutes
     $data = null;
     $url = 'https://api.darksky.net/forecast/' .$YANPIWS['darksky'] . '/' . $YANPIWS['lat'] . ',' . $YANPIWS['lon'];
     if($YANPIWS['darksky'] != null ) {
@@ -152,7 +152,6 @@ function getDailyForecastHtml($daily = null){
     $js = '';
     if ($daily == null){
         // show rain for error
-
         $html .= "<div class='forecastday'>";
         $html .= "<img src=''./skycons/rain.png' width='100' height='100'></img> No Dark Sky Data for forcast";
         $html .= "</div>";
@@ -198,4 +197,8 @@ function getHumanTime($s) {
     } else {
         return (int)$s.' seconds';
     }
+}
+
+function getCurrentWindHtml($currentlyObject){
+    return number_format($currentlyObject->windSpeed,0) . " mph";
 }
