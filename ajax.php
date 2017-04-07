@@ -12,6 +12,9 @@ if (isset($_GET['content'])){
     if ($_GET['content'] == 'forecast'){
         $forecast = getDarkSkyData();
         print getDailyForecastHtml($forecast->daily);
+    } elseif ($_GET['content'] == 'wind_now'){
+        $forecast = getDarkSkyData();
+        print getCurrentWindHtml($forecast->currently);
     } elseif ($_GET['content'] == 'sunset'){
         print getSunsetHtml(getSunsetTime());
     } elseif ($_GET['content'] == 'sunrise'){

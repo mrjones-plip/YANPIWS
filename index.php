@@ -1,8 +1,11 @@
 <?php
-
 require_once ('get_data.php');
 require_once ('config.php');
 getConfigOrDie();
+$forecast = getDarkSkyData();
+
+//die("<pre>" . print_r($forecast ,1));
+//getDailyForecastHtml($forecast->daily);
 ?>
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/html">
@@ -28,10 +31,8 @@ foreach ($YANPIWS['labels'] as $id => $label){
 <div class="col">
     <div class="row"></div>
     <div class="row ">
-        <div class=" time"></div>
-        <div class="date"></div>
-    </div>
-    <div class="row " id="datetime">
+        <div id="wind_now" class="wind_now"></div>
+        <div  id="datetime"></div>
     </div>
     <div class="row suntimes">
         <span id="sunrise" ></span>
@@ -47,6 +48,7 @@ foreach ($YANPIWS['labels'] as $id => $label){
         refreshForecast();
         refreshSunrise();
         refreshSunset();
+        refreshCurrentWind();
 <?php
         $count = 1;
         foreach ($YANPIWS['labels'] as $id => $label){

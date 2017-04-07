@@ -60,11 +60,14 @@ a {
     width:25px;
     padding-left:20px;
 }
-.date, .time, .label {
+.date, .time, .label, .wind_now {
     font-size:35pt;
 }
-.date, .time {
+.date, .time{
     float: left;
+}
+.wind_now {
+    float: right;
 }
 .date {
     padding-left: 20px;
