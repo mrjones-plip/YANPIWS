@@ -76,12 +76,19 @@ function getTempHtml($tempLine, $id=1){
 }
 
 function getTempLastHtml($tempLine){
+    global $YANPIWS;
     if ($tempLine[0] == "NA"){
         return "<li>$label: $age ". implode(" - ",$tempLine) . "</li>";
     } else {
         $lineEpoch = strtotime($tempLine[0]);
         $age = getHumanTime(time() - $lineEpoch);
         $temp = "{$tempLine[2]}°";
+        $id = $tempLine[1];
+        if (isset($YANPIWS['labels'][$id])){
+            $label = $YANPIWS['labels'][$id];
+        } else {
+            $label = "<no label>";
+        }
         return "<li>$label: $temp $age ago</li>";
     }
 }
