@@ -16,9 +16,11 @@ if (isset($_GET['content'])){
         $forecast = getDarkSkyData();
         print getCurrentWindHtml($forecast->currently);
     } elseif ($_GET['content'] == 'sunset'){
-        print getSunsetHtml(getSunsetTime());
+        $forecast = getDarkSkyData();
+        print getSunsetHtml($forecast->daily->data[0]->sunsetTime);
     } elseif ($_GET['content'] == 'sunrise'){
-        print getSunriseHtml(getSunriseTime());
+        $forecast = getDarkSkyData();
+        print getSunriseHtml($forecast->daily->data[0]->sunriseTime);
     } elseif ($_GET['content'] == 'datetime'){
         print "<div class='time'>$time</div><div class='date'>$date</div>";
     } elseif ($_GET['content'] == 'temp' && isset($_GET['id']) && isset($YANPIWS['labels'][$_GET['id']])){

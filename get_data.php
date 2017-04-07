@@ -92,38 +92,12 @@ function getTempLastHtml($tempLine){
         return "<li>$label: $temp $age ago</li>";
     }
 }
-function getSunriseTime(){
-    global $YANPIWS;
-    return date(
-        'g:i A',
-        date_sunrise(
-            time(),
-            SUNFUNCS_RET_TIMESTAMP,
-            $YANPIWS['lat'],
-            $YANPIWS['lon'],
-            90,
-            $YANPIWS['gmt_offset']
-        )
-    );
-}
-function getSunsetTime(){
-    global $YANPIWS;
-    return date(
-        'g:i A',
-        date_sunset(
-            time(),
-            SUNFUNCS_RET_TIMESTAMP,
-            $YANPIWS['lat'],
-            $YANPIWS['lon'],
-            90,
-            $YANPIWS['gmt_offset']
-        )
-    );
-}
 function getSunsetHtml($time){
+    $time = date('g:i A', $time);
     return '<img src="moon.svg" class="moon" /> '. $time;
 }
 function getSunriseHtml($time){
+    $time = date('g:i A', $time);
     return '<img src="sun.svg" class="sun" /> '. $time;
 }
 

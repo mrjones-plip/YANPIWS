@@ -3,9 +3,6 @@ require_once ('get_data.php');
 require_once ('config.php');
 getConfigOrDie();
 $forecast = getDarkSkyData();
-
-//die("<pre>" . print_r($forecast ,1));
-//getDailyForecastHtml($forecast->daily);
 ?>
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/html">
