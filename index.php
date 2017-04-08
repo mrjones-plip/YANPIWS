@@ -1,9 +1,4 @@
-<?php
-require_once ('get_data.php');
-require_once ('config.php');
-getConfigOrDie();
-$forecast = getDarkSkyData();
-?>
+
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/html">
 <head>
@@ -13,6 +8,11 @@ $forecast = getDarkSkyData();
 <link rel="stylesheet" type="text/css" href="styles.css" />
 <!--<link rel="stylesheet" type="text/css" href="styles-mini.css" />-->
 
+<?php
+require_once ('get_data.php');
+getConfigOrDie();
+$forecast = getDarkSkyData();
+?>
 <div class="YANPIWS"><a href="/stats.php">YANPIWS</a></div>
 <div class="col">
     <div class="row">

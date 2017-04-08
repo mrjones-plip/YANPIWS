@@ -21,7 +21,7 @@ function getConfigOrDie(){
         require_once ("config.php");
     } else {
         die (
-            '<h3>Error</h3><p>no config.php!  Copy config.dist.php to config.php</p>'.
+            '<h3>Error</h3><p>No config.php!  Copy config.dist.php to config.php</p>'.
             getDailyForecastHtml()
         );
     }
@@ -127,7 +127,7 @@ function getDailyForecastHtml($daily = null){
     if ($daily == null){
         // show rain for error
         $html .= "<div class='forecastday'>";
-        $html .= "<img src=''./skycons/rain.png' width='100' height='100'></img> No Dark Sky Data for forcast";
+        $html .= "<img src='./skycons/rain.png' width='100' height='100'></img> No Dark Sky Data for forecast.";
         $html .= "</div>";
     } else {
         $count = 1;
