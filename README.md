@@ -44,12 +44,7 @@ the IDs of the $13 sensors change every time the sensor batteries die/are change
 seems to interfere with the USB SDR (I'm inspiring confidence, yeah?!)~~ Turns out I just needed to move
 the antenna further away from the Pi! Finally, I coded the HTML
 and CSS to work in an 800x480 screen or greater. If you use the cheaper, 
-lower resolution screen (480x320), 
- you'll need to edit the index.php to uncomment the ``style-mini.css`` which tries to shrink
- everything down to fit:
-```
-<!--<link rel="stylesheet" type="text/css" href="styles-mini.css" />-->
-```
+lower resolution screen (480x320), YANPIWS just works thanks to ``@media`` sensing.  As well, it works on mobile devices and desktop devices as well.  All be it, mobile works best in landscape.
 
 ## Install steps
 
