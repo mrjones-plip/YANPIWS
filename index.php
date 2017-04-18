@@ -3,10 +3,11 @@
 <html lang="en" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="utf-8">
+    <script src='skycons/skycons.js'></script>
+    <script>var skycons = new Skycons({'color': 'white'});</script>
 </head>
 <body>
 <link rel="stylesheet" type="text/css" href="styles.css" />
-<!--<link rel="stylesheet" type="text/css" href="styles-mini.css" />-->
 
 <?php
 require_once ('get_data.php');

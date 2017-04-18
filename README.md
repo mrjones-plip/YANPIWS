@@ -54,6 +54,9 @@ These steps assume you already have your Pi
  and [accessible via SSH](https://www.raspberrypi.org/documentation/remote-access/ssh/README.md). 
  I recommend using a normal monitor for the install instead of the 5". It's easier this way. 
  
+Speaking of monitors - this install also assumes you have your 5" display (or 3.5" if you went that 
+way (or what ever display you want!))) already working. 
+ 
 All steps are done as the *Pi User* - be sure you've changed this user's password
 from "raspberry" ;)
 
@@ -61,23 +64,6 @@ from "raspberry" ;)
     ```
     sudo apt-get update&& sudo apt-get upgrade
     ```
-1. In order to get your 5" screen working, if you opted to go that route, edit ``sudo vim /boot/config.txt`` 
-(feel free to use ``pico`` or what not instead of ``vim``) and add these lines at the end:
-   ```
-   hdmi_group=2
-   hdmi_mode=1
-   hdmi_mode=87
-   hdmi_cvt 800 480 60 6 0 0 0
-   dtparam=spi=on
-   dtparam=i2c_arm=on
-   
-   dtoverlay=ads7846,cs=1,penirq=25,penirq_pull=2,speed=50000,keep_vref_on=0,swapxy=0,pmax=255,xohms=150,xmin=200,xmax=3900,ymin=200,ymax=3900
-   
-   dtoverlay=w1-gpio-pullup,gpiopin=4,extpullup=1
-   ```
-   After a reboot, the screen should work. 
-   Thanks [random Amazon comment](https://www.amazon.com/gp/customer-reviews/R3QVPHGJAQIYGW/ref=cm_cr_dp_d_rvw_ttl?ie=UTF8&ASIN=B013JECYF2)!
-   I never got touch calibrated correctly, but feel free follow their instructions with ``xinput-calibrator``.
 1. Install git, apache, php, compile utils for rtl, chrome and chrome utils for doing 
 full screen(some of which may be installed already):
 
@@ -132,15 +118,16 @@ and [superuser.com](https://superuser.com/questions/461035/disable-google-chrome
    ```
 1. Edit your newly created ``config.php`` to have the correct values. 
 Specifically, your latitude (``lat``),
-longitude (``lon``), time zone (``gmt_offset``) and labels which you 
+longitude (``lon``) and labels which you 
 got in the step above running ``rtl_433 -q``. As well, you'll need to sign up for an API key
 on [Dark Sky](https://darksky.net/dev/register). Be sure to keep the other lines, specifically
-the line that declares the ``$YANPIWS`` variable a global, untouched.  Here's a sample:
+the line that declares the ``$YANPIWS`` variable a global, untouched.  If you want static icons instead of
+animated ones, set 'animate' to ``false`` instead of ``true`` like below. Here's a sample:
     ```
     $YANPIWS['lat'] = 31.775554;
     $YANPIWS['lon'] = -81.822436;
+    $YANPIWS['animate'] = true;
     $YANPIWS['dataPath'] = '/var/www/html/data/';
-    $YANPIWS['gmt_offset'] = '-8';
     $YANPIWS['darksky'] = '3824vcu89v89f7das878f7a8sd';
     $YANPIWS['labels'] = array(
         '211' => 'In',

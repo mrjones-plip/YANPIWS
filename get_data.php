@@ -106,7 +106,6 @@ function getDarkSkyData(){
     $path = $YANPIWS['dataPath'];
     $cache = $path.'darksky.cache';
     $hourAgo = time() - (60*15); // 15 minutes
-    $data = null;
     $url = 'https://api.darksky.net/forecast/' .$YANPIWS['darksky'] . '/' . $YANPIWS['lat'] . ',' . $YANPIWS['lon'];
     if($YANPIWS['darksky'] != null ) {
         if ((!is_file($cache) || filectime($cache) < $hourAgo) && is_writable($path)) {
@@ -118,16 +117,24 @@ function getDarkSkyData(){
             $data = json_decode(file_get_contents($url));
         }
     }
+    if ($data === false || $data === null){
+        $data = new stdClass();
+        $data->daily = null;
+        $data->currently = null;
+    }
     return $data;
 }
 
 function getDailyForecastHtml($daily = null){
+    global $YANPIWS;
     $html = '';
     $js = '';
+    $animate = $YANPIWS['animate'];
     if ($daily == null){
         // show rain for error
         $html .= "<div class='forecastday'>";
-        $html .= "<img src='./skycons/rain.png' width='100' height='100'></img> No Dark Sky Data for forecast.";
+        $html .= "<canvas id='foo.rain' class='forecasticon' width='70' height='70'></canvas> ";
+        $html .= "No Dark Sky Data for forecast.";
         $html .= "</div>";
     } else {
         $count = 1;
@@ -141,12 +148,15 @@ function getDailyForecastHtml($daily = null){
             }
             $html .= "<div class='forecastday'>";
             $html .= "<div class='forcastDay'>$today</div>";
-            $html .= "<img src='./skycons/{$day->icon}.png' width='70' height='70'></img>";
+            if ($animate){
+                $html .= "<canvas id='$today.$day->icon' class='forecasticon' width='70' height='70'></canvas>";
+            } else {
+                $html .= "<img src='./skycons/{$day->icon}.png' width='70' height='70'></img>";
+            }
             $html .= '<div class="hight spreadtemp">' . number_format($day->temperatureMax, 0) . '°</div>';
             $html .= '<div class="lowt spreadtemp">' . number_format($day->temperatureMin, 0) . '°</div>';
             $html .= '<div class="wind"> ' . number_format($day->windSpeed, 0) .  ' mph</div>';
-            $html .= '</div>';
-
+            $html .= '</div>'. "\n";
             $count++;
         }
     }
