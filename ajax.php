@@ -14,12 +14,15 @@ if (isset($_GET['content'])){
         print getDailyForecastHtml($forecast->daily);
     } elseif ($_GET['content'] == 'wind_now'){
         $forecast = getDarkSkyData();
+        if (isset($forecast->currently))
         print getCurrentWindHtml($forecast->currently);
     } elseif ($_GET['content'] == 'sunset'){
         $forecast = getDarkSkyData();
+        if (isset($forecast->daily->data[0]->sunsetTime))
         print getSunsetHtml($forecast->daily->data[0]->sunsetTime);
     } elseif ($_GET['content'] == 'sunrise'){
         $forecast = getDarkSkyData();
+        if (isset($forecast->daily->data[0]->sunriseTime))
         print getSunriseHtml($forecast->daily->data[0]->sunriseTime);
     } elseif ($_GET['content'] == 'datetime'){
         print "<div class='time'>$time</div><div class='date'>$date</div>";
