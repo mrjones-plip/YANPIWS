@@ -13,22 +13,24 @@
  *                    [3] => 34
  *               )
  *
- * @param string $file where CSV data is
+ * @param  string $file where CSV data is
  * @return array of formatted CSV data
  */
-function getConfigOrDie(){
-    if(is_file('config.php')){
-        require_once ("config.php");
+function getConfigOrDie()
+{
+    if(is_file('config.php')) {
+        include_once "config.php";
     } else {
-        die (
+        die(
             '<h3>Error</h3><p>no config.php!  Copy config.dist.php to config.php</p>'.
             getDailyForecastHtml()
         );
     }
 }
 
-function getData($file){
-    if (is_file($file) && is_readable($file)){
+function getData($file)
+{
+    if (is_file($file) && is_readable($file)) {
         $data = file($file);
         $goodData = array();
         foreach ($data as $line){
@@ -45,9 +47,10 @@ function getData($file){
     }
 }
 
-function getMostRecentTemp($id, $date = null){
+function getMostRecentTemp($id, $date = null)
+{
     global $YANPIWS;
-    if ($date == null){
+    if ($date == null) {
         $date = date('Y-m-d', time());
     }
     $allData = getData($YANPIWS['dataPath'] . $date);
@@ -58,10 +61,11 @@ function getMostRecentTemp($id, $date = null){
     }
 }
 
-function getTempHtml($tempLine, $id=1){
+function getTempHtml($tempLine, $id=1)
+{
     global $YANPIWS;
     $key = $tempLine[1];
-    if (isset($YANPIWS['labels'][$key])){
+    if (isset($YANPIWS['labels'][$key])) {
         $label = $YANPIWS['labels'][$key];
     } else {
         $label = "#$key";
@@ -75,7 +79,8 @@ function getTempHtml($tempLine, $id=1){
     }
 }
 
-function getSunriseTime(){
+function getSunriseTime()
+{
     global $YANPIWS;
     return date(
         'g:i A',
@@ -89,7 +94,8 @@ function getSunriseTime(){
         )
     );
 }
-function getSunsetTime(){
+function getSunsetTime()
+{
     global $YANPIWS;
     return date(
         'g:i A',
@@ -103,14 +109,17 @@ function getSunsetTime(){
         )
     );
 }
-function getSunsetHtml($time){
+function getSunsetHtml($time)
+{
     return '<img src="moon.svg" class="moon" /> '. $time;
 }
-function getSunriseHtml($time){
+function getSunriseHtml($time)
+{
     return '<img src="sun.svg" class="sun" /> '. $time;
 }
 
-function getDarkSkyData(){
+function getDarkSkyData()
+{
     global $YANPIWS;
     $path = $YANPIWS['dataPath'];
     $cache = $path.'darksky.cache';
@@ -130,10 +139,11 @@ function getDarkSkyData(){
     return $data;
 }
 
-function getDailyForecastHtml($daily = null){
+function getDailyForecastHtml($daily = null)
+{
     $html = '';
     $js = '';
-    if ($daily == null){
+    if ($daily == null) {
         // show rain for error
 
         $html .= "<div class='forecastday'>";
