@@ -10,7 +10,7 @@
 <link rel="stylesheet" type="text/css" href="styles.css" />
 
 <?php
-require_once ('get_data.php');
+require_once 'get_data.php';
 getConfigOrDie();
 $forecast = getDarkSkyData();
 ?>
@@ -49,10 +49,10 @@ foreach ($YANPIWS['labels'] as $id => $label){
         refreshCurrentWind();
 <?php
         $count = 1;
-        foreach ($YANPIWS['labels'] as $id => $label){
-            echo "\t\trefreshTemp($id,$count);\n";
-            $count++;
-        }
+foreach ($YANPIWS['labels'] as $id => $label){
+    echo "\t\trefreshTemp($id,$count);\n";
+    $count++;
+}
     ?>
     }
     refreshAll();

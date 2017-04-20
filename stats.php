@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/html">
 <head>
@@ -7,7 +6,7 @@
 <body>
 <link rel="stylesheet" type="text/css" href="styles.css" />
 <?php
-require_once ("get_data.php");
+require_once "get_data.php";
 getConfigOrDie();
 
 $today = date('M j, Y, g:i a', time());
@@ -20,7 +19,7 @@ foreach ($YANPIWS['labels'] as $id => $label){
 }
 $currentTempHtml .= '</ul>';
 
-if (isset($_SERVER['SERVER_ADDR'])){
+if (isset($_SERVER['SERVER_ADDR'])) {
     $address = $_SERVER['SERVER_ADDR'];
 } else {
     $address = 'NA';
