@@ -1,5 +1,20 @@
 <?php
 /**
+ * include the config file or die trying. prints error and exits if fails
+ */
+function getConfigOrDie()
+{
+    if(is_file('config.php')) {
+        include_once "config.php";
+    } else {
+        die(
+            '<h3>Error</h3><p>No config.php!  Copy config.dist.php to config.php</p>'.
+            getDailyForecastHtml()
+        );
+    }
+}
+
+/**
  * Assuming a CSV of this structure:
  *  2017-03-22 23:11:43,211,72.5,34
  * Return a multi-dimensional array like this:
@@ -16,18 +31,6 @@
  * @param  string $file where CSV data is
  * @return array of formatted CSV data
  */
-function getConfigOrDie()
-{
-    if(is_file('config.php')) {
-        include_once "config.php";
-    } else {
-        die(
-            '<h3>Error</h3><p>No config.php!  Copy config.dist.php to config.php</p>'.
-            getDailyForecastHtml()
-        );
-    }
-}
-
 function getData($file)
 {
     if (is_file($file) && is_readable($file)) {
@@ -47,6 +50,13 @@ function getData($file)
     }
 }
 
+/**
+ * assuming theere's many temps for a day for a given sensor, get an array of the most current
+ *
+ * @param $id int of ID of the sensor
+ * @param null $date string in YEAR-MO-DAY format, defaults to today if none passed
+ * @return array of results - if no data found, array of "No Data Found" returned
+ */
 function getMostRecentTemp($id, $date = null)
 {
     global $YANPIWS;
@@ -61,7 +71,13 @@ function getMostRecentTemp($id, $date = null)
     }
 }
 
-function getTempHtml($tempLine, $id=1)
+/**
+ * given an array from getMostRecentTemp(), format it into html
+ *
+ * @param $tempLine array from getMostRecentTemp()
+ * @return string of HTML
+ */
+function getTempHtml($tempLine)
 {
     global $YANPIWS;
     $key = $tempLine[1];
@@ -79,6 +95,12 @@ function getTempHtml($tempLine, $id=1)
     }
 }
 
+/**
+ * given an array from getMostRecentTemp(), format it into debug html showing age of temp
+ *
+ * @param $tempLine array from getMostRecentTemp()
+ * @return string of HTML
+ */
 function getTempLastHtml($tempLine)
 {
     global $YANPIWS;
@@ -97,32 +119,50 @@ function getTempLastHtml($tempLine)
         return "<li>$label: $temp $age ago</li>";
     }
 }
+
+/**
+ * given an epoch timestampe, return html with icon
+ *
+ * @param $time int of epoch
+ * @return string of html
+ */
 function getSunsetHtml($time)
 {
     $time = date('g:i A', $time);
     return '<img src="moon.svg" class="moon" /> '. $time;
 }
+
+/**
+ * given an epoch timestampe, return html with icon
+ *
+ * @param $time int of epoch
+ * @return string of html
+ */
 function getSunriseHtml($time)
 {
     $time = date('g:i A', $time);
     return '<img src="sun.svg" class="sun" /> '. $time;
 }
 
+/**
+ * get data from dark sky.  will cache data and refresh it every 15 minutes
+ *
+ * @return stdClass of either resutls or very lightly populated error object
+ */
 function getDarkSkyData()
 {
     global $YANPIWS;
     $path = $YANPIWS['dataPath'];
-    $cache = $path.'darksky.cache';
+    $cache = $path . 'darksky.cache';
     $hourAgo = time() - (60*15); // 15 minutes
-    $url = 'https://api.darksky.net/forecast/' .$YANPIWS['darksky'] . '/' . $YANPIWS['lat'] . ',' . $YANPIWS['lon'];
-    if($YANPIWS['darksky'] != null ) {
+    $data = false;
+    if(isset($YANPIWS['darksky']) && $YANPIWS['darksky'] != null && isset($YANPIWS['lat']) && isset($YANPIWS['lon']) ) {
+        $url = 'https://api.darksky.net/forecast/' . $YANPIWS['darksky'] . '/' . $YANPIWS['lat'] . ',' . $YANPIWS['lon'];
         if ((!is_file($cache) || filectime($cache) < $hourAgo) && is_writable($path)) {
             $data = json_decode(file_get_contents($url));
             file_put_contents($cache, serialize($data));
         } elseif (is_file($cache)) {
             $data = unserialize(file_get_contents($cache));
-        } else {
-            $data = json_decode(file_get_contents($url));
         }
     }
     if ($data === false || $data === null) {
@@ -133,6 +173,12 @@ function getDarkSkyData()
     return $data;
 }
 
+/**
+ * expects the $data->daily object from getDarkSkyData(), returns 5 days of forecast HTML
+ *
+ * @param null $daily $data->daily object from getDarkSkyData()
+ * @return string of HTML
+ */
 function getDailyForecastHtml($daily = null)
 {
     global $YANPIWS;
@@ -172,7 +218,13 @@ function getDailyForecastHtml($daily = null)
     return $html;
 }
 
-// thanks http://www.kavoir.com/2010/09/php-get-human-readable-time-from-seconds.html
+/**
+ * given an int of seconds, return sec, min, hours or days, rounded
+ * thanks http://www.kavoir.com/2010/09/php-get-human-readable-time-from-seconds.html
+ *
+ * @param $s int of seconds
+ * @return string of human time
+ */
 function getHumanTime($s) 
 {
     $m = $s / 60;
@@ -193,6 +245,13 @@ function getHumanTime($s)
     }
 }
 
+
+/**
+ * expects the $data->currently object from getDarkSkyData(), returns windspeed HTML
+ *
+ * @param null $daily $data->currently object from getDarkSkyData()
+ * @return string of HTML
+ */
 function getCurrentWindHtml($currentlyObject)
 {
     return number_format($currentlyObject->windSpeed, 0) . " mph";
