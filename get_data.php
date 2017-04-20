@@ -13,22 +13,24 @@
  *                    [3] => 34
  *               )
  *
- * @param string $file where CSV data is
+ * @param  string $file where CSV data is
  * @return array of formatted CSV data
  */
-function getConfigOrDie(){
-    if(is_file('config.php')){
-        require_once ("config.php");
+function getConfigOrDie()
+{
+    if(is_file('config.php')) {
+        include_once "config.php";
     } else {
-        die (
+        die(
             '<h3>Error</h3><p>No config.php!  Copy config.dist.php to config.php</p>'.
             getDailyForecastHtml()
         );
     }
 }
 
-function getData($file){
-    if (is_file($file) && is_readable($file)){
+function getData($file)
+{
+    if (is_file($file) && is_readable($file)) {
         $data = file($file);
         $goodData = array();
         foreach ($data as $line){
@@ -45,9 +47,10 @@ function getData($file){
     }
 }
 
-function getMostRecentTemp($id, $date = null){
+function getMostRecentTemp($id, $date = null)
+{
     global $YANPIWS;
-    if ($date == null){
+    if ($date == null) {
         $date = date('Y-m-d', time());
     }
     $allData = getData($YANPIWS['dataPath'] . $date);
@@ -58,10 +61,11 @@ function getMostRecentTemp($id, $date = null){
     }
 }
 
-function getTempHtml($tempLine, $id=1){
+function getTempHtml($tempLine, $id=1)
+{
     global $YANPIWS;
     $key = $tempLine[1];
-    if (isset($YANPIWS['labels'][$key])){
+    if (isset($YANPIWS['labels'][$key])) {
         $label = $YANPIWS['labels'][$key];
     } else {
         $label = "#$key";
@@ -75,16 +79,17 @@ function getTempHtml($tempLine, $id=1){
     }
 }
 
-function getTempLastHtml($tempLine){
+function getTempLastHtml($tempLine)
+{
     global $YANPIWS;
-    if ($tempLine[0] == "NA"){
-        return "<li>$label: $age ". implode(" - ",$tempLine) . "</li>";
+    if ($tempLine[0] == "NA") {
+        return "<li>$label: $age ". implode(" - ", $tempLine) . "</li>";
     } else {
         $lineEpoch = strtotime($tempLine[0]);
         $age = getHumanTime(time() - $lineEpoch);
         $temp = "{$tempLine[2]}°";
         $id = $tempLine[1];
-        if (isset($YANPIWS['labels'][$id])){
+        if (isset($YANPIWS['labels'][$id])) {
             $label = $YANPIWS['labels'][$id];
         } else {
             $label = "<no label>";
@@ -92,16 +97,19 @@ function getTempLastHtml($tempLine){
         return "<li>$label: $temp $age ago</li>";
     }
 }
-function getSunsetHtml($time){
+function getSunsetHtml($time)
+{
     $time = date('g:i A', $time);
     return '<img src="moon.svg" class="moon" /> '. $time;
 }
-function getSunriseHtml($time){
+function getSunriseHtml($time)
+{
     $time = date('g:i A', $time);
     return '<img src="sun.svg" class="sun" /> '. $time;
 }
 
-function getDarkSkyData(){
+function getDarkSkyData()
+{
     global $YANPIWS;
     $path = $YANPIWS['dataPath'];
     $cache = $path.'darksky.cache';
@@ -117,7 +125,7 @@ function getDarkSkyData(){
             $data = json_decode(file_get_contents($url));
         }
     }
-    if ($data === false || $data === null){
+    if ($data === false || $data === null) {
         $data = new stdClass();
         $data->daily = null;
         $data->currently = null;
@@ -125,12 +133,13 @@ function getDarkSkyData(){
     return $data;
 }
 
-function getDailyForecastHtml($daily = null){
+function getDailyForecastHtml($daily = null)
+{
     global $YANPIWS;
     $html = '';
     $js = '';
     $animate = $YANPIWS['animate'];
-    if ($daily == null){
+    if ($daily == null) {
         // show rain for error
         $html .= "<div class='forecastday'>";
         $html .= "<canvas id='foo.rain' class='forecasticon' width='70' height='70'></canvas> ";
@@ -148,7 +157,7 @@ function getDailyForecastHtml($daily = null){
             }
             $html .= "<div class='forecastday'>";
             $html .= "<div class='forcastDay'>$today</div>";
-            if ($animate){
+            if ($animate) {
                 $html .= "<canvas id='$today.$day->icon' class='forecasticon' width='70' height='70'></canvas>";
             } else {
                 $html .= "<img src='./skycons/{$day->icon}.png' width='70' height='70'></img>";
@@ -164,7 +173,8 @@ function getDailyForecastHtml($daily = null){
 }
 
 // thanks http://www.kavoir.com/2010/09/php-get-human-readable-time-from-seconds.html
-function getHumanTime($s) {
+function getHumanTime($s) 
+{
     $m = $s / 60;
     $h = $s / 3600;
     $d = $s / 86400;
@@ -183,6 +193,7 @@ function getHumanTime($s) {
     }
 }
 
-function getCurrentWindHtml($currentlyObject){
-    return number_format($currentlyObject->windSpeed,0) . " mph";
+function getCurrentWindHtml($currentlyObject)
+{
+    return number_format($currentlyObject->windSpeed, 0) . " mph";
 }

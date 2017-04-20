@@ -9,7 +9,7 @@ function loadXMLDoc(URL, targetId, callback) {
             if (xmlhttp.status == 200) {
                 document.getElementById(targetId).innerHTML = xmlhttp.responseText;
 
-                if (typeof callback === "function"){
+                if (typeof callback === "function") {
                     callback();
                 }
             } else {
@@ -40,7 +40,7 @@ function refeshDateTime(){
 }
 
 function refreshTemp(id, id2){
-    loadXMLDoc('./ajax.php?content=temp&id=' + id, 'temp' + id2 );
+    loadXMLDoc('./ajax.php?content=temp&id=' + id, 'temp' + id2);
 }
 
 function refreshCurrentWind(){
@@ -50,9 +50,11 @@ function refreshCurrentWind(){
 function animateForecast() {
     var elements = document.querySelectorAll('.forecasticon');
     var canvasArray;
-    Array.prototype.forEach.call(elements, function(el, i){
-        canvasArray = el.getAttribute('id').split('.');
-        skycons.add(el.getAttribute('id'), canvasArray[1]);
-    });
+    Array.prototype.forEach.call(
+        elements, function(el, i){
+            canvasArray = el.getAttribute('id').split('.');
+            skycons.add(el.getAttribute('id'), canvasArray[1]);
+        }
+    );
     skycons.play();
 }
