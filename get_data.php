@@ -1,14 +1,39 @@
 <?php
 /**
+ * get all the valid config options required to bootstrap YANPIWS
+ *
+ * @return array of key names
+ */
+function getValidConfigs(){
+    return array(
+        'lat',
+        'lon',
+        'darksky',
+        'labels',
+        'animate',
+        'dataPath',
+    );
+}
+/**
  * include the config file or die trying. prints error and exits if fails
  */
 function getConfigOrDie()
 {
-    if(is_file('config.php')) {
-        include_once "config.php";
+    if(is_file('config.csv')) {
+        global $YANPIWS ;
+        $options = getValidConfigs();
+        $YANPIWStmp = array_map('str_getcsv', file('config.csv'));
+        foreach ($YANPIWStmp as $config){
+            if (substr($config[0],0,6) == 'labels'){
+                $label = explode('_',$config[0]);
+                $YANPIWS['labels'][$label[1]] = $config[1];
+            } elseif (in_array($config[0],$options)) {
+                $YANPIWS[$config[0]] = $config[1];
+            }
+        }
     } else {
         die(
-            '<h3>Error</h3><p>No config.php!  Copy config.dist.php to config.php</p>'.
+            '<h3>Error</h3><p>No config.csv!  Copy config.dist.csv to config.csv</p>'.
             getDailyForecastHtml()
         );
     }
@@ -188,7 +213,7 @@ function getDailyForecastHtml($daily = null)
     if ($daily == null) {
         // show rain for error
         $html .= "<div class='forecastday'>";
-        $html .= "<canvas id='foo.rain' class='forecasticon' width='70' height='70'></canvas> ";
+        $html .= "<img src='./skycons/rain.png' width='70' height='70' /> ";
         $html .= "No Dark Sky Data for forecast.";
         $html .= "</div>";
     } else {
@@ -206,7 +231,7 @@ function getDailyForecastHtml($daily = null)
             if ($animate) {
                 $html .= "<canvas id='$today.$day->icon' class='forecasticon' width='70' height='70'></canvas>";
             } else {
-                $html .= "<img src='./skycons/{$day->icon}.png' width='70' height='70'></img>";
+                $html .= "<img src='./skycons/{$day->icon}.png' width='70' height='70' />";
             }
             $html .= '<div class="hight spreadtemp">' . number_format($day->temperatureMax, 0) . '°</div>';
             $html .= '<div class="lowt spreadtemp">' . number_format($day->temperatureMin, 0) . '°</div>';
