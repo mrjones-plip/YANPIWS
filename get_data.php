@@ -37,7 +37,7 @@ function getConfigOrDie()
             getDailyForecastHtml()
         );
     }
-    die(print_r(isConfigValid(true),1));
+//    die(print_r(isConfigValid(true),1));
 }
 
 /**
