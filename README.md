@@ -68,7 +68,7 @@ from "raspberry" ;)
 full screen(some of which may be installed already):
 
    ```
-   sudo apt-get install -y curl git mercurial make binutils bison gcc build-essential chromium-browser ttf-mscorefonts-installer unclutter x11-xserver-utils apache2 php5
+   sudo apt-get install -y curl git mercurial make binutils bison gcc build-essential chromium-browser ttf-mscorefonts-installer unclutter x11-xserver-utils apache2 php5 php5-curl
    ```
 1. Download, compile and install [rtl_433](https://github.com/merbanan/rtl_433)
 1. With your wireless temp sensor(s) powered up and the USB Dongle attached, make sure your 

@@ -37,6 +37,47 @@ function getConfigOrDie()
             getDailyForecastHtml()
         );
     }
+    die(print_r(isConfigValid(true),1));
+}
+
+/**
+ * based on the values retrieved in getConfigOrDie(), validate all the config options
+ *
+ * @return array returns an array with key of valid as boolean and reason a string of why it's not valid
+ */
+function isConfigValid($validateApi = false)
+{
+    global $YANPIWS;
+    $valid = array('valid' => true, 'reason' => '');
+    $options = getValidConfigs();
+    if (sizeof($YANPIWS) < sizeof($options)){
+        $valid['valid'] = false;
+        $valid['reason'] .= 'Missing required option. ';
+    }
+    if (!isset($YANPIWS['darksky']) || strlen($YANPIWS['darksky']) != 32){
+        $valid['valid'] = false;
+        $valid['reason'] .= 'Dark Sky API Key is wrong length or missing. ';
+    }
+    if(!isset($YANPIWS['lat'])) {
+        $valid['valid'] = false;
+        $valid['reason'] .= 'Latitude is missing. ';
+    }
+    if (!isset($YANPIWS['lon'])){
+        $valid['valid'] = false;
+        $valid['reason'] .= 'Longitude is missing. ';
+    }
+    if ($validateApi){
+        $url = getDarkSkyUrl();
+        $http = curl_init($url);
+        $result = curl_exec($http);
+        $http_status = curl_getinfo($http, CURLINFO_HTTP_CODE);
+        if ($http_status != 200){
+            $valid['valid'] = false;
+            $valid['reason'] .= 'Dark Sky API call failed: Either invalid API key or invalid Lat/Long ' .
+                "(status: $http_status). ";
+        }
+    }
+    return $valid;
 }
 
 /**
@@ -181,8 +222,9 @@ function getDarkSkyData()
     $cache = $path . 'darksky.cache';
     $hourAgo = time() - (60*15); // 15 minutes
     $data = false;
-    if(isset($YANPIWS['darksky']) && $YANPIWS['darksky'] != null && isset($YANPIWS['lat']) && isset($YANPIWS['lon']) ) {
-        $url = 'https://api.darksky.net/forecast/' . $YANPIWS['darksky'] . '/' . $YANPIWS['lat'] . ',' . $YANPIWS['lon'];
+    $configStatus = isConfigValid();
+    if($configStatus['valid'] === true) {
+        $url = getDarkSkyUrl();
         if ((!is_file($cache) || filectime($cache) < $hourAgo) && is_writable($path)) {
             $data = json_decode(file_get_contents($url));
             file_put_contents($cache, serialize($data));
@@ -196,6 +238,16 @@ function getDarkSkyData()
         $data->currently = null;
     }
     return $data;
+}
+
+/**
+ * Simple wrapper to concat the string for the Dark Sky API endpoint
+ *
+ * @return string of URL
+ */
+function getDarkSkyUrl(){
+    global $YANPIWS;
+    return 'https://api.darksky.net/forecast/' . $YANPIWS['darksky'] . '/' . $YANPIWS['lat'] . ',' . $YANPIWS['lon'];
 }
 
 /**
