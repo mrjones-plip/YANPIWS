@@ -11,7 +11,7 @@ a {
 }
 .error {
     color: red;
-    font-size: 10pt;
+    font-size: 30pt;
 }
 .homeLink {
     font-size:29pt;
@@ -92,6 +92,10 @@ a {
 @media only screen and (max-width : 480px) {
     body {
         font-size: 15pt;
+    }
+    .error {
+        color: red;
+        font-size: 20pt;
     }
     .temp {
         font-size: 25pt;
