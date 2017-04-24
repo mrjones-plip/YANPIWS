@@ -9,6 +9,10 @@ body {
 a {
     color: white;
 }
+.error {
+    color: red;
+    font-size: 10pt;
+}
 .homeLink {
     font-size:29pt;
 }
@@ -85,7 +89,7 @@ a {
     padding-top: 20px;
 }
 
-@media only screen and (max-device-width : 480px) {
+@media only screen and (max-width : 480px) {
     body {
         font-size: 15pt;
     }

@@ -37,7 +37,6 @@ function getConfigOrDie()
             getDailyForecastHtml()
         );
     }
-//    die(print_r(isConfigValid(true),1));
 }
 
 /**
@@ -45,7 +44,7 @@ function getConfigOrDie()
  *
  * @return array returns an array with key of valid as boolean and reason a string of why it's not valid
  */
-function isConfigValid($validateApi = false)
+function configIsValid($validateApi = false)
 {
     global $YANPIWS;
     $valid = array('valid' => true, 'reason' => '');
@@ -61,15 +60,24 @@ function isConfigValid($validateApi = false)
     if(!isset($YANPIWS['lat'])) {
         $valid['valid'] = false;
         $valid['reason'] .= 'Latitude is missing. ';
+    } elseif (!validateLatitude($YANPIWS['lat'])){
+        $valid['valid'] = false;
+        $valid['reason'] .= 'Latitude is invalid. ';
     }
     if (!isset($YANPIWS['lon'])){
         $valid['valid'] = false;
         $valid['reason'] .= 'Longitude is missing. ';
+    } elseif (!validateLongitude($YANPIWS['lon'])){
+        $valid['valid'] = false;
+        $valid['reason'] .= 'Longitude is invalid. ';
     }
+    if (!isset($YANPIWS['dataPath']) || !is_writable($YANPIWS['dataPath'])){
+        $valid['valid'] = false;
+        $valid['reason'] .= 'DataPath does not exist or is not writable. ';}
     if ($validateApi){
-        $url = getDarkSkyUrl();
-        $http = curl_init($url);
-        $result = curl_exec($http);
+        $http = curl_init(getDarkSkyUrl(true));
+        curl_setopt($http, CURLOPT_NOBODY  , true);
+        curl_exec($http);
         $http_status = curl_getinfo($http, CURLINFO_HTTP_CODE);
         if ($http_status != 200){
             $valid['valid'] = false;
@@ -157,7 +165,7 @@ function getTempHtml($tempLine)
         return "<span class='degrees'>{$temp}°</span>" .
             "<span class='label'>$label</span>\n";
     } else {
-        return "No Data\n";
+        return "NA\n";
     }
 }
 
@@ -220,12 +228,12 @@ function getDarkSkyData()
     global $YANPIWS;
     $path = $YANPIWS['dataPath'];
     $cache = $path . 'darksky.cache';
-    $hourAgo = time() - (60*15); // 15 minutes
+    $hourAgo = time() - (60*3); // 3 minutes
     $data = false;
-    $configStatus = isConfigValid();
+    $configStatus = configIsValid();
     if($configStatus['valid'] === true) {
         $url = getDarkSkyUrl();
-        if ((!is_file($cache) || filectime($cache) < $hourAgo) && is_writable($path)) {
+        if ((!is_file($cache) || filectime($cache) < $hourAgo)) {
             $data = json_decode(file_get_contents($url));
             file_put_contents($cache, serialize($data));
         } elseif (is_file($cache)) {
@@ -245,9 +253,16 @@ function getDarkSkyData()
  *
  * @return string of URL
  */
-function getDarkSkyUrl(){
+function getDarkSkyUrl($useTestLatLong = false){
     global $YANPIWS;
-    return 'https://api.darksky.net/forecast/' . $YANPIWS['darksky'] . '/' . $YANPIWS['lat'] . ',' . $YANPIWS['lon'];
+    if ($useTestLatLong){
+        $lat = "31.775554";
+        $lon = "81.822436";
+    } else {
+        $lat = $YANPIWS['lat'];
+        $lon = $YANPIWS['lon'];
+    }
+    return 'https://api.darksky.net/forecast/' . $YANPIWS['darksky'] . '/' . $lat . ',' . $lon;
 }
 
 /**
@@ -264,10 +279,10 @@ function getDailyForecastHtml($daily = null)
     $animate = $YANPIWS['animate'];
     if ($daily == null) {
         // show rain for error
-        $html .= "<div class='forecastday'>";
+//        $html .= "<div class='forecastday'>";
         $html .= "<img src='./skycons/rain.png' width='70' height='70' /> ";
         $html .= "No Dark Sky Data for forecast.";
-        $html .= "</div>";
+//        $html .= "</div>";
     } else {
         $count = 1;
         foreach ($daily->data as $day) {
@@ -332,4 +347,38 @@ function getHumanTime($s)
 function getCurrentWindHtml($currentlyObject)
 {
     return number_format($currentlyObject->windSpeed, 0) . " mph";
+}
+
+
+/**
+ * Thanks to https://gist.github.com/arubacao/b5683b1dab4e4a47ee18fd55d9efbdd1 for these
+ * next three lat long funcions
+ */
+/**
+ * Validates a given latitude $lat
+ *
+ * @param float|int|string $lat Latitude
+ * @return bool `true` if $lat is valid, `false` if not
+ */
+function validateLatitude($lat) {
+    return preg_match('/^(\+|-)?(?:90(?:(?:\.0{1,6})?)|(?:[0-9]|[1-8][0-9])(?:(?:\.[0-9]{1,6})?))$/', $lat);
+}
+/**
+ * Validates a given longitude $long
+ *
+ * @param float|int|string $long Longitude
+ * @return bool `true` if $long is valid, `false` if not
+ */
+function validateLongitude($long) {
+    return preg_match('/^(\+|-)?(?:180(?:(?:\.0{1,6})?)|(?:[0-9]|[1-9][0-9]|1[0-7][0-9])(?:(?:\.[0-9]{1,6})?))$/', $long);
+}
+/**
+ * Validates a given coordinate
+ *
+ * @param float|int|string $lat Latitude
+ * @param float|int|string $long Longitude
+ * @return bool `true` if the coordinate is valid, `false` if not
+ */
+function validateLatLong($lat, $long) {
+    return preg_match('/^[-]?(([0-8]?[0-9])\.(\d+))|(90(\.0+)?),[-]?((((1[0-7][0-9])|([0-9]?[0-9]))\.(\d+))|180(\.0+)?)$/', $lat.','.$long);
 }
