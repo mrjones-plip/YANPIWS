@@ -15,9 +15,10 @@ function getValidConfigs(){
     );
 }
 /**
- * include the config file or die trying. prints error and exits if fails
+ * include the config file
+ * @param boolean $die prints error and exits if fails
  */
-function getConfigOrDie()
+function getConfig($die = true)
 {
     if(is_file('config.csv')) {
         global $YANPIWS ;
@@ -31,7 +32,7 @@ function getConfigOrDie()
                 $YANPIWS[$config[0]] = $config[1];
             }
         }
-    } else {
+    } elseif ($die) {
         die(
             '<h3>Error</h3><p>No config.csv!  Copy config.dist.csv to config.csv</p>'.
             getDailyForecastHtml()
@@ -280,7 +281,7 @@ function getDailyForecastHtml($daily = null)
     if ($daily == null) {
         // show rain for error
 //        $html .= "<div class='forecastday'>";
-        $html .= "<img src='./skycons/rain.png' width='70' height='70' /> ";
+        $html .= "<img src='./skycons/rain.png' class='errorImg'  /> ";
         $html .= "No Dark Sky Data for forecast.";
 //        $html .= "</div>";
     } else {
@@ -349,6 +350,14 @@ function getCurrentWindHtml($currentlyObject)
     return number_format($currentlyObject->windSpeed, 0) . " mph";
 }
 
+function getConfigValue($key){
+    global $YANPIWS;
+    if (in_array($key,getValidConfigs())){
+        return print htmlspecialchars($YANPIWS[$key], ENT_QUOTES, 'UTF-8');
+    } else {
+        return 'Invalid Config Requested';
+    }
+}
 
 /**
  * Thanks to https://gist.github.com/arubacao/b5683b1dab4e4a47ee18fd55d9efbdd1 for these

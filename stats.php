@@ -7,7 +7,7 @@
 <link rel="stylesheet" type="text/css" href="styles.css" />
 <?php
 require_once "get_data.php";
-getConfigOrDie();
+getConfig();
 
 $today = date('M j, Y, g:i a', time());
 $allData = getData($YANPIWS['dataPath'] . $today);
@@ -29,7 +29,8 @@ if (isset($_SERVER['SERVER_ADDR'])) {
 <div class="col">
     <div class="row">
         <p>
-            <a href="/" class="homeLink"><-  Weather</a>
+            <a href="/" class="homeLink"><-  Weather</a><br />
+            <a href="./config.php" class="homeLink">Config</a>
         </p>
         <a href="https://github.com/Ths2-9Y-LqJt6/YANPIWS">YANPIS 0.9</a> - Released Mar 26, 2017<br />
         <a href="https://darksky.net/poweredby/">Powered by Dark Sky</a><br />

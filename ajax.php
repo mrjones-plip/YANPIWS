@@ -2,7 +2,7 @@
 
 
 require_once ("get_data.php");
-getConfigOrDie();
+getConfig();
 if (isset($_GET['content'])){
 
     $today = date('Y-m-d', time());

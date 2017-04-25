@@ -11,13 +11,14 @@
 
 <?php
 require_once 'get_data.php';
-getConfigOrDie();
+getConfig();
 
 $forecast = getDarkSkyData();
 $status =configIsValid();
 if($status['valid'] != true){
     print "<div class='error'>ERROR: {$status['reason']}</div>";
-    print "<style>.temp,.suntimes{display:none;}#forecast img{width:30px;height: 30px;}</style>";
+    print "<a href='./config.php'>Edit Config</a>";
+    print "<style>.temp,.suntimes{display:none;}</style>";
 } else {
     print '<div class="YANPIWS"><a href="/stats.php">YANPIWS</a></div>';
 }

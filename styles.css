@@ -13,6 +13,9 @@ a {
     color: red;
     font-size: 30pt;
 }
+.errorImg {
+    width:60px;
+}
 .homeLink {
     font-size:29pt;
 }
@@ -88,7 +91,15 @@ a {
 .suntimes {
     padding-top: 20px;
 }
-
+label {
+    clear: both;
+    float: left;
+    width: 25%;
+    text-align: left;
+}
+input {
+    width:70%;
+}
 @media only screen and (max-width : 480px) {
     body {
         font-size: 15pt;
@@ -96,6 +107,9 @@ a {
     .error {
         color: red;
         font-size: 20pt;
+    }
+    .errorImg {
+        width:40px;
     }
     .temp {
         font-size: 25pt;
