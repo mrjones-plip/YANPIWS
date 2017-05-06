@@ -171,12 +171,28 @@ function getTempHtml($tempLine)
 }
 
 /**
+ * Get the age in human time (sec, min, hour etc) of the dark sky cache
+ * @param $returnSeconds boolean to return int of seconds if true, otherwise string of human time
+ */
+function getCacheAge($returnSeconds = false){
+    global $YANPIWS;
+    $path = $YANPIWS['dataPath'];
+    $darkskytime =  filemtime($path . 'darksky.cache');
+    if (!$returnSeconds) {
+        return getHumanTime(time() - $darkskytime);
+    } else {
+        return (time() - $darkskytime);
+    }
+}
+
+/**
  * given an array from getMostRecentTemp(), format it into debug html showing age of temp
  *
  * @param $tempLine array from getMostRecentTemp()
+ * @param $returnOnlySeconds boolean to return int of seconds if true, otherwise string of human time
  * @return string of HTML
  */
-function getTempLastHtml($tempLine)
+function getTempLastHtml($tempLine, $returnOnlySeconds = false)
 {
     global $YANPIWS;
     if ($tempLine[0] == "NA") {
@@ -191,7 +207,11 @@ function getTempLastHtml($tempLine)
         } else {
             $label = "<no label>";
         }
-        return "<li>$label: $temp $age ago</li>";
+        if (!$returnOnlySeconds) {
+            return "<li>$label: $temp $age ago</li>";
+        } else {
+            return (time() - $lineEpoch);
+        }
     }
 }
 
