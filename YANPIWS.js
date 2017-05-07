@@ -88,3 +88,10 @@ function animateForecast() {
     );
     skycons.play();
 }
+
+/**
+ * check that temps aren't old.  if they are, change text to yellow
+ */
+function checkTempAges(){
+    loadXMLDoc('./ajax.php?content=age', 'YANPIWS');
+}
