@@ -240,7 +240,7 @@ function getSunriseHtml($time)
 }
 
 /**
- * get data from dark sky.  will cache data and refresh it every 15 minutes
+ * get data from dark sky.  will cache data and refresh it every 10 minutes
  *
  * @return stdClass of either resutls or very lightly populated error object
  */
@@ -249,7 +249,7 @@ function getDarkSkyData()
     global $YANPIWS;
     $path = $YANPIWS['dataPath'];
     $cache = $path . 'darksky.cache';
-    $hourAgo = time() - (60*15); // 15 minutes
+    $hourAgo = time() - (60*10); // 10 minutes
     $data = false;
     $configStatus = configIsValid();
     if($configStatus['valid'] === true) {

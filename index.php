@@ -25,14 +25,20 @@ if($status['valid'] != true){
 ?>
 <div class="col">
     <div class="row">
-        <div class="temp temp1" id="temp1"></div>
+        <a href="/temps.php">
 <?php
 $count = 1;
 foreach ($YANPIWS['labels'] as $id => $label){
         echo "\t<div class='temp temp{$count}' id='temp{$count}'></div>\n";
         $count++;
+        if ($count > 2){
+            break;
+        }
 }
 ?>
+        </a>
+    </div>
+</div>
 <div class="col">
     <div class="row"></div>
     <div class="row ">
