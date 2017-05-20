@@ -128,15 +128,25 @@ function getData($file)
 /**
  * given the result from getData(), format the temps into averages by hour for last 24 hours.
  * @param $data array from getData()
- * @return array of up to 24 temps, 1 average per hour
+ * @return array of up to 24 temps, 1 average per hour in log() scale
  */
 function convertDataToHourly($data){
     $result = array();
+    $counts = array();
     foreach ($data as $tempArray){
         $epoch = strtotime($tempArray[0]);
         $hour = date('G', $epoch);
-        print_r($hour );
+        if(!isset($result[$hour])){
+            $result[$hour] = 0;
+            $counts[$hour] = 0;
+        }
+        $result[$hour] = $tempArray[2] + $result[$hour];
+        $counts[$hour]++;
     }
+    foreach ($counts as $hour => $count){
+        $result[$hour] = log(round($result[$hour]/$count,0));
+    }
+    print print"<pre>". print_r($result,1). "</pre>";
     return $result;
 }
 

@@ -7,9 +7,9 @@
     <script src="HappyHistogram.min.js" ></script>
     <link rel="stylesheet" href="HappyHistogram.min.css">
     <style>
-        .yearHistogram .month .chart { height: 50px; }
+        .yearHistogram .month .chart { height: 20px; }
         .yearHistogram .month { width:50%; }
-        .yearHistogram .yAxisLabel {font-size: 20pt }
+        .yearHistogram .yAxisLabel {font-size: 9pt }
         .yearHistogram .yAxis { color: white; }
         .yearHistogram { float: lefts; }
     </style>
@@ -27,9 +27,7 @@ $data = getData($YANPIWS['dataPath'] . '/' . date('Y-m-d', time()));
         <?php
         $count = 1;
         foreach ($YANPIWS['labels'] as $id => $label){
-            $hourlyTemps = convertDataToHourly($data[$id]);
-            die('<pre>' . print_r($hourlyTemps,1));
-            echo "\t<div id='temp{$count}'></div><div id='histogram{$count}'></div>\n";
+            echo "\t$label<div id='histogram{$count}'></div>\n";
             $count++;
         }
         ?>
@@ -41,10 +39,11 @@ $data = getData($YANPIWS['dataPath'] . '/' . date('Y-m-d', time()));
     <?php
     $count = 1;
     foreach ($YANPIWS['labels'] as $id => $label){
+        $hourlyTemps = convertDataToHourly($data[$id]);
         echo "\t\trefreshTemp($id,$count);\n";
         echo "
             var Year{$count} = [
-                [1,0,0,0,0,0,3,0,0,0,0,1,0,1,0,1,1,1,2,4,2,1,1,0,7,9,7,3,2,1]
+                [" . implode(",", $hourlyTemps) . "]
             ];
         ";
         echo "\t\tHappyHistogram('histogram{$count}', Year{$count}, 'white');\n";
