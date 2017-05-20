@@ -126,6 +126,21 @@ function getData($file)
 }
 
 /**
+ * given the result from getData(), format the temps into averages by hour for last 24 hours.
+ * @param $data array from getData()
+ * @return array of up to 24 temps, 1 average per hour
+ */
+function convertDataToHourly($data){
+    $result = array();
+    foreach ($data as $tempArray){
+        $epoch = strtotime($tempArray[0]);
+        $hour = date('G', $epoch);
+        print_r($hour );
+    }
+    return $result;
+}
+
+/**
  * assuming theere's many temps for a day for a given sensor, get an array of the most current
  *
  * @param $id int of ID of the sensor
