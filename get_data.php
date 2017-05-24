@@ -144,9 +144,8 @@ function convertDataToHourly($data){
         $counts[$hour]++;
     }
     foreach ($counts as $hour => $count){
-        $result[$hour] = log(round($result[$hour]/$count,0));
+        $result[$hour] = $result[$hour]/$counts[$hour];
     }
-    print print"<pre>". print_r($result,1). "</pre>";
     return $result;
 }
 

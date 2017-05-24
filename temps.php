@@ -4,14 +4,13 @@
 <head>
     <meta charset="utf-8">
     <link rel="stylesheet" type="text/css" href="styles.css" />
-    <script src="HappyHistogram.min.js" ></script>
+    <script src="jquery.3.2.1.slim.min.js" ></script>
+    <script src="jquery.jqplot.min.js" ></script>
     <link rel="stylesheet" href="HappyHistogram.min.css">
+    <link rel="stylesheet" href="jquery.jqplot.min.css">
     <style>
-        .yearHistogram .month .chart { height: 20px; }
-        .yearHistogram .month { width:50%; }
-        .yearHistogram .yAxisLabel {font-size: 9pt }
-        .yearHistogram .yAxis { color: white; }
-        .yearHistogram { float: lefts; }
+        .chart { height: 120px; width:70%; float:left;}
+        .temp, .temp .label { font-size: 15pt; float: left; }
     </style>
 </head>
 <body>
@@ -27,7 +26,10 @@ $data = getData($YANPIWS['dataPath'] . '/' . date('Y-m-d', time()));
         <?php
         $count = 1;
         foreach ($YANPIWS['labels'] as $id => $label){
-            echo "\t$label<div id='histogram{$count}'></div>\n";
+            echo "
+                <div id='chart{$count}' class='chart'></div>
+                <div class='temp' id='temp{$count}'></div>
+                ";
             $count++;
         }
         ?>
@@ -36,17 +38,38 @@ $data = getData($YANPIWS['dataPath'] . '/' . date('Y-m-d', time()));
 
 <script src="./YANPIWS.js"></script>
 <script>
+    temp = {
+        grid: {
+            backgroundColor: "black",
+            gridLineColor: 'grey',
+            gridLineWidth: false
+        },
+        seriesStyles: {
+            color: "white",
+            lineWidth: 2,
+            markerOptions: {
+                show: false
+            }
+        },
+    };
     <?php
     $count = 1;
     foreach ($YANPIWS['labels'] as $id => $label){
         $hourlyTemps = convertDataToHourly($data[$id]);
-        echo "\t\trefreshTemp($id,$count);\n";
+        echo "\n\trefreshTemp($id,$count);\n";
         echo "
-            var Year{$count} = [
-                [" . implode(",", $hourlyTemps) . "]
-            ];
+            var plot{$count} = $.jqplot ('chart{$count}', [[" . implode(",", $hourlyTemps) . "]]
+            ,{
+                axes: {
+                    xaxis: {
+                      pad: .5
+                    }
+                  }
+                }
+            );
+            temp = plot{$count}.themeEngine.newTheme('temp', temp);
+            plot{$count}.activateTheme('temp');
         ";
-        echo "\t\tHappyHistogram('histogram{$count}', Year{$count}, 'white');\n";
         $count++;
     }
     ?>
