@@ -113,7 +113,9 @@ function getData($file)
         $goodData = array();
         foreach ($data as $line){
             $lineArray = explode(",", $line);
-            $goodData[$lineArray[1]][$lineArray[0]] = $lineArray;
+            if(isset($lineArray[1])){
+                $goodData[$lineArray[1]][$lineArray[0]] = $lineArray;
+            }
         }
         foreach (array_keys($goodData) as $id){
             asort($goodData[$id]);
@@ -125,6 +127,28 @@ function getData($file)
     }
 }
 
+/**
+ * @param $data1
+ * @param $data2
+ * @param $ids
+ * @return array
+ */
+function mergeDayData($data1, $data2, $ids){
+    $result = array();
+    foreach ($ids as $id => $label) {
+        if (isset($data1[$id]) && is_array($data1[$id])){
+            foreach ($data1[$id] as $date => $temps) {
+                $result[$id][$date] = $temps;
+            }
+        }
+        if (isset($data2[$id]) && is_array($data2[$id])){
+            foreach ($data2[$id] as $date => $temps) {
+                $result[$id][$date] = $temps;
+            }
+        }
+    }
+    return $result;
+}
 /**
  * given the result from getData(), format the temps into averages by hour for last 24 hours.
  * @param $data array from getData()
@@ -146,6 +170,7 @@ function convertDataToHourly($data){
     foreach ($counts as $hour => $count){
         $result[$hour] = $result[$hour]/$counts[$hour];
     }
+//    die('daily temps:'.print_r($result,1));
     return $result;
 }
 
