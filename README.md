@@ -51,6 +51,16 @@ lower resolution screen (480x320),
 <!--<link rel="stylesheet" type="text/css" href="styles-mini.css" />-->
 ```
 
+If you want to use the BME/BMP 280 I2C chip instead, this is now supported! So instead of getting 
+the SDR USB dongle and Wireless Temperature Sensora above, instead get:
+
+* $13 - [BME280 Digital 5V Temperature Humidity Sensor](https://amzn.to/2ZL42yZ)
+* $5.80 - [Breadboard Jumper Wires](https://amzn.to/2Lesc15)
+
+While this reduces costs, it also changes how the set up works.  You'll only be able to run one 
+sensor on the I2C bus and you'll have to know how to solder.  Finally, check out the alternate
+install steps below.
+
 ## Install steps
 
 These steps assume you already have your Pi 
@@ -58,6 +68,8 @@ These steps assume you already have your Pi
  [online](https://www.raspberrypi.org/documentation/configuration/wireless/README.md) 
  and [accessible via SSH](https://www.raspberrypi.org/documentation/remote-access/ssh/README.md). 
  I recommend using a normal monitor for the install instead of the 5". It's easier this way. 
+ 
+These steps also assume you're using the SDR dongle and wireless temp sensors.  Skip to 
  
 All steps are done as the *Pi User* - be sure you've changed this user's password
 from "raspberry" ;)
@@ -167,6 +179,21 @@ Whew that's it!  Enjoy your new weather station. Let me know which awesome case 
  
  
 ![](./product.jpg)
+
+### Alternate install steps for attached I2C sensor
+
+Follow the exact same steps as above, but don't do the last step with the cron job.  Instead,
+you'll need to:
+
+1. Make sure I2C is enabled by running `sudo raspi-config` -> "Interfacing Options" -> I2C -> "Yes" -> Reboot
+1. Ensure that your BME280 sensor is attached correctly.  [Raspberry Pi Spy](https://www.raspberrypi-spy.co.uk/2016/07/using-bme280-i2c-temperature-pressure-sensor-in-python/) 
+provided this great schematic:
+    ![](./BME280-Module-Setup.png)
+
+
+    ```bash
+    */1 * * * * /usr/bin/python /var/www/html/bme280.py| /usr/bin/php -f /var/www/html/parse_and_save.php
+    ``` 
 
 
 ## Development
