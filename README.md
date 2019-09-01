@@ -188,7 +188,7 @@ you'll need to:
 1. Make sure I2C is enabled by running `sudo raspi-config` -> "Interfacing Options" -> I2C -> "Yes" -> Reboot
 1. Ensure that your BME280 sensor is attached correctly.  [Raspberry Pi Spy](https://www.raspberrypi-spy.co.uk/2016/07/using-bme280-i2c-temperature-pressure-sensor-in-python/) 
 provided this great schematic:
-    ![](./BME280-Module-Setup.png)
+    ![](./BME280-Module-Setup.png | width=100)
 
 
     ```bash
