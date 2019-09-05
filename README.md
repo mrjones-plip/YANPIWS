@@ -186,11 +186,15 @@ Follow the exact same steps as above, but don't do the last step with the cron j
 you'll need to:
 
 1. Make sure I2C is enabled by running `sudo raspi-config` -> "Interfacing Options" -> I2C -> "Yes" -> Reboot
-1. Ensure that your BME280 sensor is attached correctly.  [Raspberry Pi Spy](https://www.raspberrypi-spy.co.uk/2016/07/using-bme280-i2c-temperature-pressure-sensor-in-python/) 
-provided this great schematic:
-    ![](./BME280-Module-Setup.png | width=100)
-
-
+1. Ensure that your BME280 sensor is attached correctly. 
+ [Raspberry Pi Spy](https://www.raspberrypi-spy.co.uk/2016/07/using-bme280-i2c-temperature-pressure-sensor-in-python/) 
+provided [this great schematic](./BME280-Module-Setup.png).
+1. Assuming you installed in `/var/www/html`, run `python /var/www/html/bme280.py` and 
+ensure you see good data.  This looks like this for me:
+    ```bash
+    {"time" : "2019-09-05 14:05:00", "model" : "BMP280", "id" : 96, "temperature_F" : 80.456, "humidity" : 40.54}
+    ```
+1. If that all looks good, as the `pi` user, set up a cron job to run once a minute and generate the stats:
     ```bash
     */1 * * * * /usr/bin/python /var/www/html/bme280.py| /usr/bin/php -f /var/www/html/parse_and_save.php
     ``` 
@@ -221,6 +225,7 @@ Use your IDE of choice to edit and point your browser at ``localhost:8000``
 PRs and Issues welcome!
 
 ## Version History
+* 0.9.1 - Mar 26, 2017 - implement support for BME280 I2C sensors
 * 0.9 - Mar 26, 2017 - get feedback from [@jamcole](https://github.com/jamcole) (thanks!), add developer section, add getConfigOrDie(), 
 simplify index.php, add better logging for debugging
 * 0.8 - Mar 26, 2017 - Use cron to ensure temperature collection happens, omg - pgrep where have you been
