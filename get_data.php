@@ -143,7 +143,7 @@ function getDailyForecastHtml($daily = null){
     } else {
         $count = 1;
         foreach ($daily->data as $day) {
-            $rand = rand(99999, 999999999);
+            $rand = rand(99999, 99999999);
             if ($count == 1) {
                 $today = "Today";
             } elseif($count > 5) {
