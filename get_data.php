@@ -137,13 +137,13 @@ function getDailyForecastHtml($daily = null){
         // show rain for error
 
         $html .= "<div class='forecastday'>";
-        $html .= "<canvas id='W.112035303696' width='100' height='100'></canvas> No Dark Sky Data for forcast";
+        $html .= "<canvas id='W.112035303696' width='100' height='100'></canvas> No Dark Sky Data for forecast";
         $html .= "</div>";
         $js .= "skycons.add('W.112035303696', 'sleet');\n";
     } else {
         $count = 1;
         foreach ($daily->data as $day) {
-            $rand = rand(99999, 999999999);
+            $rand = rand(99999, 99999999);
             if ($count == 1) {
                 $today = "Today";
             } elseif($count > 5) {
