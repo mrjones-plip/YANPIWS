@@ -1,4 +1,3 @@
-#!/usr/bin/php
 <?php
 require_once("config.php");
 
@@ -10,17 +9,29 @@ $knownKeys = array(
 );
 $path = "./data";
 
-while($f = fgets(STDIN)){
-    $dataObject = json_decode($f);
-    $saveMeArray = array();
+if (is_array($_POST) && sizeof($_POST) > 0 && isset($_POST['password'])) {
+    // todo - handle posts here
+    die('POST!! !' . print_r($_POST,1));
+} else {
+    if(defined('STDIN')){
+        while ($f = fgets(STDIN)) {
+            $dataObject = json_decode($f);
+            $saveMeArray = array();
 
-    foreach ($knownKeys as $key) {
-        $saveMeArray[] = cleanseData($dataObject->$key);
+            foreach ($knownKeys as $key) {
+                if (isset($dataObject->$key)) {
+                    $saveMeArray[] = cleanseData($dataObject->$key);
+                }
+            }
+
+            if(sizeof($saveMeArray) > 1) {
+                $today = date('Y-m-d', time());
+                saveArrayToCsv($YANPIWS['dataPath'], $today, $saveMeArray);
+            }
+        }
     }
-
-    $today = date('Y-m-d', time());
-    saveArrayToCsv($YANPIWS['dataPath'], $today, $saveMeArray);
 }
+
 
 /**
  * we likely shouldn't trust data sent over unencrypted

@@ -10,3 +10,8 @@ $YANPIWS['labels'] = array(
     '211' => 'In',
     '109' => 'Out',
 );
+$YANPIWS['api_password'] = 'boxcar-spinning-problem-rockslide-scored'; // should match password below
+$YANPIWS['servers'][] = array(
+    'url' => 'http://127.0.0.1',
+    'password' => 'boxcar-spinning-problem-rockslide-scored', // should match password above
+);
