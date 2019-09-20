@@ -7,29 +7,39 @@ $knownKeys = array(
     'temperature_F',
     'humidity',
 );
-$path = "./data";
 
-if (is_array($_POST) && sizeof($_POST) > 0 && isset($_POST['password'])) {
-    // todo - handle posts here
-    die('POST!! !' . print_r($_POST,1));
-} else {
-    if(defined('STDIN')){
-        while ($f = fgets(STDIN)) {
-            $dataObject = json_decode($f);
-            $saveMeArray = array();
-
-            foreach ($knownKeys as $key) {
-                if (isset($dataObject->$key)) {
-                    $saveMeArray[] = cleanseData($dataObject->$key);
-                }
-            }
-
-            if(sizeof($saveMeArray) > 1) {
-                $today = date('Y-m-d', time());
-                saveArrayToCsv($YANPIWS['dataPath'], $today, $saveMeArray);
-            }
-        }
+if (is_array($_POST) && isset($_POST['password'])) {
+    if ($_POST['password'] == $YANPIWS['api_password']){
+        $dataArray = $_POST;
+    } else {
+        error_log("Bad password sent to parse_and_save. got '"
+            . $_POST['password'] . "' expected '" . $YANPIWS['api_password'] ."'");
     }
+
+} elseif(defined('STDIN')){
+    while ($f = fgets(STDIN)) {
+        $dataArray = json_decode($f, true);
+    }
+}
+
+$saveMeArray = array();
+foreach ($knownKeys as $key) {
+    if(isset($dataArray[$key])){
+        $saveMeArray[] = cleanseData($dataArray[$key]);
+    } else {
+        $saveMeArray[] = null;
+    }
+}
+
+if($saveMeArray[0] !== null &&
+    $saveMeArray[1] !== null &&
+    $saveMeArray[2] !== null
+) {
+    $today = date('Y-m-d', time());
+    $save = saveArrayToCsv($YANPIWS['dataPath'], $today, $saveMeArray);
+    if ($save) error_log("parse_and_save wrote to {$YANPIWS['dataPath']} this many items:" . sizeof($saveMeArray));
+} else {
+    error_log("parse_and_save called but no data in 'saveMeArray' array");
 }
 
 
@@ -54,10 +64,12 @@ function saveArrayToCsv($path, $file, $array)
 {
     if (is_dir($path) && is_writable($path) && is_array($array) && sizeof($array) > 0) {
         $time = date('g:i A');
-        echo "{$array[2]} at  {$array[1]} - {$time} - wrote to {$path}{$file}\n";
-        file_put_contents($path . $file, implode(',' , $array) . "\n",FILE_APPEND);
+        echo "{$array[2]} at  {$array[1]} - {$time} - wrote to {$path}/{$file}\n";
+        return file_put_contents($path . '/' . $file, implode(',' , $array) . "\n",FILE_APPEND);
     } else {
-        echo "failed to write to {$path}/{$file} - not a dir, not writable or invalid/empty array passed :(";
+        echo "failed to write to {$path}/{$file} " .
+            "It's not a dir, not writable or invalid/empty array passed. Array is: ".
+            print_r($array, 1) . "\n";
     }
 }
 

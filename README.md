@@ -219,13 +219,28 @@ If you don't want to deal with running the rtl-433 script, copy the sample data
 ``example.data`` to today's date (YEAR-MONTH-DAY) into the ``data`` directory.  It has IDs 211 
 and 109 which are the ones already in config.dist.php.
 
+As well, if you want to simulate individual inputs via the HTTP POSTs, you can use this `curl` command.
+Note that we're using the default password, you may need to change this if you've changed it in your 
+deployment:
+
+```bash
+curl --data "password=boxcar-spinning-problem-rockslide-scored&temperature_F=44.08&id=2&time=2019-09-18 23:59:02" http://localhost:8000/parse_and_save.php
+```
+
+Conversely, if you want to use the now deprecated `STDIN` method, you can use `echo` to pipe in JSON: 
+
+```bash
+echo '{"temperature_F":"44.08","id":"2","time":"2019-09-18 23:59:02"}' | php parse_and_save.php
+```
+
 Use your IDE of choice to edit and point your browser at ``localhost:8000`` 
 (or the IP of your Pi) and away you go.
 
 PRs and Issues welcome!
 
 ## Version History
-* 0.9.1 - Mar 26, 2017 - implement support for BME280 I2C sensors
+* 0.9.2 - Sep 19, 2019 - Fix typo, fix minor bug with `rand()` use, add support for and default to http POST for data gathering
+* 0.9.1 - Sep 9, 2019 - implement support for BME280 I2C sensors
 * 0.9 - Mar 26, 2017 - get feedback from [@jamcole](https://github.com/jamcole) (thanks!), add developer section, add getConfigOrDie(), 
 simplify index.php, add better logging for debugging
 * 0.8 - Mar 26, 2017 - Use cron to ensure temperature collection happens, omg - pgrep where have you been
