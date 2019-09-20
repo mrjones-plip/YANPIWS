@@ -8,12 +8,13 @@ $knownKeys = array(
     'humidity',
 );
 
-if (is_array($_POST) && isset($_POST['password'])) {
-    if ($_POST['password'] == $YANPIWS['api_password']){
+if (is_array($_POST) && sizeof($_POST) > 0) {
+    if (isset($_POST['password']) && $_POST['password'] == $YANPIWS['api_password']){
         $dataArray = $_POST;
     } else {
         error_log("Bad password sent to parse_and_save. got '"
             . $_POST['password'] . "' expected '" . $YANPIWS['api_password'] ."'");
+        header($_SERVER['SERVER_PROTOCOL'] . ' 401 Unauthorized', true, 401);
     }
 
 } elseif(defined('STDIN')){
