@@ -44,7 +44,20 @@ the IDs of the $13 sensors change every time the sensor batteries die/are change
 seems to interfere with the USB SDR (I'm inspiring confidence, yeah?!)~~ Turns out I just needed to move
 the antenna further away from the Pi! Finally, I coded the HTML
 and CSS to work in an 800x480 screen or greater. If you use the cheaper, 
-lower resolution screen (480x320), YANPIWS just works thanks to ``@media`` sensing.  As well, it works on mobile devices and desktop devices as well.  All be it, mobile works best in landscape.
+lower resolution screen (480x320), YANPIWS just works thanks to ``@media`` sensing.  
+As well, it works on mobile devices and desktop devices as well.  All be it, mobile 
+works best in landscape.
+
+If you want to use the BME/BMP 280 I2C chip instead, this is now supported! So instead of 
+getting the SDR USB dongle and Wireless Temperature Sensora above, instead get 
+(prices as of Sep 2019):
+
+* $13 - [BME280 Digital 5V Temperature Humidity Sensor](https://amzn.to/2ZL42yZ)
+* $5.80 - [Breadboard Jumper Wires](https://amzn.to/2Lesc15)
+
+While this reduces costs, it also changes how the set up works.  You'll only be able to run one 
+sensor on the I2C bus and you'll have to know how to solder.  Finally, check out the alternate
+install steps below.
 
 ## Install steps
 
@@ -54,8 +67,11 @@ These steps assume you already have your Pi
  and [accessible via SSH](https://www.raspberrypi.org/documentation/remote-access/ssh/README.md). 
  I recommend using a normal monitor for the install instead of the 5". It's easier this way. 
  
-Speaking of monitors - this install also assumes you have your 5" display (or 3.5" if you went that 
-way (or what ever display you want!))) already working. 
+Speaking of monitors - this install also assumes you have your 5" display (or 3.5" if you 
+went that way (or what ever display you want!)) already working. 
+ 
+These steps also assume you're using the SDR dongle and wireless temp sensors.  See below for
+BME280 sensors.
  
 All steps are done as the *Pi User* - be sure you've changed this user's password
 from "raspberry" ;)
@@ -68,7 +84,7 @@ from "raspberry" ;)
 full screen(some of which may be installed already):
 
    ```
-   sudo apt-get install -y curl git mercurial make binutils bison gcc build-essential chromium-browser ttf-mscorefonts-installer unclutter x11-xserver-utils apache2 php5 php5-curl
+   sudo apt-get install -y curl git mercurial make binutils bison gcc build-essential chromium-browser ttf-mscorefonts-installer unclutter x11-xserver-utils apache2 php php-curl
    ```
 1. Download, compile and install [rtl_433](https://github.com/merbanan/rtl_433)
 1. With your wireless temp sensor(s) powered up and the USB Dongle attached, make sure your 
@@ -150,6 +166,108 @@ Whew that's it!  Enjoy your new weather station. Let me know which awesome case 
  
 ![](./product.jpg)
 
+### Alternate install steps for attached I2C sensor
+
+Follow the exact same steps as above, but don't do the last step with the cron job.  Instead,
+you'll need to:
+
+1. Make sure I2C is enabled by running `sudo raspi-config` -> "Interfacing Options" -> I2C -> "Yes" -> Reboot
+1. Ensure that your BME280 sensor is attached correctly. 
+ [Raspberry Pi Spy](https://www.raspberrypi-spy.co.uk/2016/07/using-bme280-i2c-temperature-pressure-sensor-in-python/) 
+provided [this great schematic](./BME280-Module-Setup.png).
+1. Assuming you installed in `/var/www/html`, run `python /var/www/html/bme280.py` and 
+ensure you see good data.  This looks like this for me:
+    ```bash
+    {"time" : "2019-09-05 14:05:00", "model" : "BMP280", "id" : 96, "temperature_F" : 80.456, "humidity" : 40.54}
+    ```
+1. If that all looks good, as the `pi` user, set up a cron job to run once a minute and generate the stats:
+    ```bash
+    */1 * * * * /usr/bin/python /var/www/html/bme280.py| /usr/bin/php -f /var/www/html/read_and_post.php
+    ``` 
+   
+### Multiple Sensor Nodes
+
+If you have a lot of places you want to run temperature sensors, as of version 0.9.2, YANPIWS now
+supports a server/client deployment. This means you have the ability to run an install that does 
+nothing but send it's data to another YANPIWS instance.
+To set that up, go ahead and deploy the 2nd (Nth!!) instance based on the steps above.  Make sure everything
+is working.  Then, follow these steps:
+
+1. Get the IP address of where you want to send the data to.  See `ifconfig` if you need help (this
+command may work, but is likely fragile, `ifconfig|grep -i inet|grep broadc|cut -d ' ' -f10`). We'll
+pretend you got the ip `192.168.4.199` back. But use the real IP!
+1. One the remote node, edit the `config.php` file and in the bottom section after the `$YANPIWS['servers'][]`
+line, do one of the following:
+   * change the URL line `url` to be: `'url' => 'http://192.168.4.199',`. Remember, this should be the IP you 
+   got in the 
+   prior step. This will cause the data to not be stored locally on the node at all.  It will only
+   be sent to the remote server. The final result should look like this:
+   
+       ```php
+        $YANPIWS['servers'][] = array(
+           'url' => 'http://192.168.4.199',  // no trailing slash please ;)
+           'password' => 'boxcar-spinning-problem-rockslide-scored', // should match password above
+        );
+     
+   OR
+   * add 4 new lines with your new IP. The final result  will look like this:
+   
+       ```php
+        $YANPIWS['servers'][] = array(
+            'url' => 'http://127.0.0.1',  // no trailing slash please ;)
+            'password' => 'boxcar-spinning-problem-rockslide-scored', // should match password above
+        );
+        $YANPIWS['servers'][] = array(
+           'url' => 'http://192.168.4.199',  // no trailing slash please ;)
+           'password' => 'boxcar-spinning-problem-rockslide-scored', // should match password above
+        );
+        ``` 
+     
+     This will cause the client to write to BOTH the local and remote YANPIWS instances
+1. If your using the BME280 chip on both your server and your client(s), you'll need to edit the `bme280.py`.
+This is because all of the BME280 chips have the same ID and your server won't know which sensor is which.
+To fix this, change line 165 from this:
+
+    ```python
+    json = '{"time" : "' + str(rightnow) + '", "model" : "BMP280", "id" : ' + str(chip_id) + ', "temperature_F" 
+    ```   
+        
+     To this:
+
+    ```python
+    json = '{"time" : "' + str(rightnow) + '", "model" : "BMP280", "id" : "44", "temperature_F" 
+    ```  
+        
+     What this does is hard code this sensor to ID `44`.  For each new node you deploy, you'll need to change this 
+     to it's own unique value.
+1. On your server update the `$YANPIWS['labels']` to have an entry for your new sensor.  In the case of our
+`44` example above, along with default `96` that the BME280 uses, that would look like this:
+
+    ```php
+    $YANPIWS['labels'] = array(
+        '96' => 'In',
+        '44' => 'Out',
+    );
+    ```
+
+### API calls
+
+YANPIWS, as of version 0.9.2, now has an HTTP API that you can use to send data.  This means
+that anything that can do a `POST` to the IP of your YANPIWS server instance, can send it temp data!
+The following fields are required:
+* `id` - (int) the ID you want to write to the DB
+* `time` - (string) the time of of the data, must be in Y-M-D H:M:S format like `2019-09-18 23:59:02`
+* `temperature_F` - (float) of the temperature in ferinheight 
+* `password` - (string) must match what you have in your `config.php` file under `api_password`. 
+The default value is `boxcar-spinning-problem-rockslide-scored`.
+
+Optionally you may pass:
+* `humidity` - (float) of the humidity
+
+Assuming you installed in the default path of `/var/www/html`, you should use the following URL 
+for your `POST`, replace `IP_ADDRESS` with your real IP address of your server:
+
+* `http://IP_ADDRESS/parse_and_save.php`
 
 ## Development
 
@@ -163,12 +281,33 @@ The rtl_433 works great on Ubuntu for desktop/laptop development.  Manually kick
 script and leave it running while you code to gather live temps:
 
 ```
-rtl_433 -f 433820000 -C customary -F json -q | php -f parse_and_save.php
+rtl_433 -f 433820000 -C customary -F json -q | php -f read_and_post.php
 ```
 
 If you don't want to deal with running the rtl-433 script, copy the sample data 
 ``example.data`` to today's date (YEAR-MONTH-DAY) into the ``data`` directory.  It has IDs 211 
 and 109 which are the ones already in config.dist.php.
+
+As well, if you want to simulate individual inputs via the HTTP POSTs, you can use this `curl` command.
+Note that we're using the default password, you may need to change this if you've changed it in your 
+deployment:
+
+```bash
+curl --data "password=boxcar-spinning-problem-rockslide-scored&temperature_F=44.08&id=2&time=2019-09-18 23:59:02" http://localhost:8000/parse_and_save.php
+```
+
+As the `bme280.py` script outputs JSON, if you want to more closely similate the cron job that's run, incluidng using
+the config vars and a real `POST`, you can use this:
+
+```bash
+echo '{"temperature_F":"44.08","id":"2","time":"2019-09-18 23:59:02"}' | php read_and_post.php
+```
+
+Conversely, if you want to use the now deprecated `STDIN` method, you can use `echo` to pipe in JSON: 
+
+```bash
+echo '{"temperature_F":"44.08","id":"2","time":"2019-09-18 23:59:02"}' | php parse_and_save.php
+```
 
 Use your IDE of choice to edit and point your browser at ``localhost:8000`` 
 (or the IP of your Pi) and away you go.
@@ -176,7 +315,22 @@ Use your IDE of choice to edit and point your browser at ``localhost:8000``
 PRs and Issues welcome!
 
 ## Version History
-* 0.9 - Mar 26, 2017 - get feedback from [@jamcole](https://github.com/jamcole) (thanks!), add developer section, add getConfigOrDie(), 
+* 0.9.3 - Oct 1, 2019 - merge old PR #20 with:
+  * add stats dashboard per #17
+  * adds AJAX reloads per #19
+  * add windspeed per #16
+  * remove GMT from config per #23
+  * offer animated or static icons per #25
+  * Fix labels per #24
+  * natively support both 5" and 3.5" screens per #13
+  * all functions documented and commented per #32
+  * make title text yellow if caches are older than 10 minutes per #37
+  * don't cache invalid dark sky data #36
+* 0.9.2 - Sep 19, 2019 - add support for, and default, to http POST for 
+data gathering. Fix typo & fix minor bug with use of `rand()`. Update docs for same. 
+* 0.9.1 - Sep 9, 2019 - implement support for BME280 I2C sensors
+* 0.9 - Mar 26, 2017 - get feedback from [@jamcole](https://github.com/jamcole) (thanks!), 
+add developer section, add getConfigOrDie(), 
 simplify index.php, add better logging for debugging
 * 0.8 - Mar 26, 2017 - Use cron to ensure temperature collection happens, omg - pgrep where have you been
 all my life?!

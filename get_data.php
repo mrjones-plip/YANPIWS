@@ -249,15 +249,24 @@ function getDarkSkyData()
     global $YANPIWS;
     $path = $YANPIWS['dataPath'];
     $cache = $path . 'darksky.cache';
-    $hourAgo = time() - (60*3); // 3 minutes
+    $hourAgo = time() - (60*15); // 15 minutes
     $data = false;
     $configStatus = configIsValid();
     if($configStatus['valid'] === true) {
-        $url = getDarkSkyUrl();
         if ((!is_file($cache) || filectime($cache) < $hourAgo)) {
-            $data = json_decode(file_get_contents($url));
-            file_put_contents($cache, serialize($data));
-        } elseif (is_file($cache)) {
+            $http = curl_init(getDarkSkyUrl());
+            curl_setopt($http, CURLOPT_RETURNTRANSFER, 1);
+            $dataFromRemote = curl_exec($http);
+            $http_status = curl_getinfo($http, CURLINFO_HTTP_CODE);
+            if ($http_status == 200){
+                file_put_contents($cache, serialize(json_decode($dataFromRemote)));
+            } else {
+                // do error handling/logging here
+            }
+        }
+
+        // alwasy vetch from
+        if (is_file($cache)) {
             $data = unserialize(file_get_contents($cache));
         }
     }
@@ -331,6 +340,7 @@ function getDailyForecastHtml($daily = null)
     return $html;
 }
 
+
 /**
  * given an int of seconds, return sec, min, hours or days, rounded
  * thanks http://www.kavoir.com/2010/09/php-get-human-readable-time-from-seconds.html
@@ -338,7 +348,7 @@ function getDailyForecastHtml($daily = null)
  * @param $s int of seconds
  * @return string of human time
  */
-function getHumanTime($s) 
+function getHumanTime($s)
 {
     $m = $s / 60;
     $h = $s / 3600;
