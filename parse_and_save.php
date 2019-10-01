@@ -1,5 +1,6 @@
 <?php
-require_once("config.php");
+require_once 'get_data.php';
+getConfig();
 
 $knownKeys = array(
     'time',
@@ -11,6 +12,7 @@ $knownKeys = array(
 if (is_array($_POST) && sizeof($_POST) > 0) {
     if (isset($_POST['password']) && $_POST['password'] == $YANPIWS['api_password']){
         $dataArray = $_POST;
+        error_log('good pas! ' . $_POST['password'] . ' vs ' . $YANPIWS['api_password']);
     } else {
         error_log("Bad password sent to parse_and_save. got '"
             . $_POST['password'] . "' expected '" . $YANPIWS['api_password'] ."'");
@@ -37,8 +39,12 @@ if($saveMeArray[0] !== null &&
     $saveMeArray[2] !== null
 ) {
     $today = date('Y-m-d', time());
-    $save = saveArrayToCsv($YANPIWS['dataPath'], $today, $saveMeArray);
-    if ($save) error_log("parse_and_save wrote to {$YANPIWS['dataPath']} this many items:" . sizeof($saveMeArray));
+    $saveResult = saveArrayToCsv($YANPIWS['dataPath'], $today, $saveMeArray);
+    if ($saveResult){
+        error_log("parse_and_save wrote to {$YANPIWS['dataPath']} this many items:" . sizeof($saveMeArray));
+    }  else {
+        error_log("parse_and_save FAILED  to write to  {$YANPIWS['dataPath']} this many items:" . print_r($saveMeArray,1));
+    }
 } else {
     error_log("parse_and_save called but no data in 'saveMeArray' array");
 }
@@ -66,12 +72,16 @@ function saveArrayToCsv($path, $file, $array)
 {
     if (is_dir($path) && is_writable($path) && is_array($array) && sizeof($array) > 0) {
         $time = date('g:i A');
-        echo "{$array[2]} at  {$array[1]} - {$time} - wrote to {$path}{$file}\n";
-        file_put_contents($path . $file, implode(',' , $array) . "\n",FILE_APPEND);
+        $filePutResult = file_put_contents($path .'/'. $file, implode(',' , $array) . "\n",FILE_APPEND);
+        if ($filePutResult){
+            error_log("{$array[2]} at  {$array[1]} - {$time} - wrote to {$path}/{$file}");
+        }
+        return $filePutResult;
     } else {
-        echo "failed to write to {$path}/{$file} " .
+        error_log( "failed to write to {$path}/{$file} " .
             "It's not a dir, not writable or invalid/empty array passed. Array is: ".
-            print_r($array, 1) . "\n";
+            print_r($array, 1));
+        return false;
     }
 }
 

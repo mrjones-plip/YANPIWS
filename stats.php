@@ -31,10 +31,11 @@ $darkskytime= getCacheAge();
 <div class="col">
     <div class="row">
         <p>
-            <a href="/" class="homeLink"><-  Weather</a><br />
-            <a href="./config.php" class="homeLink">Config</a>
+            <a href="/" class="homeLink"><-  Weather</a>
+<!--            <br />-->
+<!--            <a href="./config.php" class="homeLink">Config</a>-->
         </p>
-        <a href="https://github.com/Ths2-9Y-LqJt6/YANPIWS">YANPIS 0.9</a> - Released Mar 26, 2017<br />
+        <a href="https://github.com/Ths2-9Y-LqJt6/YANPIWS">YANPIS 0.9.3</a> - Released Oct 1, 2019<br />
         <a href="https://darksky.net/poweredby/">Powered by Dark Sky</a><br />
         <?php echo $currentTempHtml ?>
         Dark Sky Cache Age: <?php echo $darkskytime ?><br/>

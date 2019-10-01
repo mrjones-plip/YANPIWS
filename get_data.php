@@ -12,6 +12,10 @@ function getValidConfigs(){
         'labels',
         'animate',
         'dataPath',
+        'api_password',
+        // we accept these two. listing it here commented out for completeness. see getConfig() below
+        // servers_*
+        // labels_*
     );
 }
 /**
@@ -25,12 +29,17 @@ function getConfig($die = true)
         $options = getValidConfigs();
         $YANPIWStmp = array_map('str_getcsv', file('config.csv'));
         foreach ($YANPIWStmp as $config){
-            if (substr($config[0],0,6) == 'labels'){
+
+            if (substr($config[0],0,6) === 'labels'){
                 $label = explode('_',$config[0]);
                 $YANPIWS['labels'][$label[1]] = $config[1];
+            } elseif(substr($config[0],0,7) === 'servers'){
+                $serversAry = explode('_',$config[0]);
+                $YANPIWS['servers'][$serversAry[1]][$serversAry[2]] = $config[1];
             } elseif (in_array($config[0],$options)) {
                 $YANPIWS[$config[0]] = $config[1];
             }
+
         }
     } elseif ($die) {
         die(
@@ -245,6 +254,8 @@ function getTempLastHtml($tempLine, $returnOnlySeconds = false)
 {
     global $YANPIWS;
     if ($tempLine[0] == "NA") {
+        $age = '';
+        $label = '';
         return "<li>$label: $age ". implode(" - ", $tempLine) . "</li>";
     } else {
         $lineEpoch = strtotime($tempLine[0]);

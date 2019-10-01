@@ -163,7 +163,7 @@ def main():
   temperature_F = float((temperature * 1.8) + 32);
   rightnow = datetime.now().strftime('%Y-%m-%d %H:%M:%S');
   json = '{"time" : "' + str(rightnow) + '", "model" : "BMP280", "id" : ' + str(chip_id) + ', "temperature_F" : ' + str(temperature_F) + ', "humidity" : ' + str(round(humidity,2)) + '}'
-  print json;
+  print json
   #print "{ \"time\" : \"",rightnow,"\", \"model\" : \"BMP280\", \"id\" :", chip_id, ", \"temperature_F\" :", temperature_F,", \"humidity\" :",humidity,"}"
   #print "Version     :", chip_version
 
