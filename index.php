@@ -20,19 +20,25 @@ if($status['valid'] != true){
     print "<a href='./config.php'>Edit Config</a>";
     print "<style>.temp,.suntimes{display:none;}</style>";
 } else {
-    print '<div class="YANPIWS"><a href="/stats.php">YANPIWS</a></div>';
+    print '<div id="YANPIWS" class="YANPIWS"></div>';
 }
 ?>
 <div class="col">
     <div class="row">
-        <div class="temp temp1" id="temp1"></div>
+        <a href="/temps.php">
 <?php
 $count = 1;
 foreach ($YANPIWS['labels'] as $id => $label){
         echo "\t<div class='temp temp{$count}' id='temp{$count}'></div>\n";
         $count++;
+        if ($count > 2){
+            break;
+        }
 }
 ?>
+        </a>
+    </div>
+</div>
 <div class="col">
     <div class="row"></div>
     <div class="row ">
@@ -54,6 +60,7 @@ foreach ($YANPIWS['labels'] as $id => $label){
         refreshSunrise();
         refreshSunset();
         refreshCurrentWind();
+        checkTempAges();
 <?php
         $count = 1;
 foreach ($YANPIWS['labels'] as $id => $label){
