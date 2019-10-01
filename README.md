@@ -24,7 +24,7 @@ Goals for this project are:
 
 ## Hardware
 
-Here's the parts I used and prices at time of publishing:
+Here's the parts I used and prices at time of publishing (March 2017):
 
 * $20 - [433 MHz SDR USB dongle](http://amzn.to/2nc5MhX)
 * $13 - [Wireless Temperature sensor](http://amzn.to/2lVdhJ6)
@@ -44,15 +44,13 @@ the IDs of the $13 sensors change every time the sensor batteries die/are change
 seems to interfere with the USB SDR (I'm inspiring confidence, yeah?!)~~ Turns out I just needed to move
 the antenna further away from the Pi! Finally, I coded the HTML
 and CSS to work in an 800x480 screen or greater. If you use the cheaper, 
-lower resolution screen (480x320), 
- you'll need to edit the index.php to uncomment the ``style-mini.css`` which tries to shrink
- everything down to fit:
-```
-<!--<link rel="stylesheet" type="text/css" href="styles-mini.css" />-->
-```
+lower resolution screen (480x320), YANPIWS just works thanks to ``@media`` sensing.  
+As well, it works on mobile devices and desktop devices as well.  All be it, mobile 
+works best in landscape.
 
-If you want to use the BME/BMP 280 I2C chip instead, this is now supported! So instead of getting 
-the SDR USB dongle and Wireless Temperature Sensora above, instead get:
+If you want to use the BME/BMP 280 I2C chip instead, this is now supported! So instead of 
+getting the SDR USB dongle and Wireless Temperature Sensora above, instead get 
+(prices as of Sep 2019):
 
 * $13 - [BME280 Digital 5V Temperature Humidity Sensor](https://amzn.to/2ZL42yZ)
 * $5.80 - [Breadboard Jumper Wires](https://amzn.to/2Lesc15)
@@ -69,7 +67,11 @@ These steps assume you already have your Pi
  and [accessible via SSH](https://www.raspberrypi.org/documentation/remote-access/ssh/README.md). 
  I recommend using a normal monitor for the install instead of the 5". It's easier this way. 
  
-These steps also assume you're using the SDR dongle and wireless temp sensors.  Skip to 
+Speaking of monitors - this install also assumes you have your 5" display (or 3.5" if you 
+went that way (or what ever display you want!)) already working. 
+ 
+These steps also assume you're using the SDR dongle and wireless temp sensors.  See below for
+BME280 sensors.
  
 All steps are done as the *Pi User* - be sure you've changed this user's password
 from "raspberry" ;)
@@ -78,23 +80,6 @@ from "raspberry" ;)
     ```
     sudo apt-get update&& sudo apt-get upgrade
     ```
-1. In order to get your 5" screen working, if you opted to go that route, edit ``sudo vim /boot/config.txt`` 
-(feel free to use ``pico`` or what not instead of ``vim``) and add these lines at the end:
-   ```
-   hdmi_group=2
-   hdmi_mode=1
-   hdmi_mode=87
-   hdmi_cvt 800 480 60 6 0 0 0
-   dtparam=spi=on
-   dtparam=i2c_arm=on
-   
-   dtoverlay=ads7846,cs=1,penirq=25,penirq_pull=2,speed=50000,keep_vref_on=0,swapxy=0,pmax=255,xohms=150,xmin=200,xmax=3900,ymin=200,ymax=3900
-   
-   dtoverlay=w1-gpio-pullup,gpiopin=4,extpullup=1
-   ```
-   After a reboot, the screen should work. 
-   Thanks [random Amazon comment](https://www.amazon.com/gp/customer-reviews/R3QVPHGJAQIYGW/ref=cm_cr_dp_d_rvw_ttl?ie=UTF8&ASIN=B013JECYF2)!
-   I never got touch calibrated correctly, but feel free follow their instructions with ``xinput-calibrator``.
 1. Install git, apache, php, compile utils for rtl, chrome and chrome utils for doing 
 full screen(some of which may be installed already):
 
@@ -149,15 +134,16 @@ and [superuser.com](https://superuser.com/questions/461035/disable-google-chrome
    ```
 1. Edit your newly created ``config.php`` to have the correct values. 
 Specifically, your latitude (``lat``),
-longitude (``lon``), time zone (``gmt_offset``) and labels which you 
+longitude (``lon``) and labels which you 
 got in the step above running ``rtl_433 -q``. As well, you'll need to sign up for an API key
 on [Dark Sky](https://darksky.net/dev/register). Be sure to keep the other lines, specifically
-the line that declares the ``$YANPIWS`` variable a global, untouched.  Here's a sample:
+the line that declares the ``$YANPIWS`` variable a global, untouched.  If you want static icons instead of
+animated ones, set 'animate' to ``false`` instead of ``true`` like below. Here's a sample:
     ```
     $YANPIWS['lat'] = 31.775554;
     $YANPIWS['lon'] = -81.822436;
+    $YANPIWS['animate'] = true;
     $YANPIWS['dataPath'] = '/var/www/html/data/';
-    $YANPIWS['gmt_offset'] = '-8';
     $YANPIWS['darksky'] = '3824vcu89v89f7das878f7a8sd';
     $YANPIWS['labels'] = array(
         '211' => 'In',
@@ -329,6 +315,17 @@ Use your IDE of choice to edit and point your browser at ``localhost:8000``
 PRs and Issues welcome!
 
 ## Version History
+* 0.9.3 - Oct 1, 2019 - merge old PR #20 with:
+  ** add stats dashboard per #17
+  ** adds AJAX reloads per #19
+  ** add windspeed per #16
+  ** remove GMT from config per #23
+  ** offer animated or static icons per #25
+  ** Fix labels per #24
+  ** natively support both 5" and 3.5" screens per #13
+  ** all functions documented and commented per #32
+  ** make title text yellow if caches are older than 10 minutes per #37
+  ** don't cache invalid dark sky data #36
 * 0.9.2 - Sep 19, 2019 - add support for, and default, to http POST for 
 data gathering. Fix typo & fix minor bug with use of `rand()`. Update docs for same. 
 * 0.9.1 - Sep 9, 2019 - implement support for BME280 I2C sensors

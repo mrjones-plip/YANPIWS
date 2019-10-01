@@ -6,6 +6,29 @@ body {
     font-size: 22pt;
     font-family: sans-serif;
 }
+a {
+    color: white;
+}
+.error {
+    color: red;
+    font-size: 30pt;
+}
+.errorImg {
+    width:60px;
+}
+.homeLink {
+    font-size:29pt;
+}
+.YANPIWS a {
+    color: darkgreen;
+    text-decoration: none;
+    font-size:20pt;
+}
+.YANPIWS {
+    position: fixed;
+    z-index: 10000;
+    left: 42%;
+}
 .forecastday {
     width:20%;
     float:left;
@@ -13,7 +36,6 @@ body {
 }
 .temp {
     padding-bottom:10px;
-    padding-top:20px;
     font-size: 50pt;
     float: left;
 }
@@ -45,11 +67,14 @@ body {
     width:25px;
     padding-left:20px;
 }
-.date, .time, .label {
+.date, .time, .label, .wind_now {
     font-size:35pt;
 }
-.date, .time {
+.date, .time{
     float: left;
+}
+.wind_now {
+    float: right;
 }
 .date {
     padding-left: 20px;
@@ -65,4 +90,47 @@ body {
 }
 .suntimes {
     padding-top: 20px;
+}
+label {
+    clear: both;
+    float: left;
+    width: 25%;
+    text-align: left;
+}
+input {
+    width:70%;
+}
+@media only screen and (max-width : 480px) {
+    body {
+        font-size: 15pt;
+    }
+    .error {
+        color: red;
+        font-size: 20pt;
+    }
+    .errorImg {
+        width:40px;
+    }
+    .temp {
+        font-size: 25pt;
+    }
+    .rigthtCol{
+        padding-top:10px;
+    }
+    .date, .time, .label, .wind_now {
+        font-size:15pt;
+    }
+    .spreadtemp {
+        font-size:11pt;
+    }
+    .YANPIWS a{
+        font-size:15pt;
+    }
+    .suntimes {
+        padding-top: 10px;
+    }
+    canvas {
+        width:50px;
+        height:50px;
+    }
 }
