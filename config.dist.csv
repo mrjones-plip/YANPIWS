@@ -5,3 +5,6 @@ labels_211,In
 labels_109,Out
 animate,true
 dataPath,/var/www/html/data/
+api_password,boxcar-spinning-problem-rockslide-scored
+servers_url,http://127.0.0.1
+servers_password,boxcar-spinning-problem-rockslide-scored

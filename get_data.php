@@ -12,6 +12,9 @@ function getValidConfigs(){
         'labels',
         'animate',
         'dataPath',
+        'api_password',
+        'servers_url',
+        'servers_password',
     );
 }
 /**
