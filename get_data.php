@@ -113,7 +113,9 @@ function getData($file)
         $goodData = array();
         foreach ($data as $line){
             $lineArray = explode(",", $line);
-            $goodData[$lineArray[1]][$lineArray[0]] = $lineArray;
+            if(isset($lineArray[1])){
+                $goodData[$lineArray[1]][$lineArray[0]] = $lineArray;
+            }
         }
         foreach (array_keys($goodData) as $id){
             asort($goodData[$id]);
@@ -123,6 +125,53 @@ function getData($file)
     } else {
         return array();
     }
+}
+
+/**
+ * @param $data1
+ * @param $data2
+ * @param $ids
+ * @return array
+ */
+function mergeDayData($data1, $data2, $ids){
+    $result = array();
+    foreach ($ids as $id => $label) {
+        if (isset($data1[$id]) && is_array($data1[$id])){
+            foreach ($data1[$id] as $date => $temps) {
+                $result[$id][$date] = $temps;
+            }
+        }
+        if (isset($data2[$id]) && is_array($data2[$id])){
+            foreach ($data2[$id] as $date => $temps) {
+                $result[$id][$date] = $temps;
+            }
+        }
+    }
+    return $result;
+}
+/**
+ * given the result from getData(), format the temps into averages by hour for last 24 hours.
+ * @param $data array from getData()
+ * @return array of up to 24 temps, 1 average per hour in log() scale
+ */
+function convertDataToHourly($data){
+    $result = array();
+    $counts = array();
+    foreach ($data as $tempArray){
+        $epoch = strtotime($tempArray[0]);
+        $hour = date('G', $epoch);
+        if(!isset($result[$hour])){
+            $result[$hour] = 0;
+            $counts[$hour] = 0;
+        }
+        $result[$hour] = $tempArray[2] + $result[$hour];
+        $counts[$hour]++;
+    }
+    foreach ($counts as $hour => $count){
+        $result[$hour] = $result[$hour]/$counts[$hour];
+    }
+//    die('daily temps:'.print_r($result,1));
+    return $result;
 }
 
 /**
@@ -171,12 +220,28 @@ function getTempHtml($tempLine)
 }
 
 /**
+ * Get the age in human time (sec, min, hour etc) of the dark sky cache
+ * @param $returnSeconds boolean to return int of seconds if true, otherwise string of human time
+ */
+function getCacheAge($returnSeconds = false){
+    global $YANPIWS;
+    $path = $YANPIWS['dataPath'];
+    $darkskytime =  filemtime($path . 'darksky.cache');
+    if (!$returnSeconds) {
+        return getHumanTime(time() - $darkskytime);
+    } else {
+        return (time() - $darkskytime);
+    }
+}
+
+/**
  * given an array from getMostRecentTemp(), format it into debug html showing age of temp
  *
  * @param $tempLine array from getMostRecentTemp()
+ * @param $returnOnlySeconds boolean to return int of seconds if true, otherwise string of human time
  * @return string of HTML
  */
-function getTempLastHtml($tempLine)
+function getTempLastHtml($tempLine, $returnOnlySeconds = false)
 {
     global $YANPIWS;
     if ($tempLine[0] == "NA") {
@@ -191,7 +256,11 @@ function getTempLastHtml($tempLine)
         } else {
             $label = "<no label>";
         }
-        return "<li>$label: $temp $age ago</li>";
+        if (!$returnOnlySeconds) {
+            return "<li>$label: $temp $age ago</li>";
+        } else {
+            return (time() - $lineEpoch);
+        }
     }
 }
 
@@ -220,7 +289,7 @@ function getSunriseHtml($time)
 }
 
 /**
- * get data from dark sky.  will cache data and refresh it every 15 minutes
+ * get data from dark sky.  will cache data and refresh it every 10 minutes
  *
  * @return stdClass of either resutls or very lightly populated error object
  */
@@ -229,7 +298,7 @@ function getDarkSkyData()
     global $YANPIWS;
     $path = $YANPIWS['dataPath'];
     $cache = $path . 'darksky.cache';
-    $hourAgo = time() - (60*15); // 15 minutes
+    $hourAgo = time() - (60*10); // 10 minutes
     $data = false;
     $configStatus = configIsValid();
     if($configStatus['valid'] === true) {

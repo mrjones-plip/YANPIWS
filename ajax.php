@@ -24,6 +24,21 @@ if (isset($_GET['content'])){
         $forecast = getDarkSkyData();
         if (isset($forecast->daily->data[0]->sunriseTime))
         print getSunriseHtml($forecast->daily->data[0]->sunriseTime);
+    } elseif ($_GET['content'] == 'age'){
+        $cacheAge = getCacheAge(true);
+        $maxTempAge = 0;
+        foreach ($YANPIWS['labels'] as $id => $label){
+            $tempLine = getMostRecentTemp($id);
+            $currentTempAge = getTempLastHtml($tempLine, true);
+            if ($maxTempAge < $currentTempAge){
+                $maxTempAge = $currentTempAge;
+            }
+        }
+        if ($currentTempAge > 600 || $maxTempAge > 600){
+            print '<a class="yellow" href="/stats.php">YANPIWS</a>';
+        } else {
+            print '<a  href="/stats.php">YANPIWS</a>';
+        }
     } elseif ($_GET['content'] == 'datetime'){
         print "<div class='time'>$time</div><div class='date'>$date</div>";
     } elseif ($_GET['content'] == 'temp' && isset($_GET['id']) && isset($YANPIWS['labels'][$_GET['id']])){

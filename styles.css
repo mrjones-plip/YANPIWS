@@ -24,6 +24,9 @@ a {
     text-decoration: none;
     font-size:20pt;
 }
+a.yellow {
+    color: yellow;
+}
 .YANPIWS {
     position: fixed;
     z-index: 10000;
