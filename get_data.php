@@ -320,6 +320,7 @@ function getDailyForecastHtml($daily = null)
     return $html;
 }
 
+
 /**
  * given an int of seconds, return sec, min, hours or days, rounded
  * thanks http://www.kavoir.com/2010/09/php-get-human-readable-time-from-seconds.html
