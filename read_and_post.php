@@ -1,6 +1,7 @@
 <?php
 
-require_once("config.php");
+require_once 'get_data.php';
+getConfig();
 
 if(defined('STDIN')){
     while ($f = fgets(STDIN)) {

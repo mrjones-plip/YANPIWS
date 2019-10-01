@@ -17,7 +17,7 @@ $forecast = getDarkSkyData();
 $status =configIsValid();
 if($status['valid'] != true){
     print "<div class='error'>ERROR: {$status['reason']}</div>";
-    print "<a href='./config.php'>Edit Config</a>";
+//    print "<a href='./config.php'>Edit Config</a>";
     print "<style>.temp,.suntimes{display:none;}</style>";
 } else {
     print '<div id="YANPIWS" class="YANPIWS"></div>';

@@ -122,7 +122,7 @@ and [superuser.com](https://superuser.com/questions/461035/disable-google-chrome
      ```
      Upon reboot you should see the default apache page, full screen, with no menu bar at the top.
 1. Remove the default ``index.html``, clone this repo into ``/var/www/html`` and create your own 
-``config.php``:
+``config.csv``:
    ```
    cd /var/html/
    sudo rm www/index.html
@@ -130,25 +130,26 @@ and [superuser.com](https://superuser.com/questions/461035/disable-google-chrome
    cd html
    chown -R pi .
    chgrp -R www-data .
-   cp config.dist.php config.php
+   cp config.dist.csv config.csv
    ```
-1. Edit your newly created ``config.php`` to have the correct values. 
+1. Edit your newly created ``config.csv`` to have the correct values. 
 Specifically, your latitude (``lat``),
 longitude (``lon``) and labels which you 
 got in the step above running ``rtl_433 -q``. As well, you'll need to sign up for an API key
-on [Dark Sky](https://darksky.net/dev/register). Be sure to keep the other lines, specifically
-the line that declares the ``$YANPIWS`` variable a global, untouched.  If you want static icons instead of
+on [Dark Sky](https://darksky.net/dev/register) and put that in for the `darksky` value below. 
+If you want static icons instead of
 animated ones, set 'animate' to ``false`` instead of ``true`` like below. Here's a sample:
     ```
-    $YANPIWS['lat'] = 31.775554;
-    $YANPIWS['lon'] = -81.822436;
-    $YANPIWS['animate'] = true;
-    $YANPIWS['dataPath'] = '/var/www/html/data/';
-    $YANPIWS['darksky'] = '3824vcu89v89f7das878f7a8sd';
-    $YANPIWS['labels'] = array(
-        '211' => 'In',
-        '109' => 'Out',
-    );
+    lat,31.775554
+    lon,-81.822436
+    darksky,aabbccddeeffgghhiijj112233445566
+    animate,true
+    labels_211,In
+    labels_109,Out
+    dataPath,/var/www/html/data/
+    api_password,boxcar-spinning-problem-rockslide-scored
+    servers_0_url,http://127.0.0.1
+    servers_0_password,boxcar-spinning-problem-rockslide-scored
     ```
 1. Reboot your Pi so the browser starts loading the configured YANPIWS app.
 1. [Add a cronjob](https://www.raspberrypi.org/documentation/linux/usage/cron.md) 
@@ -196,7 +197,7 @@ is working.  Then, follow these steps:
 1. Get the IP address of where you want to send the data to.  See `ifconfig` if you need help (this
 command may work, but is likely fragile, `ifconfig|grep -i inet|grep broadc|cut -d ' ' -f10`). We'll
 pretend you got the ip `192.168.4.199` back. But use the real IP!
-1. One the remote node, edit the `config.php` file and in the bottom section after the `$YANPIWS['servers'][]`
+1. One the remote node, edit the `config.csv` file and in the bottom section after the `$YANPIWS['servers'][]`
 line, do one of the following:
    * change the URL line `url` to be: `'url' => 'http://192.168.4.199',`. Remember, this should be the IP you 
    got in the 
@@ -258,7 +259,7 @@ The following fields are required:
 * `id` - (int) the ID you want to write to the DB
 * `time` - (string) the time of of the data, must be in Y-M-D H:M:S format like `2019-09-18 23:59:02`
 * `temperature_F` - (float) of the temperature in ferinheight 
-* `password` - (string) must match what you have in your `config.php` file under `api_password`. 
+* `password` - (string) must match what you have in your `config.csv` file under `api_password`. 
 The default value is `boxcar-spinning-problem-rockslide-scored`.
 
 Optionally you may pass:
@@ -286,7 +287,7 @@ rtl_433 -f 433820000 -C customary -F json -q | php -f read_and_post.php
 
 If you don't want to deal with running the rtl-433 script, copy the sample data 
 ``example.data`` to today's date (YEAR-MONTH-DAY) into the ``data`` directory.  It has IDs 211 
-and 109 which are the ones already in config.dist.php.
+and 109 which are the ones already in config.dist.csv.
 
 As well, if you want to simulate individual inputs via the HTTP POSTs, you can use this `curl` command.
 Note that we're using the default password, you may need to change this if you've changed it in your 
