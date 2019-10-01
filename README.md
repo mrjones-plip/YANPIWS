@@ -316,16 +316,16 @@ PRs and Issues welcome!
 
 ## Version History
 * 0.9.3 - Oct 1, 2019 - merge old PR #20 with:
-  ** add stats dashboard per #17
-  ** adds AJAX reloads per #19
-  ** add windspeed per #16
-  ** remove GMT from config per #23
-  ** offer animated or static icons per #25
-  ** Fix labels per #24
-  ** natively support both 5" and 3.5" screens per #13
-  ** all functions documented and commented per #32
-  ** make title text yellow if caches are older than 10 minutes per #37
-  ** don't cache invalid dark sky data #36
+  * add stats dashboard per #17
+  * adds AJAX reloads per #19
+  * add windspeed per #16
+  * remove GMT from config per #23
+  * offer animated or static icons per #25
+  * Fix labels per #24
+  * natively support both 5" and 3.5" screens per #13
+  * all functions documented and commented per #32
+  * make title text yellow if caches are older than 10 minutes per #37
+  * don't cache invalid dark sky data #36
 * 0.9.2 - Sep 19, 2019 - add support for, and default, to http POST for 
 data gathering. Fix typo & fix minor bug with use of `rand()`. Update docs for same. 
 * 0.9.1 - Sep 9, 2019 - implement support for BME280 I2C sensors
