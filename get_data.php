@@ -227,6 +227,32 @@ function getTempHtml($tempLine)
         return "NA\n";
     }
 }
+/**
+ * given an array from getMostRecentTemp(), format it into html
+ *
+ * @param $tempLine array from getMostRecentTemp()
+ * @return string of HTML
+ */
+function getHumidityHtml($tempLine, $useLabel = false)
+{
+    global $YANPIWS;
+    $key = $tempLine[1];
+    if (isset($YANPIWS['labels'][$key])) {
+        $label = $YANPIWS['labels'][$key];
+    } else {
+        $label = "#$key";
+    }
+    if (isset($tempLine[3]) && $tempLine != null) {
+        $temp = number_format(trim($tempLine[3]), 0);
+        $result = "<span class='percent'>{$temp}%</span>";
+        if($useLabel) {
+            $result .= "<span class='label'>$label</span>\n";
+        }
+        return $result;
+    } else {
+        return "NA\n";
+    }
+}
 
 /**
  * Get the age in human time (sec, min, hour etc) of the dark sky cache

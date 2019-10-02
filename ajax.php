@@ -8,7 +8,6 @@ if (isset($_GET['content'])){
     $today = date('Y-m-d', time());
     $time = date('g:i A', time());
     $date = date('D M j', time());
-    $count=1;
     if ($_GET['content'] == 'forecast'){
         $forecast = getDarkSkyData();
         print getDailyForecastHtml($forecast->daily);
@@ -43,7 +42,10 @@ if (isset($_GET['content'])){
         print "<div class='time'>$time</div><div class='date'> $date</div>";
     } elseif ($_GET['content'] == 'temp' && isset($_GET['id']) && isset($YANPIWS['labels'][$_GET['id']])){
         $tempLine = getMostRecentTemp($_GET['id']);
-        print getTempHtml($tempLine, $count++);
+        print getTempHtml($tempLine);
+    } elseif ($_GET['content'] == 'humidity' && isset($_GET['id']) && isset($YANPIWS['labels'][$_GET['id']])){
+        $tempLine = getMostRecentTemp($_GET['id']);
+        print getHumidityHtml($tempLine);
     } else {
         //ahhhh!  wtf!?!
         print "No AJAX here";
