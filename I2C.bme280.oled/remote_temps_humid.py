@@ -67,11 +67,13 @@ bottom = height-padding
 
 temp1url = 'http://192.168.68.105/ajax.php?content=temp&id=231'
 temp2url = 'http://192.168.68.105/ajax.php?content=temp&id=63'
+humid1url = 'http://192.168.68.105/ajax.php?content=humidity&id=231'
+humid2url = 'http://192.168.68.105/ajax.php?content=humidity&id=63'
 datetime = 'http://192.168.68.105/ajax.php?content=datetime'
 
 # Load default font.
-font = ImageFont.truetype("/usr/share/fonts/truetype/lato/Lato-Heavy.ttf", 26)
-font_small = ImageFont.truetype("/usr/share/fonts/truetype/lato/Lato-Heavy.ttf", 13)
+font = ImageFont.truetype("Lato-Heavy.ttf", 20)
+font_small = ImageFont.truetype("Lato-Heavy.ttf", 12)
 # Alternatively load a TTF font.  Make sure the .ttf font file is in the same directory as the python script!
 # Some other nice fonts to try: http://www.dafont.com/bitmap.php
 # font = ImageFont.truetype('Minecraftia.ttf', 8)
@@ -83,12 +85,14 @@ while True:
     # fetch the cooked up html -> strings
     temp1 = get_cleaned_string_from_url(temp1url);
     temp2 = get_cleaned_string_from_url(temp2url);
+    humid1 = get_cleaned_string_from_url(humid1url);
+    humid2 = get_cleaned_string_from_url(humid2url);
     date_time = get_cleaned_string_from_url(datetime);
 
     # render the data
-    draw.text((0, top ),     str(date_time) , font=font_small, fill=255)
-    draw.text((0, top + 12),     str(temp1) , font=font, fill=255)
-    draw.text((0, top + 40),     str(temp2) , font=font, fill=255)
+    draw.text((0, top ), date_time , font=font_small, fill=255)
+    draw.text((0, top + 18), humid1 + ' ' +  temp1 , font=font, fill=255)
+    draw.text((0, top + 46), humid2 + ' ' + temp2 , font=font, fill=255)
 
     # Display image.
     disp.image(image)

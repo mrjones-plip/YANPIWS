@@ -37,7 +37,6 @@ import subprocess
 
 DEVICE = 0x76 # Default device I2C address
 
-
 bus = smbus.SMBus(1) # Rev 2 Pi, Pi 2 & Pi 3 uses bus 1
                      # Rev 1 Pi uses bus 0
 
@@ -217,18 +216,17 @@ padding = -2
 top = padding
 bottom = height-padding
 
-font = ImageFont.truetype("/usr/share/fonts/truetype/lato/Lato-Heavy.ttf", 31)
-
+font = ImageFont.truetype("Lato-Heavy.ttf", 31)
 
 while True:
 
     # Draw a black filled box to clear the image.
     draw.rectangle((0,0,width,height), outline=0, fill=0)
 
-    temp_ary = json.loads(get_temp());
+    temp_ary = json.loads(get_temp())
 
-    draw.text((0, top),     str(format(temp_ary['temperature_F'],'.3f')) , font=font, fill=255)
-    draw.text((0, top+32),     str(format(temp_ary['humidity'],'.2f')) + '%', font=font, fill=255)
+    draw.text((0, top), str(format(temp_ary['temperature_F'],'.3f')) , font=font, fill=255)
+    draw.text((0, top+32), str(format(temp_ary['humidity'],'.2f')) + '%', font=font, fill=255)
 
     # Display image.
     disp.image(image)
