@@ -40,7 +40,7 @@ if (isset($_GET['content'])){
             print '<a  href="/stats.php">YANPIWS</a>';
         }
     } elseif ($_GET['content'] == 'datetime'){
-        print "<div class='time'>$time</div><div class='date'>$date</div>";
+        print "<div class='time'>$time</div><div class='date'> $date</div>";
     } elseif ($_GET['content'] == 'temp' && isset($_GET['id']) && isset($YANPIWS['labels'][$_GET['id']])){
         $tempLine = getMostRecentTemp($_GET['id']);
         print getTempHtml($tempLine, $count++);

@@ -216,14 +216,10 @@ draw.rectangle((-20,-20,width,height), outline=0, fill=0)
 padding = -2
 top = padding
 bottom = height-padding
-# Move left to right keeping track of the current x position for drawing shapes.
+
+font = ImageFont.truetype("/usr/share/fonts/truetype/lato/Lato-Heavy.ttf", 31)
 
 
-# Load default font.
-font = ImageFont.truetype("/usr/share/fonts/truetype/lato/Lato-Heavy.ttf", 30)
-# Alternatively load a TTF font.  Make sure the .ttf font file is in the same directory as the python script!
-# Some other nice fonts to try: http://www.dafont.com/bitmap.php
-# font = ImageFont.truetype('Minecraftia.ttf', 8)
 while True:
 
     # Draw a black filled box to clear the image.
@@ -231,10 +227,10 @@ while True:
 
     temp_ary = json.loads(get_temp());
 
-    draw.text((0, top),     str(round(temp_ary['temperature_F'],1)) + '°F', font=font, fill=255)
-    draw.text((0, top+35),     str(round(temp_ary['humidity'],1)) + '%', font=font, fill=255)
+    draw.text((0, top),     str(format(temp_ary['temperature_F'],'.3f')) , font=font, fill=255)
+    draw.text((0, top+32),     str(format(temp_ary['humidity'],'.2f')) + '%', font=font, fill=255)
 
     # Display image.
     disp.image(image)
     disp.display()
-    time.sleep(.5)
+    time.sleep(.3)
