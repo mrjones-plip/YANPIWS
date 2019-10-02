@@ -183,7 +183,7 @@ ensure you see good data.  This looks like this for me:
     ```
 1. If that all looks good, as the `pi` user, set up a cron job to run once a minute and generate the stats:
     ```bash
-    */1 * * * * /usr/bin/python /var/www/html/bme280.py| /usr/bin/php -f /var/www/html/read_and_post.php
+    */1 * * * * cd /var/www/html;/usr/bin/python /var/www/html/bme280.py | /usr/bin/php -f read_and_post.php
     ``` 
    
 ### Multiple Sensor Nodes
