@@ -26,9 +26,10 @@ from ctypes import c_ubyte
 
 DEVICE = 0x76 # Default device I2C address
 
-
-bus = smbus.SMBus(1) # Rev 2 Pi, Pi 2 & Pi 3 uses bus 1
-                     # Rev 1 Pi uses bus 0
+# Rev 2 Pi, Pi 2 & Pi 3 uses bus 1
+# Rev 1 Pi uses bus 0
+# Orange Pi Zero uses bus 0 for pins 1-5 (other pins for bus 1 & 2)
+bus = smbus.SMBus(1)
 
 def getShort(data, index):
   # return two bytes from data as a signed 16-bit value
@@ -163,7 +164,7 @@ def main():
   temperature_F = float((temperature * 1.8) + 32);
   rightnow = datetime.now().strftime('%Y-%m-%d %H:%M:%S');
   json = '{"time" : "' + str(rightnow) + '", "model" : "BMP280", "id" : ' + str(chip_id) + ', "temperature_F" : ' + str(temperature_F) + ', "humidity" : ' + str(round(humidity,2)) + '}'
-  print json
+  print(json)
   #print "{ \"time\" : \"",rightnow,"\", \"model\" : \"BMP280\", \"id\" :", chip_id, ", \"temperature_F\" :", temperature_F,", \"humidity\" :",humidity,"}"
   #print "Version     :", chip_version
 

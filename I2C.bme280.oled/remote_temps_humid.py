@@ -1,5 +1,27 @@
 #!/usr/bin/python
 
+######################################################
+# Change these for your environment
+######################################################
+
+# IP address of your YANPIWS device you want to show data from
+yanpiws_ip = '192.168.68.105'
+# ID from your YANPIWS config.csv of temp 1
+yanpiws_temp_1 = '231'
+# ID from your YANPIWS config.csv of temp 2
+yanpiws_temp_2 = '63'
+
+# Rev 2 Pi, Pi 2 & Pi 3 uses bus 1
+# Rev 1 Pi uses bus 0
+# Orange Pi Zero uses bus 0 for pins 1-5 (other pins for bus 1 & 2)
+bus_number = 0;
+
+######################################################
+# don't change anything below here!
+######################################################
+
+
+
 
 import smbus
 import time
@@ -17,7 +39,6 @@ from PIL import ImageDraw
 from PIL import ImageFont
 import random
 import subprocess
-
 
 def remove_html_tags(text):
     """Remove html tags from a string"""
@@ -37,8 +58,10 @@ DC = 23
 SPI_PORT = 0
 SPI_DEVICE = 0
 
-# 128x64 display with hardware I2C:
-disp = Adafruit_SSD1306.SSD1306_128_64(rst=RST)
+# Rev 2 Pi, Pi 2 & Pi 3 uses bus 1
+# Rev 1 Pi uses bus 0
+# Orange Pi Zero uses bus 0 for pins 1-5 (other pins for bus 1 & 2)
+disp = Adafruit_SSD1306.SSD1306_128_64(rst=RST, i2c_bus=bus_number)
 
 # Initialize library.
 disp.begin()
@@ -65,11 +88,11 @@ padding = -2
 top = padding
 bottom = height-padding
 
-temp1url = 'http://192.168.68.105/ajax.php?content=temp&id=231'
-temp2url = 'http://192.168.68.105/ajax.php?content=temp&id=63'
-humid1url = 'http://192.168.68.105/ajax.php?content=humidity&id=231'
-humid2url = 'http://192.168.68.105/ajax.php?content=humidity&id=63'
-datetime = 'http://192.168.68.105/ajax.php?content=datetime'
+temp1url = 'http://' + yanpiws_ip + '/ajax.php?content=temp&id=' + yanpiws_temp_1
+temp2url = 'http://' + yanpiws_ip + '/ajax.php?content=temp&id=' + yanpiws_temp_2
+humid1url = 'http://' + yanpiws_ip + '/ajax.php?content=humidity&id=' + yanpiws_temp_1
+humid2url = 'http://' + yanpiws_ip + '/ajax.php?content=humidity&id=' + yanpiws_temp_2
+datetime = 'http://' + yanpiws_ip + '/ajax.php?content=datetime'
 
 # Load default font.
 font = ImageFont.truetype("Lato-Heavy.ttf", 20)
