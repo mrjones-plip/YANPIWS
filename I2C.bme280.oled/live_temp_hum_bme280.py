@@ -1,23 +1,21 @@
 #!/usr/bin/python
-#--------------------------------------
-#    ___  ___  _ ____
-#   / _ \/ _ \(_) __/__  __ __
-#  / , _/ ___/ /\ \/ _ \/ // /
-# /_/|_/_/  /_/___/ .__/\_, /
-#                /_/   /___/
-#
-#           bme280.py
-#  Read data from a digital pressure sensor.
-#
-#  Official datasheet available from :
-#  https://www.bosch-sensortec.com/bst/products/all_products/bme280
-#
-# Author : Matt Hawkins
-# Date   : 21/01/2018
-#
-# https://www.raspberrypi-spy.co.uk/
-#
-#--------------------------------------
+
+######################################################
+# Change these for your environment
+######################################################
+
+# ID of your temp sensor from i2cdetect Keep '0x' and just change '76' to your id
+temp_sensor_id = 0x76
+
+# Rev 2 Pi, Pi 2 & Pi 3 uses bus 1
+# Rev 1 Pi uses bus 0
+# Orange Pi Zero uses bus 0 for pins 1-5 (other pins for bus 1 & 2)
+bus_number = 0;
+
+######################################################
+# don't change anything below here!
+######################################################
+
 import smbus
 import time
 from ctypes import c_short
@@ -35,11 +33,7 @@ from PIL import ImageFont
 import random
 import subprocess
 
-DEVICE = 0x76 # Default device I2C address
-
-
-bus = smbus.SMBus(1) # Rev 2 Pi, Pi 2 & Pi 3 uses bus 1
-                     # Rev 1 Pi uses bus 0
+bus = smbus.SMBus(bus_number)
 
 def getShort(data, index):
   # return two bytes from data as a signed 16-bit value
@@ -61,13 +55,13 @@ def getUChar(data,index):
   result =  data[index] & 0xFF
   return result
 
-def readBME280ID(addr=DEVICE):
+def readBME280ID(addr=temp_sensor_id):
   # Chip ID Register Address
   REG_ID     = 0xD0
   (chip_id, chip_version) = bus.read_i2c_block_data(addr, REG_ID, 2)
   return (chip_id, chip_version)
 
-def readBME280All(addr=DEVICE):
+def readBME280All(addr=temp_sensor_id):
   # Register Addresses
   REG_DATA = 0xF7
   REG_CONTROL = 0xF4
@@ -190,7 +184,7 @@ SPI_PORT = 0
 SPI_DEVICE = 0
 
 # 128x64 display with hardware I2C:
-disp = Adafruit_SSD1306.SSD1306_128_64(rst=RST)
+disp = Adafruit_SSD1306.SSD1306_128_64(rst=RST, i2c_bus=bus_number)
 
 # Initialize library.
 disp.begin()
@@ -216,25 +210,20 @@ draw.rectangle((-20,-20,width,height), outline=0, fill=0)
 padding = -2
 top = padding
 bottom = height-padding
-# Move left to right keeping track of the current x position for drawing shapes.
 
+font = ImageFont.truetype("Lato-Heavy.ttf", 31)
 
-# Load default font.
-font = ImageFont.truetype("/usr/share/fonts/truetype/lato/Lato-Heavy.ttf", 30)
-# Alternatively load a TTF font.  Make sure the .ttf font file is in the same directory as the python script!
-# Some other nice fonts to try: http://www.dafont.com/bitmap.php
-# font = ImageFont.truetype('Minecraftia.ttf', 8)
 while True:
 
     # Draw a black filled box to clear the image.
     draw.rectangle((0,0,width,height), outline=0, fill=0)
 
-    temp_ary = json.loads(get_temp());
+    temp_ary = json.loads(get_temp())
 
-    draw.text((0, top),     str(round(temp_ary['temperature_F'],1)) + '°F', font=font, fill=255)
-    draw.text((0, top+35),     str(round(temp_ary['humidity'],1)) + '%', font=font, fill=255)
+    draw.text((0, top), str(format(temp_ary['temperature_F'],'.3f')) , font=font, fill=255)
+    draw.text((0, top+32), str(format(temp_ary['humidity'],'.2f')) + '%', font=font, fill=255)
 
     # Display image.
     disp.image(image)
     disp.display()
-    time.sleep(.5)
+    time.sleep(.3)
