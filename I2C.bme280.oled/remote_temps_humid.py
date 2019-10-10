@@ -20,9 +20,6 @@ bus_number = 0;
 # don't change anything below here!
 ######################################################
 
-
-
-
 import smbus
 import time
 from ctypes import c_short
@@ -31,6 +28,7 @@ from ctypes import c_ubyte
 import json
 
 import time
+import os
 from random import *
 import Adafruit_GPIO.SPI as SPI
 import Adafruit_SSD1306
@@ -39,6 +37,9 @@ from PIL import ImageDraw
 from PIL import ImageFont
 import random
 import subprocess
+
+# set full puth for incling libs below
+full_path = os.path.dirname(os.path.abspath(__file__)) + "/"
 
 def remove_html_tags(text):
     """Remove html tags from a string"""
@@ -95,8 +96,8 @@ humid2url = 'http://' + yanpiws_ip + '/ajax.php?content=humidity&id=' + yanpiws_
 datetime = 'http://' + yanpiws_ip + '/ajax.php?content=datetime'
 
 # Load default font.
-font = ImageFont.truetype("Lato-Heavy.ttf", 20)
-font_small = ImageFont.truetype("Lato-Heavy.ttf", 12)
+font = ImageFont.truetype(full_path + "Lato-Heavy.ttf", 20)
+font_small = ImageFont.truetype(full_path + "Lato-Heavy.ttf", 12)
 # Alternatively load a TTF font.  Make sure the .ttf font file is in the same directory as the python script!
 # Some other nice fonts to try: http://www.dafont.com/bitmap.php
 # font = ImageFont.truetype('Minecraftia.ttf', 8)
