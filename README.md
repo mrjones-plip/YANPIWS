@@ -316,6 +316,7 @@ Use your IDE of choice to edit and point your browser at ``localhost:8000``
 PRs and Issues welcome!
 
 ## Version History
+* 0.9.4 - Oct 10, 2019 - tidy up python scripts per #50 and #51
 * 0.9.3 - Oct 1, 2019 - merge old PR #20 with:
   * add stats dashboard per #17
   * adds AJAX reloads per #19
