@@ -10,7 +10,7 @@ temp_sensor_id = 0x76
 # Rev 2 Pi, Pi 2 & Pi 3 uses bus 1
 # Rev 1 Pi uses bus 0
 # Orange Pi Zero uses bus 0 for pins 1-5 (other pins for bus 1 & 2)
-bus_number = 0;
+bus_number = 0
 
 ######################################################
 # don't change anything below here!
@@ -24,6 +24,7 @@ from ctypes import c_ubyte
 import json
 
 import time
+import os
 from random import *
 import Adafruit_GPIO.SPI as SPI
 import Adafruit_SSD1306
@@ -32,6 +33,9 @@ from PIL import ImageDraw
 from PIL import ImageFont
 import random
 import subprocess
+
+# set full puth for incling libs below
+full_path = os.path.dirname(os.path.abspath(__file__)) + "/"
 
 bus = smbus.SMBus(bus_number)
 
@@ -211,7 +215,7 @@ padding = -2
 top = padding
 bottom = height-padding
 
-font = ImageFont.truetype("Lato-Heavy.ttf", 31)
+font = ImageFont.truetype(full_path + "Lato-Heavy.ttf", 31)
 
 while True:
 
