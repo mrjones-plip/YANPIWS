@@ -10,7 +10,7 @@ temp_sensor_id = 0x76
 # Rev 2 Pi, Pi 2 & Pi 3 uses bus 1
 # Rev 1 Pi uses bus 0
 # Orange Pi Zero uses bus 0 for pins 1-5 (other pins for bus 1 & 2)
-bus_number = 0;
+bus_number = 0
 
 ######################################################
 # don't change anything below here!
