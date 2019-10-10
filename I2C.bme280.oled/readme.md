@@ -55,7 +55,8 @@ The `yanpiws_temp`s are the IDs of the temps in your `config.csv`:
     ```
  1. To see instant live temps of your local sensor, run `python3 live_temp_hum_bme280.py`. To see the
  remote temps from your main YANPIWS install, run  `python3 remote_temps_humid.py`.
-
+ 1. To ensure this runs at boot and stays runninig, consider setting up a `systemd` job.  tecadmin.net has [a great write up](https://tecadmin.net/setup-autorun-python-script-using-systemd/) on this!
+ 
 If you need more help - read up on the "Long Start" below.
  
 # Long Start
