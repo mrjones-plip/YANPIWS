@@ -18,13 +18,23 @@
 # https://www.raspberrypi-spy.co.uk/
 #
 #--------------------------------------
+
+# grab args from CLI or default to 76
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--bus', '-b', default='0x76', type=str, help='Bus Number defaults to 0x76')
+args = parser.parse_args()
+
+# todo - cast this as an int or something? Original value was unquoted and just 0x76
+DEVICE = args.bus
+
 import smbus
 import time
 from ctypes import c_short
 from ctypes import c_byte
 from ctypes import c_ubyte
 
-DEVICE = 0x76 # Default device I2C address
 
 # Rev 2 Pi, Pi 2 & Pi 3 uses bus 1
 # Rev 1 Pi uses bus 0

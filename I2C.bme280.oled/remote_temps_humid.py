@@ -1,20 +1,32 @@
 #!/usr/bin/python
 
-######################################################
-# Change these for your environment
-######################################################
 
-# IP address of your YANPIWS device you want to show data from
-yanpiws_ip = '192.168.68.105'
-# ID from your YANPIWS config.csv of temp 1
-yanpiws_temp_1 = '231'
-# ID from your YANPIWS config.csv of temp 2
-yanpiws_temp_2 = '63'
+# grab args from CLI
+import argparse
+
+parser = argparse.ArgumentParser()
 
 # Rev 2 Pi, Pi 2 & Pi 3 uses bus 1
 # Rev 1 Pi uses bus 0
 # Orange Pi Zero uses bus 0 for pins 1-5 (other pins for bus 1 & 2)
-bus_number = 0
+parser.add_argument('--bus', '-b', default=0, type=int, help='Bus Number, defaults to 0')
+
+# IP address of your YANPIWS device you want to show data from
+parser.add_argument('--remote_ip', '-ip', default='192.168.68.105', type=str, help='Temp sensor ID, defaults to 0x76')
+
+# ID from your YANPIWS config.csv of temp 1
+parser.add_argument('--temp_id1', '-id1', default='231', type=str, help='remote temp ID #1, defaults to 231')
+
+# ID from your YANPIWS config.csv of temp 2
+parser.add_argument('--temp_id2', '-id2', default='63', type=str, help='remote temp ID #2, defaults to 63')
+
+args = parser.parse_args()
+
+yanpiws_ip = args.remote_ip
+yanpiws_temp_1 = args.temp_id1
+yanpiws_temp_2 = args.temp_id2
+
+bus_number = args.bus
 
 ######################################################
 # don't change anything below here!
