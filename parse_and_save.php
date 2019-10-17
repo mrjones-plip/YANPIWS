@@ -13,7 +13,7 @@ if (is_array($_POST) && sizeof($_POST) > 0) {
     if (isset($_POST['password']) && $_POST['password'] == $YANPIWS['api_password']){
         $dataArray = $_POST;
         if (!isset($dataArray['time'])){
-            $dataArray['time'] =  date('Y-m-d h:i:s', time());
+            $dataArray['time'] =  date('Y-m-d G:i:s', time());
         }
     } else {
         error_log("Bad password sent to parse_and_save. got '"
