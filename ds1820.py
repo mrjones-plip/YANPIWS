@@ -9,6 +9,7 @@ device_file = device_folder + '/w1_slave'
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--id', '-i', default='96', type=int, help='ID to output, defaults to 96')
+args = parser.parse_args()
 
 def read_temp_raw():
     f = open(device_file, 'r')
