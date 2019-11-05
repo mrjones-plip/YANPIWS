@@ -15,10 +15,10 @@ parser.add_argument('--bus', '-b', default=0, type=int, help='Bus Number, defaul
 parser.add_argument('--remote_ip', '-ip', default='192.168.68.105', type=str, help='Temp sensor ID, defaults to 0x76')
 
 # ID from your YANPIWS config.csv of temp 1
-parser.add_argument('--temp_id1', '-id1', default='231', type=str, help='remote temp ID #1, defaults to 231')
+parser.add_argument('--temp_id1', '-id1', default='231', type=int, help='remote temp ID #1, defaults to 231')
 
 # ID from your YANPIWS config.csv of temp 2
-parser.add_argument('--temp_id2', '-id2', default='63', type=str, help='remote temp ID #2, defaults to 63')
+parser.add_argument('--temp_id2', '-id2', default='63', type=int, help='remote temp ID #2, defaults to 63')
 
 args = parser.parse_args()
 
