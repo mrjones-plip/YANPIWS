@@ -217,8 +217,9 @@ top = padding
 bottom = height-padding
 
 font = ImageFont.truetype(full_path + "Lato-Heavy.ttf", 31)
+count = 1
 
-while True:
+while (count < 127):
 
     # Draw a black filled box to clear the image.
     draw.rectangle((0,0,width,height), outline=0, fill=0)
@@ -231,4 +232,5 @@ while True:
     # Display image.
     disp.image(image)
     disp.display()
-    time.sleep(.3)
+    time.sleep(.4)
+    count = count + 1

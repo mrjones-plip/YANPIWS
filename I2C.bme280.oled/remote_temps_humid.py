@@ -101,11 +101,11 @@ padding = -2
 top = padding
 bottom = height-padding
 
-temp1url = 'http://' + yanpiws_ip + '/ajax.php?content=temp&id=' + yanpiws_temp_1
-temp2url = 'http://' + yanpiws_ip + '/ajax.php?content=temp&id=' + yanpiws_temp_2
-humid1url = 'http://' + yanpiws_ip + '/ajax.php?content=humidity&id=' + yanpiws_temp_1
-humid2url = 'http://' + yanpiws_ip + '/ajax.php?content=humidity&id=' + yanpiws_temp_2
-datetime = 'http://' + yanpiws_ip + '/ajax.php?content=datetime'
+temp1url = 'http://' + str(yanpiws_ip) + '/ajax.php?content=temp&id=' + str(yanpiws_temp_1)
+temp2url = 'http://' + str(yanpiws_ip) + '/ajax.php?content=temp&id=' + str(yanpiws_temp_2)
+humid1url = 'http://' + str(yanpiws_ip) + '/ajax.php?content=humidity&id=' + str(yanpiws_temp_1)
+humid2url = 'http://' + str(yanpiws_ip) + '/ajax.php?content=humidity&id=' + str(yanpiws_temp_2)
+datetime = 'http://' + str(yanpiws_ip) + '/ajax.php?content=datetime'
 
 # Load default font.
 font = ImageFont.truetype(full_path + "Lato-Heavy.ttf", 20)
@@ -113,26 +113,22 @@ font_small = ImageFont.truetype(full_path + "Lato-Heavy.ttf", 12)
 # Alternatively load a TTF font.  Make sure the .ttf font file is in the same directory as the python script!
 # Some other nice fonts to try: http://www.dafont.com/bitmap.php
 # font = ImageFont.truetype('Minecraftia.ttf', 8)
-while True:
 
-    # Draw a black filled box to clear the image.
-    draw.rectangle((0,0,width,height), outline=0, fill=0)
+# Draw a black filled box to clear the image.
+draw.rectangle((0,0,width,height), outline=0, fill=0)
 
-    # fetch the cooked up html -> strings
-    temp1 = get_cleaned_string_from_url(temp1url);
-    temp2 = get_cleaned_string_from_url(temp2url);
-    humid1 = get_cleaned_string_from_url(humid1url);
-    humid2 = get_cleaned_string_from_url(humid2url);
-    date_time = get_cleaned_string_from_url(datetime);
+# fetch the cooked up html -> strings
+temp1 = get_cleaned_string_from_url(temp1url);
+temp2 = get_cleaned_string_from_url(temp2url);
+humid1 = get_cleaned_string_from_url(humid1url);
+humid2 = get_cleaned_string_from_url(humid2url);
+date_time = get_cleaned_string_from_url(datetime);
 
-    # render the data
-    draw.text((0, top ), date_time , font=font_small, fill=255)
-    draw.text((0, top + 18), humid1 + ' ' +  temp1 , font=font, fill=255)
-    draw.text((0, top + 46), humid2 + ' ' + temp2 , font=font, fill=255)
+# render the data
+draw.text((0, top ), date_time , font=font_small, fill=255)
+draw.text((0, top + 18), humid1 + ' ' +  temp1 , font=font, fill=255)
+draw.text((0, top + 46), humid2 + ' ' + temp2 , font=font, fill=255)
 
-    # Display image.
-    disp.image(image)
-    disp.display()
-    time.sleep(.5)
-
-    time.sleep(5)
+# Display image.
+disp.image(image)
+disp.display()
