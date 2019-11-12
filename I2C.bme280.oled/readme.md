@@ -35,27 +35,37 @@ These python scripts assume you're using I2C compatible hardware.  For my develo
 
 1. You should already have you screen set up and working.  You should know the I2C bus, 
 either `1` or `0`, after running `i2cdetect -l`. As well, you should know the two 
-device IDs after running `i2cdetect 0` or `i2cdetect 1`. These are likley `76` for temp & `3c` for display.
-1. Edit the  top of your `remote_temps_humid.py` file to update the  `yanpiws_ip`,
-`yanpiws_temp_1` , `yanpiws_temp_2` and `bus_number` accordingly. 
-The `yanpiws_temp`s are the IDs of the temps in your `config.csv`:
+device IDs after running `i2cdetect 0` or `i2cdetect 1`. These are likley `76` for temp sensor & `3c` for display.
+
+1. The `remote_temps_humid.py` script takes the following arguments:
+    ```angular2
+    usage: remote_temps_humid.py [--bus] [--remote_ip]
+                                 [--temp_id1] [--temp_id2]
+
+    ```
+   It defaults to `--bus/-b` of `0` and the `--remote_ip/-ip` should be where your main
+   YANPIWS install is.  The `--temp_id1/-id1` and `--temp_id1/-id2` are from 
+   IDs of the temps in your `config.csv`. A complete call might look like this:
 
     ```python
-    yanpiws_ip = '192.168.68.105'
-    yanpiws_temp_1 = '231'
-    yanpiws_temp_2 = '63'
-    bus_number = 0;
+    python3 remote_temps_humid.py -b 0 -ip 10.0.40.219 -id1 96 -id2 97
     ```
-1. Edit the  top of your `live_temp_hum_bme280.py` file to update the  `temp_sensor_id`,
- and `bus_number` accordingly:
+1. `live_temp_hum_bme280.py` takes the following arguments:
 
-    ```python
-    temp_sensor_id = 0x76
-    bus_number = 0;
     ```
- 1. To see instant live temps of your local sensor, run `python3 live_temp_hum_bme280.py`. To see the
- remote temps from your main YANPIWS install, run  `python3 remote_temps_humid.py`.
- 1. To ensure this runs at boot and stays runninig, consider setting up a `systemd` job.  tecadmin.net has [a great write up](https://tecadmin.net/setup-autorun-python-script-using-systemd/) on this!
+    usage: live_temp_hum_bme280.py [--bus BUS] [--device DEVICE]
+    ```
+   
+   It defaults to `--bus/-b` of `1` and `--device/-d` of `0x76`.  Likely if you're on a Pi, you 
+   won't need to change anything, so you can just call it with out any arguments.
+ 
+ 1. For ensure this runs at boot runs every minute, add **one** of these to your crontab, but be
+ sure to update the variables and paths accordingly!
+ 
+    ```cron
+    */1 * * * * cd /var/www/html/I2C.bme280.oled; /usr/bin/python3 remote_temps_humid.py -b 0 -ip 10.0.40.219 -id1 96 -id2 97 
+    */1 * * * * cd /var/www/html/I2C.bme280.oled; /usr/bin/python3 live_temp_hum_bme280.py 
+    ``` 
  
 If you need more help - read up on the "Long Start" below.
  
@@ -65,7 +75,8 @@ These are my notes for doing an install on an Orange Pi Zero.
  
 1. You'll need to wire your devices in parallel. I did it with a harness I made like this
 with spliced, soldered and heat-shrink tubed [Breadboard Jumper Wires](https://amzn.to/2Lesc15): ![](./harness.jpeg)
-1. Connect the harness to the correct I2C pins like this (Thanks to [code electron](http://codelectron.com/how-to-setup-oled-display-with-orange-pi-zero-python-ssd1306/)
+1. Connect the harness to the correct I2C pins like this 
+(Thanks to [code electron](http://codelectron.com/how-to-setup-oled-display-with-orange-pi-zero-python-ssd1306/)
  for image): ![](./schematics.png)
 1. download "bionic" from [armbian](https://www.armbian.com/orange-pi-zero/)
 1. write image to microsd card, put in device 
@@ -116,6 +127,5 @@ with spliced, soldered and heat-shrink tubed [Breadboard Jumper Wires](https://a
     60: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
     70: -- -- -- -- -- -- 76 -- 
     ```
-1. go to dir `cd /var/www/html/I2C.bme280.oled`
-1. edit files per quick start above
-1. run files and enjoy!
+1. add crontab entries per above with the correct flags/paths
+1. enjoy!
