@@ -18,18 +18,30 @@
 # https://www.raspberrypi-spy.co.uk/
 #
 #--------------------------------------
+
+# grab args from CLI or default to 76
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--device', '-d', default=0x76, type=str, help='Device Number defaults to 0x76')
+parser.add_argument('--bus', '-b', default=1, type=int, help='Bus defaults to 1')
+parser.add_argument('--id', '-i', default='96', type=int, help='ID to output, defaults to 96')
+args = parser.parse_args()
+
+# todo - cast this as an int or something? Original value was unquoted and just 0x76
+DEVICE = int(args.device)
+
 import smbus
 import time
 from ctypes import c_short
 from ctypes import c_byte
 from ctypes import c_ubyte
 
-DEVICE = 0x76 # Default device I2C address
 
 # Rev 2 Pi, Pi 2 & Pi 3 uses bus 1
 # Rev 1 Pi uses bus 0
 # Orange Pi Zero uses bus 0 for pins 1-5 (other pins for bus 1 & 2)
-bus = smbus.SMBus(1)
+bus = smbus.SMBus(args.bus)
 
 def getShort(data, index):
   # return two bytes from data as a signed 16-bit value
@@ -163,7 +175,7 @@ def main():
   temperature,pressure,humidity = readBME280All()
   temperature_F = float((temperature * 1.8) + 32);
   rightnow = datetime.now().strftime('%Y-%m-%d %H:%M:%S');
-  json = '{"time" : "' + str(rightnow) + '", "model" : "BMP280", "id" : ' + str(chip_id) + ', "temperature_F" : ' + str(temperature_F) + ', "humidity" : ' + str(round(humidity,2)) + '}'
+  json = '{"time" : "' + str(rightnow) + '", "model" : "BMP280", "id" : ' + str(args.id) + ', "temperature_F" : ' + str(temperature_F) + ', "humidity" : ' + str(round(humidity,2)) + '}'
   print(json)
   #print "{ \"time\" : \"",rightnow,"\", \"model\" : \"BMP280\", \"id\" :", chip_id, ", \"temperature_F\" :", temperature_F,", \"humidity\" :",humidity,"}"
   #print "Version     :", chip_version

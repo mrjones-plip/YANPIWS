@@ -1,20 +1,21 @@
 #!/usr/bin/python
 
-######################################################
-# Change these for your environment
-######################################################
+# grab args from CLI
+import argparse
 
-# ID of your temp sensor from i2cdetect Keep '0x' and just change '76' to your id
-temp_sensor_id = 0x76
+parser = argparse.ArgumentParser()
 
 # Rev 2 Pi, Pi 2 & Pi 3 uses bus 1
 # Rev 1 Pi uses bus 0
 # Orange Pi Zero uses bus 0 for pins 1-5 (other pins for bus 1 & 2)
-bus_number = 0
+parser.add_argument('--bus', '-b', default=1, type=int, help='Bus defaults to 1')
 
-######################################################
-# don't change anything below here!
-######################################################
+# ID of your temp sensor from i2cdetect
+parser.add_argument('--device', '-d', default=0x76, type=str, help='Device Number defaults to 0x76')
+
+# todo - temo_id need to be cast as an int or something? original value was unquoted 0x76
+args = parser.parse_args()
+temp_sensor_id = args.device
 
 import smbus
 import time
@@ -37,7 +38,7 @@ import subprocess
 # set full puth for incling libs below
 full_path = os.path.dirname(os.path.abspath(__file__)) + "/"
 
-bus = smbus.SMBus(bus_number)
+bus = smbus.SMBus(args.bus)
 
 def getShort(data, index):
   # return two bytes from data as a signed 16-bit value
@@ -188,7 +189,7 @@ SPI_PORT = 0
 SPI_DEVICE = 0
 
 # 128x64 display with hardware I2C:
-disp = Adafruit_SSD1306.SSD1306_128_64(rst=RST, i2c_bus=bus_number)
+disp = Adafruit_SSD1306.SSD1306_128_64(rst=RST, i2c_bus=args.bus)
 
 # Initialize library.
 disp.begin()
@@ -216,8 +217,9 @@ top = padding
 bottom = height-padding
 
 font = ImageFont.truetype(full_path + "Lato-Heavy.ttf", 31)
+count = 1
 
-while True:
+while (count < 127):
 
     # Draw a black filled box to clear the image.
     draw.rectangle((0,0,width,height), outline=0, fill=0)
@@ -230,4 +232,5 @@ while True:
     # Display image.
     disp.image(image)
     disp.display()
-    time.sleep(.3)
+    time.sleep(.4)
+    count = count + 1
