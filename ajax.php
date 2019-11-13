@@ -8,6 +8,11 @@ if (isset($_GET['content'])){
     $today = date('Y-m-d', time());
     $time = date('g:i A', time());
     $date = date('D M j', time());
+
+    // update this ajax file per #61 https://github.com/Ths2-9Y-LqJt6/YANPIWS/issues/61
+    touch($YANPIWS['dataPath'] . '/' . 'last_ajax');
+
+    // no process request
     if ($_GET['content'] == 'forecast'){
         $forecast = getDarkSkyData();
         print getDailyForecastHtml($forecast->daily);
