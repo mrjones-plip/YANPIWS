@@ -316,6 +316,12 @@ Use your IDE of choice to edit and point your browser at ``localhost:8000``
 PRs and Issues welcome!
 
 ## Version History
+* 0.9.5 - Nov 12, 2019
+  * Improve all python scripts to take arguments instead of being edited #54
+  * Fix empty bad time format from #51 per #56
+  * add info on how to use systemd to update mini display with python scripts #58
+  * add info on how to use systemd to update mini display with python scripts #59
+  * put last updated file for every AJAX call #61
 * 0.9.4 - Oct 10, 2019 - tidy up python scripts per #50 and #51
 * 0.9.3 - Oct 1, 2019 - merge old PR #20 with:
   * add stats dashboard per #17
