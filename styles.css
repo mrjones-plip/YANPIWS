@@ -48,12 +48,20 @@ a.yellow {
     float: right;
 }
 .temp:first-child  {
-    padding-right: 7%;
+    padding-right: 11%;
 }
 
-.label {
-    text-transform: uppercase;
+/*two temps */
+.temp:first-child:nth-last-child(2),
+.temp:first-child:nth-last-child(2) ~ .temp {
+
 }
+/*three temps */
+.temp:first-child:nth-last-child(3),
+.temp:first-child:nth-last-child(3) ~ .temp {
+
+}
+
 .degrees {
     font-weight: bold;
 }
@@ -78,6 +86,11 @@ a.yellow {
 }
 .date, .time, .label, .wind_now {
     font-size:35pt;
+}
+
+.label {
+    text-transform: uppercase;
+    font-size: 25pt;
 }
 .date, .time{
     float: left;
