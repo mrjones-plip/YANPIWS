@@ -73,5 +73,6 @@ foreach ($YANPIWS['labels'] as $id => $label){
     refreshAll();
     setInterval ( refreshAll, 60000 );
 </script>
+<span id="null"></span>
 </body>
 </html>
