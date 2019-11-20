@@ -51,6 +51,7 @@ if (isset($_GET['content'])){
     } elseif ($_GET['content'] == 'last_ajax'){
         // update this ajax file per #61 https://github.com/Ths2-9Y-LqJt6/YANPIWS/issues/61
         touch($YANPIWS['dataPath'] . '/' . 'last_ajax');
+        print "<!-- " . date() . "-->";
     } else {
         //ahhhh!  wtf!?!
         print "No AJAX here";
