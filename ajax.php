@@ -9,9 +9,6 @@ if (isset($_GET['content'])){
     $time = date('g:i A', time());
     $date = date('D M j', time());
 
-    // update this ajax file per #61 https://github.com/Ths2-9Y-LqJt6/YANPIWS/issues/61
-    touch($YANPIWS['dataPath'] . '/' . 'last_ajax');
-
     // no process request
     if ($_GET['content'] == 'forecast'){
         $forecast = getDarkSkyData();
@@ -51,6 +48,10 @@ if (isset($_GET['content'])){
     } elseif ($_GET['content'] == 'humidity' && isset($_GET['id']) && isset($YANPIWS['labels'][$_GET['id']])){
         $tempLine = getMostRecentTemp($_GET['id']);
         print getHumidityHtml($tempLine);
+    } elseif ($_GET['content'] == 'last_ajax'){
+        // update this ajax file per #61 https://github.com/Ths2-9Y-LqJt6/YANPIWS/issues/61
+        touch($YANPIWS['dataPath'] . '/' . 'last_ajax');
+        print "<!-- " .  time() . "-->";
     } else {
         //ahhhh!  wtf!?!
         print "No AJAX here";
