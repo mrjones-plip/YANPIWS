@@ -52,7 +52,7 @@ foreach ($YANPIWS['labels'] as $id => $label){
 </div>
 <div class="col rigthtCol" id="forecast">
 </div>
-<script src="./YANPIWS.js"></script>
+<script src="./YANPIWS.js?0.9.4"></script>
 <script>
     function refreshAll() {
         refeshDateTime();
