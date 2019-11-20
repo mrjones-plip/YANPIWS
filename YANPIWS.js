@@ -99,5 +99,5 @@ function checkTempAges(){
  * check that temps aren't old.  if they are, change text to yellow
  */
 function refreshLastAjax(){
-    loadXMLDoc('./ajax.php?content=last_ajax', 'null');
+    loadXMLDoc('./ajax.php?content=last_ajax', 'dev_null');
 }
