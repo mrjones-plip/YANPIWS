@@ -22,7 +22,7 @@ a {
 .YANPIWS a {
     color: darkgreen;
     text-decoration: none;
-    font-size:20pt;
+    font-size:12pt;
 }
 a.yellow {
     color: yellow;
@@ -31,6 +31,7 @@ a.yellow {
     position: fixed;
     z-index: 10000;
     left: 42%;
+    top: -10px;
 }
 .forecastday {
     width:20%;
@@ -42,9 +43,14 @@ a.yellow {
     font-size: 50pt;
     float: left;
 }
-.temp2 {
-    float:right;
+
+.temp:last-child  {
+    float: right;
 }
+.temp:first-child  {
+    padding-right: 14%;
+}
+
 .label {
     text-transform: uppercase;
 }

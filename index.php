@@ -3,11 +3,11 @@
 <html lang="en" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="utf-8">
-    <script src='skycons/skycons.js'></script>
+    <script src='skycons/skycons.js?<?php echo $YANPIWS['cache_bust'] ?>'></script>
     <script>var skycons = new Skycons({'color': 'white'});</script>
 </head>
 <body>
-<link rel="stylesheet" type="text/css" href="styles.css" />
+<link rel="stylesheet" type="text/css" href="styles.css?<?php echo $YANPIWS['cache_bust'] ?>" />
 
 <?php
 require_once 'get_data.php';
@@ -17,7 +17,6 @@ $forecast = getDarkSkyData();
 $status =configIsValid();
 if($status['valid'] != true){
     print "<div class='error'>ERROR: {$status['reason']}</div>";
-//    print "<a href='./config.php'>Edit Config</a>";
     print "<style>.temp,.suntimes{display:none;}</style>";
 } else {
     print '<div id="YANPIWS" class="YANPIWS"></div>';
@@ -31,7 +30,7 @@ $count = 1;
 foreach ($YANPIWS['labels'] as $id => $label){
         echo "\t<div class='temp temp{$count}' id='temp{$count}'></div>\n";
         $count++;
-        if ($count > 2){
+        if ($count > $YANPIWS['temp_count']){
             break;
         }
 }
@@ -52,7 +51,7 @@ foreach ($YANPIWS['labels'] as $id => $label){
 </div>
 <div class="col rigthtCol" id="forecast">
 </div>
-<script src="./YANPIWS.js"></script>
+<script src="./YANPIWS.js?<?php echo $YANPIWS['cache_bust'] ?>"></script>
 <script>
     function refreshAll() {
         refeshDateTime();
