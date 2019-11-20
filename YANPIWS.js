@@ -95,3 +95,9 @@ function animateForecast() {
 function checkTempAges(){
     loadXMLDoc('./ajax.php?content=age', 'YANPIWS');
 }
+/**
+ * check that temps aren't old.  if they are, change text to yellow
+ */
+function refreshLastAjax(){
+    loadXMLDoc('./ajax.php?content=last_ajax', null);
+}

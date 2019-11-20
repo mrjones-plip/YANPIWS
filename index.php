@@ -61,6 +61,7 @@ foreach ($YANPIWS['labels'] as $id => $label){
         refreshSunset();
         refreshCurrentWind();
         checkTempAges();
+        refreshLastAjax();
 <?php
         $count = 1;
 foreach ($YANPIWS['labels'] as $id => $label){
