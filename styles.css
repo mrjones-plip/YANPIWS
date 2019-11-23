@@ -22,7 +22,7 @@ a {
 .YANPIWS a {
     color: darkgreen;
     text-decoration: none;
-    font-size:20pt;
+    font-size:12pt;
 }
 a.yellow {
     color: yellow;
@@ -31,6 +31,7 @@ a.yellow {
     position: fixed;
     z-index: 10000;
     left: 42%;
+    top: -10px;
 }
 .forecastday {
     width:20%;
@@ -42,12 +43,25 @@ a.yellow {
     font-size: 50pt;
     float: left;
 }
-.temp2 {
-    float:right;
+
+.temp:last-child  {
+    float: right;
 }
-.label {
-    text-transform: uppercase;
+.temp:first-child  {
+    padding-right: 11%;
 }
+
+/*two temps */
+.temp:first-child:nth-last-child(2),
+.temp:first-child:nth-last-child(2) ~ .temp {
+
+}
+/*three temps */
+.temp:first-child:nth-last-child(3),
+.temp:first-child:nth-last-child(3) ~ .temp {
+
+}
+
 .degrees {
     font-weight: bold;
 }
@@ -72,6 +86,11 @@ a.yellow {
 }
 .date, .time, .label, .wind_now {
     font-size:35pt;
+}
+
+.label {
+    text-transform: uppercase;
+    font-size: 25pt;
 }
 .date, .time{
     float: left;

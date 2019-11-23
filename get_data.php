@@ -13,6 +13,7 @@ function getValidConfigs(){
         'animate',
         'dataPath',
         'api_password',
+        'temp_count',
         // we accept these two. listing it here commented out for completeness. see getConfig() below
         // servers_*
         // labels_*
@@ -41,6 +42,7 @@ function getConfig($die = true)
             }
 
         }
+        $YANPIWS['cache_bust'] = '0.9.4';
     } elseif ($die) {
         die(
             '<h3>Error</h3><p>No config.csv!  Copy config.dist.csv to config.csv</p>'.
