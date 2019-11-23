@@ -27,19 +27,32 @@ if (isset($_GET['content'])){
 
         case "wind_now":;
             if (isset($forecast->currently)) {
-                print getCurrentWindHtml($forecast->currently);
+                if ($raw){
+                    print json_encode(array(getCurrentWind($forecast->currently)));
+                } else {
+                    print getCurrentWind($forecast->currently);
+                }
+
             }
             break;
 
         case "sunset":
             if (isset($forecast->daily->data[0]->sunsetTime)){
-                print getSunsetHtml($forecast->daily->data[0]->sunsetTime);
+                if ($raw){
+                    print json_encode(array($forecast->daily->data[0]->sunsetTime)));
+                } else {
+                    print getSunsetHtml($forecast->daily->data[0]->sunsetTime);
+                }
             }
             break;
 
         case "sunrise":
             if (isset($forecast->daily->data[0]->sunriseTime)){
-                print getSunriseHtml($forecast->daily->data[0]->sunriseTime);
+                if ($raw){
+                    print json_encode(array($forecast->daily->data[0]->sunriseTime));
+                } else {
+                    print getSunriseHtml($forecast->daily->data[0]->sunriseTime);
+                }
             }
             break;
 
@@ -61,20 +74,32 @@ if (isset($_GET['content'])){
             break;
 
         case "datetime":
-            print "<div class='time'>$time</div><div class='date'> $date</div>";
+            if($raw){
+                print json_encode(array($date));
+            } else {
+                print "<div class='time'>$time</div><div class='date'> $date</div>";
+            }
             break;
 
         case "temp":
             if (isset($_GET['id']) && isset($YANPIWS['labels'][$_GET['id']])){
                 $tempLine = getMostRecentTemp($_GET['id']);
-                print getTempHtml($tempLine);
+                if($raw){
+                    print json_encode(array($tempLine));
+                } else {
+                    print getTempHtml($tempLine);
+                }
             }
             break;
 
         case "humidity":
             if (isset($_GET['id']) && isset($YANPIWS['labels'][$_GET['id']])){
                 $tempLine = getMostRecentTemp($_GET['id']);
-                print getHumidityHtml($tempLine);
+                if($raw){
+                    print json_encode(array($tempLine));
+                } else {
+                    print getHumidityHtml($tempLine);
+                }
             }
             break;
 

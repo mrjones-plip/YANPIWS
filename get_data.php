@@ -505,7 +505,7 @@ function getHumanTime($s)
  * @param null $daily $data->currently object from getDarkSkyData()
  * @return string of HTML
  */
-function getCurrentWindHtml($currentlyObject)
+function getCurrentWind($currentlyObject)
 {
     return number_format($currentlyObject->windSpeed, 0) . " mph";
 }
