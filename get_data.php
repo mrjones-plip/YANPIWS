@@ -384,30 +384,30 @@ function getDarkSkyUrl($useTestLatLong = false){
 }
 
 /**
- * expects the $data->daily object from getDarkSkyData(), returns 5 days of forecast HTML
+ * expects the $data->daily object from getDarkSkyData(), returns $days (default 5) of forecast HTML
  *
  * @param null $daily $data->daily object from getDarkSkyData()
+ * @param int $days how many days of forecast to return
  * @return string of HTML
  */
-function getDailyForecastHtml($daily = null)
+function getDailyForecastHtml($daily = null, $days = 5)
 {
-    global $YANPIWS;
     $html = '';
     $js = '';
     $animate = $YANPIWS['animate'];
     if ($daily == null) {
         // show rain for error
-//        $html .= "<div class='forecastday'>";
         $html .= "<img src='./skycons/rain.png' class='errorImg'  /> ";
         $html .= "No Dark Sky Data for forecast.";
-//        $html .= "</div>";
     } else {
         $count = 1;
         foreach ($daily->data as $day) {
+            if($count > $days) {
+                break;
+            }
+
             if ($count == 1) {
                 $today = "Today";
-            } elseif($count > 5) {
-                break;
             } else {
                 $today = substr(date('D', $day->time), 0, 3);
             }

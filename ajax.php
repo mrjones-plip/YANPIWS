@@ -22,7 +22,9 @@ if (isset($_GET['content'])){
             break;
 
         case "wind_now":;
-            if (isset($forecast->currently));
+            if (isset($forecast->currently)) {
+                print getCurrentWindHtml($forecast->currently);
+            }
             break;
 
         case "sunset":
