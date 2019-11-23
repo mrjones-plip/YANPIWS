@@ -18,7 +18,11 @@ if (isset($_GET['content'])){
 
     switch ($_GET['content']){
         case "forecast":
-            print getDailyForecastHtml($forecast->daily);
+            if ($raw){
+                print getDailyForecast($forecast->daily);
+            } else {
+                print getDailyForecastHtml($forecast->daily);
+            }
             break;
 
         case "wind_now":;

@@ -428,47 +428,46 @@ function getDailyForecastHtml($daily = null, $days = 5)
 }
 
 /**
- * expects the $data->daily object from getDarkSkyData() and $days ahead. returns 1 day of forecast in specified format
+ * expects the $data->daily object from getDarkSkyData(), returns $days (default 5) of forecast HTML
  *
  * @param null $daily $data->daily object from getDarkSkyData()
- * @param int $daysAhead from now to return forecast for. Defautls to today.  0 = today, 1 = tomorrow etc.
- * @param string $format txt, csv or JSON
+ * @param int $days how many days of forecast to return
  * @return string of HTML
  */
-function getDayForecastl($daily = null, $daysAhead = 0, $format = 'txt')
+function getDailyForecast($daily = null, $days = 5)
 {
     $result = array();
     if ($daily == null) {
         $result['result'] = "No Dark Sky Data for forecast.";
     } else {
 
-        // todo - check that $daily->data is an array and that this next line is valid
-        $day = $daily->data[$daysAhead];
+        $count = 1;
+        foreach ($daily->data as $day) {
+            if($count > $days) {
+                break;
+            }
+            $dayAry = array();
 
-        if ($count == 1) {
-            $today = "Today";
-        } else {
-            $today = substr(date('D', $day->time), 0, 3);
+            // figure which day it is
+            if ($count == 1) {
+                $today = "Today";
+            } else {
+                $today = substr(date('D', $day->time), 0, 3);
+            }
+
+            // assemble result array
+            $dayAry['day'] = $today;
+            $dayAry['High'] =  number_format($day->temperatureMax, 0);
+            $dayAry['Low'] =  number_format($day->temperatureMin, 0);
+            $dayAry['Wind'] = number_format($day->windSpeed, 0) .  ' mph';
+
+            $result[] = $dayAry;
+            $count++;
         }
-        $result['day'] = $today;
-        $result['High'] =  number_format($day->temperatureMax, 0);
-        $result['Low'] =  number_format($day->temperatureMin, 0);
-        $result['Wind'] = number_format($day->windSpeed, 0) .  ' mph';
-    }
-    switch (strtolower($format)){
-        case 'txt':
-            return implode("\n", $result);
-            break;
 
-        case 'csv':
-            // todo this isn't valid csv
-            return implode("\n", $result);
-            break;
-
-        case 'json':
-            return json_encode($result);
-            break;
     }
+
+    return json_encode($result);
 }
 
 
