@@ -110,7 +110,7 @@ top = padding
 bottom = height-padding
 
 # Load default font.
-font = ImageFont.truetype(full_path + "Lato-Heavy.ttf", 12)
+font = ImageFont.truetype(full_path + "Lato-Heavy.ttf", 10)
 font_small = ImageFont.truetype(full_path + "Lato-Heavy.ttf", 12)
 # Alternatively load a TTF font.  Make sure the .ttf font file is in the same directory as the python script!
 # Some other nice fonts to try: http://www.dafont.com/bitmap.php
@@ -125,8 +125,8 @@ finalset= datetime.datetime.fromtimestamp(sunset[0]).strftime('%I:%M').lstrip("0
 # render the data
 draw.text((0, top ), date_time[0] + ' ' + date_time[1] , font=font_small, fill=255)
 draw.text((0, top + 16), temp1final + '       ' + finalrise + '       ' + finalset, font=font, fill=255)
-draw.text((0, top + 31), forecast[0]['day'] + ' H: ' + forecast[0]['High'] + ' L: ' + forecast[0]['Low'] + str(forecast[0]['Icon']) , font=font, fill=255)
-draw.text((0, top + 47), forecast[1]['day'] + ' H: ' + forecast[1]['High'] + ' L: ' + forecast[1]['Low'] + str(forecast[1]['Icon']) , font=font, fill=255)
+draw.text((0, top + 31), forecast[0]['day'] + ' H' + forecast[0]['High'] + ' L' + forecast[0]['Low'] + ' ' + str(forecast[0]['Icon']) , font=font, fill=255)
+draw.text((0, top + 47), forecast[1]['day'] + ' H' + forecast[1]['High'] + ' L' + forecast[1]['Low'] + ' ' + str(forecast[1]['Icon']) , font=font, fill=255)
 
 # Display image.
 disp.image(image)
