@@ -51,10 +51,6 @@ if yanpiws_temp_2 is not None:
 
 date_time = json.loads(get_string_from_url(datetime))
 
-
-print(date_time)
-exit()
-
 import smbus
 import time
 from ctypes import c_short
@@ -124,7 +120,7 @@ font_small = ImageFont.truetype(full_path + "Lato-Heavy.ttf", 12)
 draw.rectangle((0,0,width,height), outline=0, fill=0)
 
 # render the data
-draw.text((0, top ), date_time , font=font_small, fill=255)
+draw.text((0, top ), date_time[0] + ' ' + date_time[1] , font=font_small, fill=255)
 draw.text((0, top + 18), temp1[0][4] + ' ' +  temp1[0][3] , font=font, fill=255)
 if yanpiws_temp_2 is not None:
     draw.text((0, top + 46), temp2[0][4] + ' ' + temp2[0][3] , font=font, fill=255)
