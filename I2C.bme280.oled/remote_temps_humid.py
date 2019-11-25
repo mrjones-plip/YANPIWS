@@ -95,11 +95,11 @@ padding = -2
 top = padding
 bottom = height-padding
 
-temp1url = 'http://' + str(yanpiws_ip) + '/ajax.php?raw=true&content=temp&id=' + str(yanpiws_temp_1)
-temp2url = 'http://' + str(yanpiws_ip) + '/ajax.php?raw=true&content=temp&id=' + str(yanpiws_temp_2)
-humid1url = 'http://' + str(yanpiws_ip) + '/ajax.php?raw=true&content=humidity&id=' + str(yanpiws_temp_1)
-humid2url = 'http://' + str(yanpiws_ip) + '/ajax.php?raw=true&content=humidity&id=' + str(yanpiws_temp_2)
-datetime = 'http://' + str(yanpiws_ip) + '/ajax.php?raw=true&content=datetime'
+temp1url = 'http://' + str(yanpiws_ip) + '/ajax.php?raw=1&content=temp&id=' + str(yanpiws_temp_1)
+temp2url = 'http://' + str(yanpiws_ip) + '/ajax.php?raw=1&content=temp&id=' + str(yanpiws_temp_2)
+humid1url = 'http://' + str(yanpiws_ip) + '/ajax.php?raw=1&content=humidity&id=' + str(yanpiws_temp_1)
+humid2url = 'http://' + str(yanpiws_ip) + '/ajax.php?raw=1&content=humidity&id=' + str(yanpiws_temp_2)
+datetime = 'http://' + str(yanpiws_ip) + '/ajax.php?raw=1&content=datetime'
 
 # Load default font.
 font = ImageFont.truetype(full_path + "Lato-Heavy.ttf", 20)
