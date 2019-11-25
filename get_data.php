@@ -460,7 +460,7 @@ function getDailyForecast($daily = null, $days = 5)
             $dayAry['High'] =  number_format($day->temperatureMax, 0);
             $dayAry['Low'] =  number_format($day->temperatureMin, 0);
             $dayAry['Wind'] = number_format($day->windSpeed, 0) .  ' mph';
-            $dayAry['Icon'] = number_format($day->icon, 0);
+            $dayAry['Icon'] = $day->icon;
 
             $result[] = $dayAry;
             $count++;
