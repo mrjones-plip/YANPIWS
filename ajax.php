@@ -39,7 +39,7 @@ if (isset($_GET['content'])){
         case "sunset":
             if (isset($forecast->daily->data[0]->sunsetTime)){
                 if ($raw){
-                    print json_encode(array($forecast->daily->data[0]->sunsetTime)));
+                    print json_encode(array($forecast->daily->data[0]->sunsetTime));
                 } else {
                     print getSunsetHtml($forecast->daily->data[0]->sunsetTime);
                 }
