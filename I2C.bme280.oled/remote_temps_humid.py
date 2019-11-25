@@ -53,16 +53,10 @@ import subprocess
 # set full puth for incling libs below
 full_path = os.path.dirname(os.path.abspath(__file__)) + "/"
 
-def remove_html_tags(text):
-    """Remove html tags from a string"""
-    import re
-    clean = re.compile('<.*?>')
-    return re.sub(clean, '', text)
-
-def get_cleaned_string_from_url(url):
+def get_string_from_url(url):
     import urllib.request
     raw_html = urllib.request.urlopen(url).read().decode('utf-8').rstrip()
-    return remove_html_tags(raw_html)
+    return raw_html
 
 # Raspberry Pi pin configuration:
 RST = None     # on the PiOLED this pin isnt used
@@ -101,11 +95,11 @@ padding = -2
 top = padding
 bottom = height-padding
 
-temp1url = 'http://' + str(yanpiws_ip) + '/ajax.php?content=temp&id=' + str(yanpiws_temp_1)
-temp2url = 'http://' + str(yanpiws_ip) + '/ajax.php?content=temp&id=' + str(yanpiws_temp_2)
-humid1url = 'http://' + str(yanpiws_ip) + '/ajax.php?content=humidity&id=' + str(yanpiws_temp_1)
-humid2url = 'http://' + str(yanpiws_ip) + '/ajax.php?content=humidity&id=' + str(yanpiws_temp_2)
-datetime = 'http://' + str(yanpiws_ip) + '/ajax.php?content=datetime'
+temp1url = 'http://' + str(yanpiws_ip) + '/ajax.php?raw=true&content=temp&id=' + str(yanpiws_temp_1)
+temp2url = 'http://' + str(yanpiws_ip) + '/ajax.php?raw=true&content=temp&id=' + str(yanpiws_temp_2)
+humid1url = 'http://' + str(yanpiws_ip) + '/ajax.php?raw=true&content=humidity&id=' + str(yanpiws_temp_1)
+humid2url = 'http://' + str(yanpiws_ip) + '/ajax.php?raw=true&content=humidity&id=' + str(yanpiws_temp_2)
+datetime = 'http://' + str(yanpiws_ip) + '/ajax.php?raw=true&content=datetime'
 
 # Load default font.
 font = ImageFont.truetype(full_path + "Lato-Heavy.ttf", 20)
@@ -118,11 +112,11 @@ font_small = ImageFont.truetype(full_path + "Lato-Heavy.ttf", 12)
 draw.rectangle((0,0,width,height), outline=0, fill=0)
 
 # fetch the cooked up html -> strings
-temp1 = get_cleaned_string_from_url(temp1url);
-temp2 = get_cleaned_string_from_url(temp2url);
-humid1 = get_cleaned_string_from_url(humid1url);
-humid2 = get_cleaned_string_from_url(humid2url);
-date_time = get_cleaned_string_from_url(datetime);
+temp1 = get_string_from_url(temp1url);
+temp2 = get_string_from_url(temp2url);
+humid1 = get_string_from_url(humid1url);
+humid2 = get_string_from_url(humid2url);
+date_time = get_string_from_url(datetime);
 
 # render the data
 draw.text((0, top ), date_time , font=font_small, fill=255)

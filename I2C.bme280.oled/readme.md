@@ -53,7 +53,8 @@ device IDs after running `i2cdetect 0` or `i2cdetect 1`. These are likley `76` f
 1. `live_temp_hum_bme280.py` takes the following arguments:
 
     ```
-    usage: live_temp_hum_bme280.py [--bus BUS] [--device DEVICE]
+    usage: live_temp_hum_bme280.py [-h] [--temp_bus TEMP_BUS]
+                                   [--display_bus DISPLAY_BUS] [--device DEVICE]
     ```
    
    It defaults to `--bus/-b` of `1` and `--device/-d` of `0x76`.  Likely if you're on a Pi, you 
