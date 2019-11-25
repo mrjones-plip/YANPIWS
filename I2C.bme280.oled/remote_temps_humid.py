@@ -18,7 +18,7 @@ parser.add_argument('--remote_ip', '-ip', default='192.168.68.105', type=str, he
 parser.add_argument('--temp_id1', '-id1', default='231', type=int, help='remote temp ID #1, defaults to 231')
 
 # ID from your YANPIWS config.csv of temp 2
-parser.add_argument('--temp_id2', '-id2', default='63', type=int, help='remote temp ID #2, defaults to 63')
+parser.add_argument('--temp_id2', '-id2', type=int, help='remote temp ID #2, defaults to 63')
 
 args = parser.parse_args()
 
@@ -28,9 +28,32 @@ yanpiws_temp_2 = args.temp_id2
 
 bus_number = args.bus
 
-######################################################
-# don't change anything below here!
-######################################################
+temp1url = 'http://' + str(yanpiws_ip) + '/ajax.php?raw=1&content=temp&id=' + str(yanpiws_temp_1)
+temp2url = 'http://' + str(yanpiws_ip) + '/ajax.php?raw=1&content=temp&id=' + str(yanpiws_temp_2)
+humid1url = 'http://' + str(yanpiws_ip) + '/ajax.php?raw=1&content=humidity&id=' + str(yanpiws_temp_1)
+humid2url = 'http://' + str(yanpiws_ip) + '/ajax.php?raw=1&content=humidity&id=' + str(yanpiws_temp_2)
+datetime = 'http://' + str(yanpiws_ip) + '/ajax.php?raw=1&content=datetime'
+
+def get_string_from_url(url):
+    import urllib.request
+    raw_html = urllib.request.urlopen(url).read().decode('utf-8').rstrip()
+    return raw_html
+
+# fetch the cooked up html -> strings
+import json
+temp1 = json.loads(get_string_from_url(temp1url))
+if yanpiws_temp_2 is not None:
+    temp2 = json.loads(get_string_from_url(temp2url))
+
+humid1 = json.loads(get_string_from_url(humid1url))
+if yanpiws_temp_2 is not None:
+    humid2 = json.loads(get_string_from_url(humid2url))
+
+date_time = json.loads(get_string_from_url(datetime))
+
+
+print(date_time)
+exit()
 
 import smbus
 import time
@@ -52,11 +75,6 @@ import subprocess
 
 # set full puth for incling libs below
 full_path = os.path.dirname(os.path.abspath(__file__)) + "/"
-
-def get_string_from_url(url):
-    import urllib.request
-    raw_html = urllib.request.urlopen(url).read().decode('utf-8').rstrip()
-    return raw_html
 
 # Raspberry Pi pin configuration:
 RST = None     # on the PiOLED this pin isnt used
@@ -95,12 +113,6 @@ padding = -2
 top = padding
 bottom = height-padding
 
-temp1url = 'http://' + str(yanpiws_ip) + '/ajax.php?raw=1&content=temp&id=' + str(yanpiws_temp_1)
-temp2url = 'http://' + str(yanpiws_ip) + '/ajax.php?raw=1&content=temp&id=' + str(yanpiws_temp_2)
-humid1url = 'http://' + str(yanpiws_ip) + '/ajax.php?raw=1&content=humidity&id=' + str(yanpiws_temp_1)
-humid2url = 'http://' + str(yanpiws_ip) + '/ajax.php?raw=1&content=humidity&id=' + str(yanpiws_temp_2)
-datetime = 'http://' + str(yanpiws_ip) + '/ajax.php?raw=1&content=datetime'
-
 # Load default font.
 font = ImageFont.truetype(full_path + "Lato-Heavy.ttf", 20)
 font_small = ImageFont.truetype(full_path + "Lato-Heavy.ttf", 12)
@@ -111,17 +123,11 @@ font_small = ImageFont.truetype(full_path + "Lato-Heavy.ttf", 12)
 # Draw a black filled box to clear the image.
 draw.rectangle((0,0,width,height), outline=0, fill=0)
 
-# fetch the cooked up html -> strings
-temp1 = get_string_from_url(temp1url);
-temp2 = get_string_from_url(temp2url);
-humid1 = get_string_from_url(humid1url);
-humid2 = get_string_from_url(humid2url);
-date_time = get_string_from_url(datetime);
-
 # render the data
 draw.text((0, top ), date_time , font=font_small, fill=255)
-draw.text((0, top + 18), humid1 + ' ' +  temp1 , font=font, fill=255)
-draw.text((0, top + 46), humid2 + ' ' + temp2 , font=font, fill=255)
+draw.text((0, top + 18), temp1[0][4] + ' ' +  temp1[0][3] , font=font, fill=255)
+if yanpiws_temp_2 is not None:
+    draw.text((0, top + 46), temp2[0][4] + ' ' + temp2[0][3] , font=font, fill=255)
 
 # Display image.
 disp.image(image)
