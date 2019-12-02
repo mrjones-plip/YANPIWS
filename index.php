@@ -1,4 +1,8 @@
-
+<?php
+global $YANPIWS;
+require_once 'get_data.php';
+getConfig();
+?>
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/html">
 <head>
@@ -10,8 +14,6 @@
 <link rel="stylesheet" type="text/css" href="styles.css?<?php echo $YANPIWS['cache_bust'] ?>" />
 
 <?php
-require_once 'get_data.php';
-getConfig();
 
 $forecast = getDarkSkyData();
 $status =configIsValid();

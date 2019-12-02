@@ -42,7 +42,8 @@ def get_string_from_url(url):
 # fetch the cooked up html -> strings
 import json
 temp1 = json.loads(get_string_from_url(temp1url))
-temp1final = temp1[0][2].split('.')[0]
+
+temp1final = temp1['temp'].split('.')[0] + ' ' +  temp1['label']
 
 forecast = json.loads(get_string_from_url(forecastUrl))
 
@@ -124,7 +125,7 @@ finalset= datetime.datetime.fromtimestamp(sunset[0]).strftime('%I:%M').lstrip("0
 
 # render the data
 draw.text((0, top ), date_time[0] + ' ' + date_time[1] , font=font_small, fill=255)
-draw.text((0, top + 16), temp1final + '       ' + finalrise + '       ' + finalset, font=font, fill=255)
+draw.text((0, top + 16), temp1final + ' ' + finalrise + ' ' + finalset, font=font, fill=255)
 draw.text((0, top + 31), forecast[0]['day'] + '  H: ' + forecast[0]['High'] + ' L: ' + forecast[0]['Low'] + ' ' + forecast[0]['Icon'] , font=font, fill=255)
 draw.text((0, top + 47), forecast[1]['day'] + '  H: ' + forecast[1]['High'] + ' L: ' + forecast[1]['Low'] + ' ' + forecast[1]['Icon'] , font=font, fill=255)
 

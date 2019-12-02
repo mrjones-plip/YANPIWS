@@ -10,7 +10,7 @@ if (isset($_GET['content'])){
     $date = date('D M j', time());
     $forecast = getDarkSkyData();
 
-    if ($_GET['raw'] === '1'){
+    if (isset($_GET['raw']) && $_GET['raw'] === '1'){
         $raw = true;
     } else {
         $raw = false;
@@ -85,7 +85,7 @@ if (isset($_GET['content'])){
             if (isset($_GET['id']) && isset($YANPIWS['labels'][$_GET['id']])){
                 $tempLine = getMostRecentTemp($_GET['id']);
                 if($raw){
-                    print json_encode(array($tempLine));
+                    print json_encode($tempLine);
                 } else {
                     print getTempHtml($tempLine);
                 }
