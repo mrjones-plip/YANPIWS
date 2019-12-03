@@ -30,9 +30,10 @@ bus_number = args.bus
 
 temp1url = 'http://' + str(yanpiws_ip) + '/ajax.php?raw=1&content=temp&id=' + str(yanpiws_temp_1)
 temp2url = 'http://' + str(yanpiws_ip) + '/ajax.php?raw=1&content=temp&id=' + str(yanpiws_temp_2)
-humid1url = 'http://' + str(yanpiws_ip) + '/ajax.php?raw=1&content=humidity&id=' + str(yanpiws_temp_1)
-humid2url = 'http://' + str(yanpiws_ip) + '/ajax.php?raw=1&content=humidity&id=' + str(yanpiws_temp_2)
-datetime = 'http://' + str(yanpiws_ip) + '/ajax.php?raw=1&content=datetime'
+forecastUrl = 'http://' + str(yanpiws_ip) + '/ajax.php?raw=1&content=forecast'
+sunsetUrl = 'http://' + str(yanpiws_ip) + '/ajax.php?raw=1&content=sunset'
+sunriseUrl = 'http://' + str(yanpiws_ip) + '/ajax.php?raw=1&content=sunrise'
+datetimeUrl = 'http://' + str(yanpiws_ip) + '/ajax.php?raw=1&content=datetime'
 
 def get_string_from_url(url):
     import urllib.request
@@ -42,14 +43,20 @@ def get_string_from_url(url):
 # fetch the cooked up html -> strings
 import json
 temp1 = json.loads(get_string_from_url(temp1url))
-if yanpiws_temp_2 is not None:
+temp1final = temp1['temp'].split('.')[0] + ' ' +  temp1['label']
+
+if yanpiws_temp_2 != None:
     temp2 = json.loads(get_string_from_url(temp2url))
+    temp2final = ' ' + temp2['temp'].split('.')[0] + ' ' +  temp2['label']
+else:
+    temp2final = ''
 
-humid1 = json.loads(get_string_from_url(humid1url))
-if yanpiws_temp_2 is not None:
-    humid2 = json.loads(get_string_from_url(humid2url))
+forecast = json.loads(get_string_from_url(forecastUrl))
 
-date_time = json.loads(get_string_from_url(datetime))
+sunset = json.loads(get_string_from_url(sunsetUrl))
+sunrise = json.loads(get_string_from_url(sunriseUrl))
+
+date_time = json.loads(get_string_from_url(datetimeUrl))
 
 import smbus
 import time
@@ -110,7 +117,7 @@ top = padding
 bottom = height-padding
 
 # Load default font.
-font = ImageFont.truetype(full_path + "Lato-Heavy.ttf", 20)
+font = ImageFont.truetype(full_path + "Lato-Heavy.ttf", 10)
 font_small = ImageFont.truetype(full_path + "Lato-Heavy.ttf", 12)
 # Alternatively load a TTF font.  Make sure the .ttf font file is in the same directory as the python script!
 # Some other nice fonts to try: http://www.dafont.com/bitmap.php
@@ -118,13 +125,15 @@ font_small = ImageFont.truetype(full_path + "Lato-Heavy.ttf", 12)
 
 # Draw a black filled box to clear the image.
 draw.rectangle((0,0,width,height), outline=0, fill=0)
+import datetime
+finalrise = datetime.datetime.fromtimestamp(sunrise[0]).strftime('%I:%M').lstrip("0").replace(" 0", " ")
+finalset= datetime.datetime.fromtimestamp(sunset[0]).strftime('%I:%M').lstrip("0").replace(" 0", " ")
 
 # render the data
 draw.text((0, top ), date_time[0] + ' ' + date_time[1] , font=font_small, fill=255)
-#draw.text((0, top + 18), str(temp1) + ' ' +  temp1 , font=font, fill=255)
-draw.text((0, top + 18), temp1[0][2] + ' ' + temp1[0][3] , font=font, fill=255)
-if yanpiws_temp_2 is not None:
-    draw.text((0, top + 46), temp2[0][2] + ' ' + temp2[0][3] , font=font, fill=255)
+draw.text((0, top + 17), temp1final + temp2final + ' ' + finalrise + ' ' + finalset, font=font_small, fill=255)
+draw.text((0, top + 35), 'H: ' + forecast[0]['High'] + ' L: ' + forecast[0]['Low'] + ' ' + forecast[0]['Icon'] , font=font_small, fill=255)
+draw.text((0, top + 52), 'H: ' + forecast[1]['High'] + ' L: ' + forecast[1]['Low'] + ' ' + forecast[1]['Icon'] , font=font_small, fill=255)
 
 # Display image.
 disp.image(image)

@@ -9,9 +9,6 @@
 require_once "get_data.php";
 getConfig();
 
-$today = date('M j, Y, g:i a', time());
-$allData = getData($YANPIWS['dataPath'] . $today);
-
 $currentTempHtml = '<ul>';
 foreach ($YANPIWS['labels'] as $id => $label){
     $tempLine = getMostRecentTemp($id);

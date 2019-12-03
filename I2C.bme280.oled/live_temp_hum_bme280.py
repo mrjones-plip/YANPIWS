@@ -5,13 +5,21 @@ import argparse
 
 parser = argparse.ArgumentParser()
 
+# temp bus
 # Rev 2 Pi, Pi 2 & Pi 3 uses bus 1
 # Rev 1 Pi uses bus 0
 # Orange Pi Zero uses bus 0 for pins 1-5 (other pins for bus 1 & 2)
-parser.add_argument('--bus', '-b', default=1, type=int, help='Bus defaults to 1')
+parser.add_argument('--temp_bus', '-tb', default=1, type=int, help='Bus defaults to 1')
+
+# display bus
+# Rev 2 Pi, Pi 2 & Pi 3 uses bus 1
+# Rev 1 Pi uses bus 0
+# Orange Pi Zero uses bus 0 for pins 1-5 (other pins for bus 1 & 2)
+parser.add_argument('--display_bus', '-db', default=1, type=int, help='Bus defaults to 1')
 
 # ID of your temp sensor from i2cdetect
 parser.add_argument('--device', '-d', default=0x76, type=str, help='Device Number defaults to 0x76')
+
 
 # todo - temo_id need to be cast as an int or something? original value was unquoted 0x76
 args = parser.parse_args()
@@ -38,7 +46,7 @@ import subprocess
 # set full puth for incling libs below
 full_path = os.path.dirname(os.path.abspath(__file__)) + "/"
 
-bus = smbus.SMBus(args.bus)
+bus = smbus.SMBus(args.temp_bus)
 
 def getShort(data, index):
   # return two bytes from data as a signed 16-bit value
@@ -189,7 +197,7 @@ SPI_PORT = 0
 SPI_DEVICE = 0
 
 # 128x64 display with hardware I2C:
-disp = Adafruit_SSD1306.SSD1306_128_64(rst=RST, i2c_bus=args.bus)
+disp = Adafruit_SSD1306.SSD1306_128_64(rst=RST, i2c_bus=args.display_bus)
 
 # Initialize library.
 disp.begin()

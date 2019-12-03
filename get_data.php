@@ -200,10 +200,26 @@ function getMostRecentTemp($id, $date = null)
     }
     $allData = getData($YANPIWS['dataPath'] . $date);
     if (isset($allData[$id])) {
-        return array_pop($allData[$id]);
+        $result = array_pop($allData[$id]);
+
+        $label = '';
+        if (isset($YANPIWS['labels'][$id])) {
+            $label = $YANPIWS['labels'][$id];
+        }
+
+        $finalResult['date'] = trim($result[0]);
+        $finalResult['id'] = trim($result[1]);
+        $finalResult['temp'] = trim($result[2]);
+        $finalResult['label'] = $label;
+        $finalResult['humidity'] = trim($result[3]);
     } else {
-        return array('NA','No Data Found',null ,'NA','NA');
+        $finalResult['date'] = 'NA';
+        $finalResult['id'] = 'No Data Found';
+        $finalResult['temp'] = 'NA';
+        $finalResult['label'] = 'NA';
+        $finalResult['humidity'] = 'NA';
     }
+    return $finalResult;
 }
 
 /**
@@ -214,17 +230,10 @@ function getMostRecentTemp($id, $date = null)
  */
 function getTempHtml($tempLine)
 {
-    global $YANPIWS;
-    $key = $tempLine[1];
-    if (isset($YANPIWS['labels'][$key])) {
-        $label = $YANPIWS['labels'][$key];
-    } else {
-        $label = "#$key";
-    }
-    if (isset($tempLine[2]) && $tempLine != null) {
-        $temp = number_format($tempLine[2], 0);
+    if (isset($tempLine['temp']) && $tempLine != null) {
+        $temp = number_format($tempLine['temp'], 0);
         return "<span class='degrees'>{$temp}°</span>" .
-            "<span class='label'>$label</span>\n";
+            "<span class='label'>{$tempLine['label']}</span>\n";
     } else {
         return "NA\n";
     }
@@ -238,15 +247,15 @@ function getTempHtml($tempLine)
 function getHumidityHtml($tempLine, $useLabel = false)
 {
     global $YANPIWS;
-    $key = $tempLine[1];
+    $key = $tempLine['id'];
     if (isset($YANPIWS['labels'][$key])) {
         $label = $YANPIWS['labels'][$key];
     } else {
         $label = "#$key";
     }
-    if (isset($tempLine[3]) && $tempLine != null) {
-        $temp = number_format(trim($tempLine[3]), 0);
-        $result = "<span class='percent'>{$temp}%</span>";
+    if (isset($tempLine['humidity']) && $tempLine != null) {
+        $humidity = number_format(trim($tempLine['humidity']), 0);
+        $result = "<span class='percent'>{$humidity}%</span>";
         if($useLabel) {
             $result .= "<span class='label'>$label</span>\n";
         }
@@ -281,20 +290,16 @@ function getCacheAge($returnSeconds = false){
 function getTempLastHtml($tempLine, $returnOnlySeconds = false)
 {
     global $YANPIWS;
-    if ($tempLine[0] == "NA") {
+    if ($tempLine['date'] == "NA") {
         $age = '';
         $label = '';
         return "<li>$label: $age ". implode(" - ", $tempLine) . "</li>";
     } else {
-        $lineEpoch = strtotime($tempLine[0]);
+        $lineEpoch = strtotime($tempLine['date']);
         $age = getHumanTime(time() - $lineEpoch);
-        $temp = "{$tempLine[2]}°";
-        $id = $tempLine[1];
-        if (isset($YANPIWS['labels'][$id])) {
-            $label = $YANPIWS['labels'][$id];
-        } else {
-            $label = "<no label>";
-        }
+        $temp = "{$tempLine['temp']}°";
+        $id = $tempLine['id'];
+        $label = $tempLine['label'];
         if (!$returnOnlySeconds) {
             return "<li>$label: $temp $age ago</li>";
         } else {
@@ -384,30 +389,30 @@ function getDarkSkyUrl($useTestLatLong = false){
 }
 
 /**
- * expects the $data->daily object from getDarkSkyData(), returns 5 days of forecast HTML
+ * expects the $data->daily object from getDarkSkyData(), returns $days (default 5) of forecast HTML
  *
  * @param null $daily $data->daily object from getDarkSkyData()
+ * @param int $days how many days of forecast to return
  * @return string of HTML
  */
-function getDailyForecastHtml($daily = null)
+function getDailyForecastHtml($daily = null, $days = 5)
 {
     global $YANPIWS;
     $html = '';
-    $js = '';
     $animate = $YANPIWS['animate'];
     if ($daily == null) {
         // show rain for error
-//        $html .= "<div class='forecastday'>";
         $html .= "<img src='./skycons/rain.png' class='errorImg'  /> ";
         $html .= "No Dark Sky Data for forecast.";
-//        $html .= "</div>";
     } else {
         $count = 1;
         foreach ($daily->data as $day) {
+            if($count > $days) {
+                break;
+            }
+
             if ($count == 1) {
                 $today = "Today";
-            } elseif($count > 5) {
-                break;
             } else {
                 $today = substr(date('D', $day->time), 0, 3);
             }
@@ -426,6 +431,50 @@ function getDailyForecastHtml($daily = null)
         }
     }
     return $html;
+}
+
+/**
+ * expects the $data->daily object from getDarkSkyData(), returns $days (default 5) of forecast HTML
+ *
+ * @param null $daily $data->daily object from getDarkSkyData()
+ * @param int $days how many days of forecast to return
+ * @return string of HTML
+ */
+function getDailyForecast($daily = null, $days = 5)
+{
+    $result = array();
+    if ($daily == null) {
+        $result['result'] = "No Dark Sky Data for forecast.";
+    } else {
+
+        $count = 1;
+        foreach ($daily->data as $day) {
+            if($count > $days) {
+                break;
+            }
+            $dayAry = array();
+
+            // figure which day it is
+            if ($count == 1) {
+                $today = "Today";
+            } else {
+                $today = substr(date('D', $day->time), 0, 3);
+            }
+
+            // assemble result array
+            $dayAry['day'] = $today;
+            $dayAry['High'] =  number_format($day->temperatureMax, 0);
+            $dayAry['Low'] =  number_format($day->temperatureMin, 0);
+            $dayAry['Wind'] = number_format($day->windSpeed, 0) .  ' mph';
+            $dayAry['Icon'] = $day->icon;
+
+            $result[] = $dayAry;
+            $count++;
+        }
+
+    }
+
+    return json_encode($result);
 }
 
 
@@ -463,7 +512,7 @@ function getHumanTime($s)
  * @param null $daily $data->currently object from getDarkSkyData()
  * @return string of HTML
  */
-function getCurrentWindHtml($currentlyObject)
+function getCurrentWind($currentlyObject)
 {
     return number_format($currentlyObject->windSpeed, 0) . " mph";
 }
