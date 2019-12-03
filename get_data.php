@@ -253,9 +253,9 @@ function getHumidityHtml($tempLine, $useLabel = false)
     } else {
         $label = "#$key";
     }
-    if (isset($tempLine[3]) && $tempLine != null) {
-        $temp = number_format(trim($tempLine[3]), 0);
-        $result = "<span class='percent'>{$temp}%</span>";
+    if (isset($tempLine['humidity']) && $tempLine != null) {
+        $humidity = number_format(trim($tempLine['humidity']), 0);
+        $result = "<span class='percent'>{$humidity}%</span>";
         if($useLabel) {
             $result .= "<span class='label'>$label</span>\n";
         }
