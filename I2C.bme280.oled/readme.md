@@ -1,18 +1,25 @@
 # I2C Bus: BME280 sensor & 0.96" OLED Display
 
 For the folks who want to support super tiny displays, this directory has
-info how to show up to two temperatures and humidity from your YANPIWS install like this:
+info how to show up to two temperatures and humidity from your YANPIWS install like this using 
+`remote_temps_humid.py`:
 
 ![](./remote.temps.jpg)
 
 As well, you can show real time temperature if you have both a 
-display and a sensor hooked up. This will up date every 100ms. No YANPIWS web server install needed:
+display and a sensor hooked up. This will up date every 100ms. No YANPIWS 
+web server install needed. See `live_temp_hum_bme280.py`:
 
-![](./realtime.temps.png)
+![](./realtime.temps.jpg)
 
 Thanks to [raspberrypi-spy](https://www.raspberrypi-spy.co.uk/) for much of this script. 
 Thanks to [code electron](http://codelectron.com/how-to-setup-oled-display-with-orange-pi-zero-python-ssd1306/)
  for images and tecno info!
+
+Finally, if you want to show a more complete set of data, you can use the `remote_all.py` script
+to show something like this:
+
+![](./remote.all.jpeg)
 
 
 # Requirements
@@ -59,13 +66,23 @@ device IDs after running `i2cdetect 0` or `i2cdetect 1`. These are likley `76` f
    
    It defaults to `--bus/-b` of `1` and `--device/-d` of `0x76`.  Likely if you're on a Pi, you 
    won't need to change anything, so you can just call it with out any arguments.
+   
+ 1. `remote_all.py` takes teh following arguments:
+    ```$xslt
+    usage: remote_all.py [-h] [--bus BUS] [--remote_ip REMOTE_IP]
+                         [--temp_id1 TEMP_ID1] [--temp_id2 TEMP_ID2]
+     ```
+    
+    It defaults to `--bus/-b` of `0` and you can pass in one or two remote IDs to use. Note that
+    if you have long labels, you'll likely push the sunrise and sunset times off the screen.
  
  1. For ensure this runs at boot runs every minute, add **one** of these to your crontab, but be
  sure to update the variables and paths accordingly!
  
     ```cron
-    */1 * * * * cd /var/www/html/I2C.bme280.oled; /usr/bin/python3 remote_temps_humid.py -b 0 -ip 10.0.40.219 -id1 96 -id2 97 
-    */1 * * * * cd /var/www/html/I2C.bme280.oled; /usr/bin/python3 live_temp_hum_bme280.py 
+    * * * * * cd /var/www/html/I2C.bme280.oled; /usr/bin/python3 remote_temps_humid.py -b 0 -ip 10.0.40.219 -id1 96 -id2 97 
+    * * * * * cd /var/www/html/I2C.bme280.oled; /usr/bin/python3 live_temp_hum_bme280.py 
+    * * * * * /usr/bin/python3 /var/www/html/I2C.bme280.oled/remote_all.py -ip  192.168.68.105 -id1 73 -id2 231
     ``` 
  
 If you need more help - read up on the "Long Start" below.
