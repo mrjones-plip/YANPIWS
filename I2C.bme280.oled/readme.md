@@ -35,7 +35,7 @@ These python scripts assume you're using I2C compatible hardware.  For my develo
 ## Software
 
 * Python3
-* I2C bus enabled (eg `raspbi-config` or `armbian-config`)
+* I2C bus enabled (eg `raspi-config` or `armbian-config`)
 * Adafruit-GPIO Drivers for OLED installed
 
 # Quick start
