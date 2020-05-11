@@ -61,10 +61,13 @@ install steps below.
 
 ## Install steps
 
-These steps assume you already have your Pi 
+These steps assume you already have 
+[downloaded Buster with Desktop](https://www.raspberrypi.org/downloads/raspbian/) 
+to your Pi and it's
 [installed and booting](https://www.raspberrypi.org/documentation/installation/installing-images/README.md),
  [online](https://www.raspberrypi.org/documentation/configuration/wireless/README.md) 
- and [accessible via SSH](https://www.raspberrypi.org/documentation/remote-access/ssh/README.md). 
+ and [accessible via SSH](https://www.raspberrypi.org/documentation/remote-access/ssh/README.md). Further
+ be sure your [timezone is correct](https://www.raspberrypi.org/documentation/configuration/raspi-config.md)!
  I recommend using a normal monitor for the install instead of the 5". It's easier this way. 
  
 Speaking of monitors - this install also assumes you have your 5" display (or 3.5" if you 
@@ -78,67 +81,55 @@ from "raspberry" ;)
 
 1. Ensure your Pi is current;
     ```
-    sudo apt-get update&& sudo apt-get upgrade
+    sudo apt update&& sudo apt dist-upgrade
     ```
-1. Install git, apache, php, compile utils for rtl, chrome and chrome utils for doing 
-full screen(some of which may be installed already):
+1. Install git, apache, php, chrome and chrome utils for doing 
+full screen(some of which may be installed already). Note, this assumes you're
+using the easy method to install `rtl_433` instead of compiling from source:
 
    ```
-   sudo apt-get install -y curl git mercurial make binutils bison gcc build-essential chromium-browser ttf-mscorefonts-installer unclutter x11-xserver-utils apache2 php php-curl
+   sudo apt-get install -y curl git chromium-browser apache2 php php-curl unclutter sed
    ```
-1. Download, compile and install [rtl_433](https://github.com/merbanan/rtl_433)
+1. Download, compile and install [rtl_433](https://github.com/merbanan/rtl_433). Consider installing using the faster 
+method cited on [tech.borpin.co.uk](https://tech.borpin.co.uk/2019/12/17/install-a-package-from-the-testing-repository/)
+which involves adding a testing apt repo. 
 1. With your wireless temp sensor(s) powered up and the USB Dongle attached, make sure your 
-sensors are read with rtl_433. Let it run for a while an note the IDs returned for the later step
-of creating your own config file.  Here we see ID 153:
-   ```
-   pi@raspberrypi:~ $ rtl_433 -q
-   
-   Found Rafael Micro R820T tuner
-   Exact sample rate is: 250000.000414 Hz
-   Sample rate set to 250000.
-   Bit detection level set to 0 (Auto).
-   Tuner gain set to Auto.
-   Tuned to 433920000 Hz.
-   2017-03-25 17:07:21 :   Fine Offset Electronics, WH2 Temperature/Humidity sensor
-           ID:      153
-           Temperature:     25.5 C
-           Humidity:        36 %
-   ```
-1. Edit ``/home/pi/.config/lxsession/LXDE-pi/autostart`` to auto start Chromium in incognito and kiosk mode
-on the Pi's web server.  Thanks
-to [blog.gordonturner.com](https://blog.gordonturner.com/2016/12/29/raspberry-pi-full-screen-browser-raspbian-november-2016/)
-and [superuser.com](https://superuser.com/questions/461035/disable-google-chrome-session-restore-functionality#618972)
- pages for the howto:
+sensors are read with `rtl_433`. Let it run for a while an note the IDs returned for the later step
+of creating your own config file.  Here we see ID 231:
     ```
-    @lxpanel --profile LXDE-pi
-    @pcmanfm --desktop --profile LXDE-pi
-    #@xscreensaver -no-splash
-    @point-rpi
-    @/usr/bin/chromium-browser --kiosk --incognito --start-maximized http://127.0.0.1
-    @unclutter
-    @xset s off
-    @xset s noblank
-    @xset -dpms
-     ```
-     Upon reboot you should see the default apache page, full screen, with no menu bar at the top.
+    pi@raspberrypi:~ $ rtl_433
+    rtl_433 version unknown inputs file rtl_tcp RTL-SDR SoapySDR
+    [SNIP]
+    Sample rate set to 250000 S/s.
+    Tuner gain set to Auto.
+    Tuned to 433.920MHz.
+    Allocating 15 zero-copy buffers
+    _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+    time      : 2020-05-11 00:55:17
+    model     : Fineoffset-WH2                         ID        : 231
+    Temperature: 35.5 C      Humidity  : 1 %           Integrity : CRC
+    _
+    ```
+   If you get an error `usb_open error -3`, unplug and replug the USB dongle, that should fix it.
 1. Remove the default ``index.html``, clone this repo into ``/var/www/html`` and create your own 
 ``config.csv``:
    ```
-   cd /var/html/
-   sudo rm www/index.html
+   cd /var/www
+   sudo rm html/index.html
    sudo git clone https://github.com/Ths2-9Y-LqJt6/YANPIWS.git html
    cd html
-   chown -R pi .
-   chgrp -R www-data .
+   sudo mkdir data
+   sudo chown -R pi:www-data .
+   sudo chmod -R 775 .
    cp config.dist.csv config.csv
    ```
-1. Edit your newly created ``config.csv`` to have the correct values. 
-Specifically, your latitude (``lat``),
-longitude (``lon``) and labels which you 
-got in the step above running ``rtl_433 -q``. As well, you'll need to sign up for an API key
+1. Edit your newly created `config.csv` to have the correct values. 
+Specifically, your latitude (`lat`),
+longitude (`lon`) and labels which you 
+got in the step above running `rtl_433`. As well, you'll need to sign up for an API key
 on [Dark Sky](https://darksky.net/dev/register) and put that in for the `darksky` value below. 
 If you want static icons instead of
-animated ones, set 'animate' to ``false`` instead of ``true`` like below. Here's a sample:
+animated ones, set 'animate' to `false` instead of `true` like below. Here's a sample:
     ```
     lat,31.775554
     lon,-81.822436
@@ -151,7 +142,18 @@ animated ones, set 'animate' to ``false`` instead of ``true`` like below. Here's
     servers_0_url,http://127.0.0.1
     servers_0_password,boxcar-spinning-problem-rockslide-scored
     ```
-1. Reboot your Pi so the browser starts loading the configured YANPIWS app.
+1. Run these commands to copy the `kiosk.sh` script into systemd and enable the service. This 
+will  to auto start Chromium in kiosk mode on the Pi's web server every time you boot:
+
+   ```python
+   sudo cp /var/www/html/kiosk.service /lib/systemd/system/kiosk.service
+   sudo systemctl daemon-reload
+   sudo systemctl start kiosk.service
+   sudo systemctl enable kiosk.service
+   ```
+
+  Thanks to [Py My Life Up](https://pimylifeup.com/raspberry-pi-kiosk/) pages for the howto   
+1. Reboot your Pi so confirm the browser starts loading the configured YANPIWS app.
 1. [Add a cronjob](https://www.raspberrypi.org/documentation/linux/usage/cron.md) 
 for the Pi user to run every 5 minutes to ensure temperature collection is happening:
     ```
