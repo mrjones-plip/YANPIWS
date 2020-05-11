@@ -92,7 +92,8 @@ using the easy method to install `rtl_433` instead of compiling from source:
    ```
 1. Download, compile and install [rtl_433](https://github.com/merbanan/rtl_433). Consider installing using the faster 
 method cited on [tech.borpin.co.uk](https://tech.borpin.co.uk/2019/12/17/install-a-package-from-the-testing-repository/)
-which involves adding a testing apt repo. 
+which involves adding a testing apt repo.  Note that the last apt call should be `apt install rtl-433` with a dash
+not an underscore.  Also on that page note that `/etc/apt/preferences` should be `/etc/apt/preferences.d/`.
 1. With your wireless temp sensor(s) powered up and the USB Dongle attached, make sure your 
 sensors are read with `rtl_433`. Let it run for a while an note the IDs returned for the later step
 of creating your own config file.  Here we see ID 231:
@@ -114,13 +115,13 @@ of creating your own config file.  Here we see ID 231:
 1. Clone this repo, symlink `html` into `www` and create your own `config.csv`:
    ```
    cd
-   sudo git clone https://github.com/Ths2-9Y-LqJt6/YANPIWS.git 
+   git clone https://github.com/Ths2-9Y-LqJt6/YANPIWS.git 
    cd YANPIWS
-   cp config.dist.csv config.csv
+   cp html/config.dist.csv html/config.csv
    sudo rm -rf /var/www/html
-   ln -s html /var/www/html
-   sudo chown -R pi:www-data /var/www/html
-   sudo chmod -R 775 /var/www/html
+   sudo ln -s /home/pi/YANPIWS/html /var/www/html
+   sudo chown -R pi:www-data data
+   sudo chmod -R 775 data
    ```
 1. Edit your newly created `config.csv` to have the correct values. 
 Specifically, your latitude (`lat`),
@@ -136,7 +137,7 @@ animated ones, set 'animate' to `false` instead of `true` like below. Here's a s
     animate,true
     labels_211,In
     labels_109,Out
-    dataPath,/home/pi/data/
+    dataPath,/home/pi/YANPIWS/data/
     api_password,boxcar-spinning-problem-rockslide-scored
     servers_0_url,http://127.0.0.1
     servers_0_password,boxcar-spinning-problem-rockslide-scored
