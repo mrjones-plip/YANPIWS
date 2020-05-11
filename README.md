@@ -87,7 +87,7 @@ full screen(some of which may be installed already). Note, this assumes you're
 using the easy method to install `rtl_433` instead of compiling from source:
 
    ```
-   sudo apt-get install -y curl git chromium-browser apache2 php php-curl xdotool unclutter sed
+   sudo apt-get install -y curl git chromium-browser apache2 php php-curl unclutter sed
    ```
 1. Download, compile and install [rtl_433](https://github.com/merbanan/rtl_433). Consider installing using the faster 
 method cited on [tech.borpin.co.uk](https://tech.borpin.co.uk/2019/12/17/install-a-package-from-the-testing-repository/)
