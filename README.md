@@ -61,7 +61,9 @@ install steps below.
 
 ## Install steps
 
-These steps assume you already have your Pi 
+These steps assume you already have 
+[downloaded Buster with Desktop](https://www.raspberrypi.org/downloads/raspbian/) 
+to your Pi and it's
 [installed and booting](https://www.raspberrypi.org/documentation/installation/installing-images/README.md),
  [online](https://www.raspberrypi.org/documentation/configuration/wireless/README.md) 
  and [accessible via SSH](https://www.raspberrypi.org/documentation/remote-access/ssh/README.md). 
@@ -78,32 +80,35 @@ from "raspberry" ;)
 
 1. Ensure your Pi is current;
     ```
-    sudo apt-get update&& sudo apt-get upgrade
+    sudo apt update&& sudo apt dist-upgrade
     ```
-1. Install git, apache, php, compile utils for rtl, chrome and chrome utils for doing 
-full screen(some of which may be installed already):
+1. Install git, apache, php, chrome and chrome utils for doing 
+full screen(some of which may be installed already). Note, this assumes you're
+using the easy method to install `rtl_433` instead of compiling from source:
 
    ```
-   sudo apt-get install -y curl git mercurial make binutils bison gcc build-essential chromium-browser ttf-mscorefonts-installer unclutter x11-xserver-utils apache2 php php-curl
+   sudo apt-get install -y curl git chromium-browser apache2 php php-curl xdotool unclutter sed
    ```
-1. Download, compile and install [rtl_433](https://github.com/merbanan/rtl_433)
+1. Download, compile and install [rtl_433](https://github.com/merbanan/rtl_433). Consider installing using the faster 
+method cited on [tech.borpin.co.uk](https://tech.borpin.co.uk/2019/12/17/install-a-package-from-the-testing-repository/)
+which involves adding a testing apt repo. 
 1. With your wireless temp sensor(s) powered up and the USB Dongle attached, make sure your 
 sensors are read with rtl_433. Let it run for a while an note the IDs returned for the later step
 of creating your own config file.  Here we see ID 153:
-   ```
-   pi@raspberrypi:~ $ rtl_433 -q
-   
-   Found Rafael Micro R820T tuner
-   Exact sample rate is: 250000.000414 Hz
-   Sample rate set to 250000.
-   Bit detection level set to 0 (Auto).
-   Tuner gain set to Auto.
-   Tuned to 433920000 Hz.
-   2017-03-25 17:07:21 :   Fine Offset Electronics, WH2 Temperature/Humidity sensor
-           ID:      153
-           Temperature:     25.5 C
-           Humidity:        36 %
-   ```
+    ```
+    pi@raspberrypi:~ $ rtl_433
+    rtl_433 version unknown inputs file rtl_tcp RTL-SDR SoapySDR
+    [SNIP]
+    Sample rate set to 250000 S/s.
+    Tuner gain set to Auto.
+    Tuned to 433.920MHz.
+    Allocating 15 zero-copy buffers
+    _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+    time      : 2020-05-11 00:55:17
+    model     : Fineoffset-WH2                         ID        : 231
+    Temperature: 35.5 C      Humidity  : 1 %           Integrity : CRC
+    _
+    ```
 1. Edit ``/home/pi/.config/lxsession/LXDE-pi/autostart`` to auto start Chromium in incognito and kiosk mode
 on the Pi's web server.  Thanks
 to [blog.gordonturner.com](https://blog.gordonturner.com/2016/12/29/raspberry-pi-full-screen-browser-raspbian-november-2016/)
