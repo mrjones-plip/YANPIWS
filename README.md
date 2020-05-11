@@ -117,7 +117,7 @@ of creating your own config file.  Here we see ID 231:
    cd
    git clone https://github.com/Ths2-9Y-LqJt6/YANPIWS.git 
    cd YANPIWS
-   cp html/config.dist.csv html/config.csv
+   cp config.dist.csv config.csv
    sudo rm -rf /var/www/html
    sudo ln -s /home/pi/YANPIWS/html /var/www/html
    sudo chown -R pi:www-data data
@@ -146,8 +146,8 @@ animated ones, set 'animate' to `false` instead of `true` like below. Here's a s
 will  to auto start Chromium in kiosk mode on the Pi's web server every time you boot:
 
    ```
-   cd
-   sudo cp YANPIWS/kiosk.service /lib/systemd/system/kiosk.service
+   cd ~pi/YANPIWS
+   sudo cp scripts/kiosk.service /lib/systemd/system/kiosk.service
    sudo systemctl daemon-reload
    sudo systemctl start kiosk.service
    sudo systemctl enable kiosk.service
