@@ -66,7 +66,8 @@ These steps assume you already have
 to your Pi and it's
 [installed and booting](https://www.raspberrypi.org/documentation/installation/installing-images/README.md),
  [online](https://www.raspberrypi.org/documentation/configuration/wireless/README.md) 
- and [accessible via SSH](https://www.raspberrypi.org/documentation/remote-access/ssh/README.md). 
+ and [accessible via SSH](https://www.raspberrypi.org/documentation/remote-access/ssh/README.md). Further
+ be sure your [timezone is correct](https://www.raspberrypi.org/documentation/configuration/raspi-config.md)!
  I recommend using a normal monitor for the install instead of the 5". It's easier this way. 
  
 Speaking of monitors - this install also assumes you have your 5" display (or 3.5" if you 
