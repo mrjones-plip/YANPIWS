@@ -25,10 +25,10 @@ function getValidConfigs(){
  */
 function getConfig($die = true)
 {
-    if(is_file('config.csv')) {
+    if(is_file('../config.csv')) {
         global $YANPIWS ;
         $options = getValidConfigs();
-        $YANPIWStmp = array_map('str_getcsv', file('config.csv'));
+        $YANPIWStmp = array_map('str_getcsv', file('../config.csv'));
         foreach ($YANPIWStmp as $config){
 
             if (substr($config[0],0,6) === 'labels'){
