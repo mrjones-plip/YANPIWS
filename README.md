@@ -318,6 +318,8 @@ Use your IDE of choice to edit and point your browser at ``localhost:8000``
 PRs and Issues welcome!
 
 ## Version History
+* 0.9.7 - May 10, 2020 
+  * Updated readme, kiosk steps, rtl_433 install steps #70
 * 0.9.6 - Nov 20, 2019
   * Add config for 1, 2 or 3 temps on screen #64
   * Update health check logic #61
