@@ -152,8 +152,7 @@ will  to auto start Chromium in kiosk mode on the Pi's web server every time you
    sudo systemctl start kiosk.service
    sudo systemctl enable kiosk.service
    ```
-
-  Thanks to [Py My Life Up](https://pimylifeup.com/raspberry-pi-kiosk/) pages for the howto   
+   Thanks to [Py My Life Up](https://pimylifeup.com/raspberry-pi-kiosk/) pages for the howto
 1. Reboot your Pi so confirm the browser starts loading the configured YANPIWS app.
 1. [Add a cronjob](https://www.raspberrypi.org/documentation/linux/usage/cron.md) 
 for the Pi user to run every 5 minutes to ensure temperature collection is happening:
