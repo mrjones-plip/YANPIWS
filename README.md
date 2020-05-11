@@ -93,8 +93,8 @@ using the easy method to install `rtl_433` instead of compiling from source:
 method cited on [tech.borpin.co.uk](https://tech.borpin.co.uk/2019/12/17/install-a-package-from-the-testing-repository/)
 which involves adding a testing apt repo. 
 1. With your wireless temp sensor(s) powered up and the USB Dongle attached, make sure your 
-sensors are read with rtl_433. Let it run for a while an note the IDs returned for the later step
-of creating your own config file.  Here we see ID 153:
+sensors are read with `rtl_433`. Let it run for a while an note the IDs returned for the later step
+of creating your own config file.  Here we see ID 231:
     ```
     pi@raspberrypi:~ $ rtl_433
     rtl_433 version unknown inputs file rtl_tcp RTL-SDR SoapySDR
@@ -109,21 +109,27 @@ of creating your own config file.  Here we see ID 153:
     Temperature: 35.5 C      Humidity  : 1 %           Integrity : CRC
     _
     ```
-1. Edit ``/home/pi/.config/lxsession/LXDE-pi/autostart`` to auto start Chromium in incognito and kiosk mode
-on the Pi's web server.  Thanks
-to [blog.gordonturner.com](https://blog.gordonturner.com/2016/12/29/raspberry-pi-full-screen-browser-raspbian-november-2016/)
-and [superuser.com](https://superuser.com/questions/461035/disable-google-chrome-session-restore-functionality#618972)
- pages for the howto:
+   If you get an error `usb_open error -3`, unplug and replug the USB dongle, that should fix it.
+1. Copy the `kiosk.sh` script into systemd with 
+`sudo cp /var/www/html/kisk.service /lib/systemd/system/kiosk.service` to auto start Chromium in incognito and kiosk mode
+on the Pi's web server.  Thanks to [Py My Life Up](https://pimylifeup.com/raspberry-pi-kiosk/) pages for the howto:
     ```
-    @lxpanel --profile LXDE-pi
-    @pcmanfm --desktop --profile LXDE-pi
-    #@xscreensaver -no-splash
-    @point-rpi
-    @/usr/bin/chromium-browser --kiosk --incognito --start-maximized http://127.0.0.1
-    @unclutter
-    @xset s off
-    @xset s noblank
-    @xset -dpms
+    [Unit]
+    Description=Chromium Kiosk
+    Wants=graphical.target
+    After=graphical.target
+    
+    [Service]
+    Environment=DISPLAY=:0.0
+    Environment=XAUTHORITY=/home/pi/.Xauthority
+    Type=simple
+    ExecStart=/bin/bash /var/www/html/kiosk.sh
+    Restart=on-abort
+    User=pi
+    Group=pi
+    
+    [Install]
+    WantedBy=graphical.target
      ```
      Upon reboot you should see the default apache page, full screen, with no menu bar at the top.
 1. Remove the default ``index.html``, clone this repo into ``/var/www/html`` and create your own 
