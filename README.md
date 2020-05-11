@@ -2,7 +2,7 @@
 Yet Another Pi Weather Station (YANPIWS) - My explorations in getting a Rasberry Pi 
 showing local time and weather:
 
-![](./YANPIWS.gif)
+![](./images/YANPIWS.gif)
 
 ## Overview
 
@@ -111,17 +111,16 @@ of creating your own config file.  Here we see ID 231:
     _
     ```
    If you get an error `usb_open error -3`, unplug and replug the USB dongle, that should fix it.
-1. Remove the default ``index.html``, clone this repo into ``/var/www/html`` and create your own 
-``config.csv``:
+1. Clone this repo, symlink `html` into `www` and create your own `config.csv`:
    ```
-   cd /var/www
-   sudo rm html/index.html
-   sudo git clone https://github.com/Ths2-9Y-LqJt6/YANPIWS.git html
-   cd html
-   sudo mkdir data
-   sudo chown -R pi:www-data .
-   sudo chmod -R 775 .
+   cd
+   sudo git clone https://github.com/Ths2-9Y-LqJt6/YANPIWS.git 
+   cd YANPIWS
    cp config.dist.csv config.csv
+   sudo rm -rf /var/www/html
+   ln -s html /var/www/html
+   sudo chown -R pi:www-data /var/www/html
+   sudo chmod -R 775 /var/www/html
    ```
 1. Edit your newly created `config.csv` to have the correct values. 
 Specifically, your latitude (`lat`),
@@ -137,7 +136,7 @@ animated ones, set 'animate' to `false` instead of `true` like below. Here's a s
     animate,true
     labels_211,In
     labels_109,Out
-    dataPath,/var/www/html/data/
+    dataPath,/home/pi/data/
     api_password,boxcar-spinning-problem-rockslide-scored
     servers_0_url,http://127.0.0.1
     servers_0_password,boxcar-spinning-problem-rockslide-scored
@@ -145,8 +144,9 @@ animated ones, set 'animate' to `false` instead of `true` like below. Here's a s
 1. Run these commands to copy the `kiosk.sh` script into systemd and enable the service. This 
 will  to auto start Chromium in kiosk mode on the Pi's web server every time you boot:
 
-   ```python
-   sudo cp /var/www/html/kiosk.service /lib/systemd/system/kiosk.service
+   ```
+   cd
+   sudo cp YANPIWS/kiosk.service /lib/systemd/system/kiosk.service
    sudo systemctl daemon-reload
    sudo systemctl start kiosk.service
    sudo systemctl enable kiosk.service
@@ -157,7 +157,7 @@ will  to auto start Chromium in kiosk mode on the Pi's web server every time you
 1. [Add a cronjob](https://www.raspberrypi.org/documentation/linux/usage/cron.md) 
 for the Pi user to run every 5 minutes to ensure temperature collection is happening:
     ```
-    */5 * * * * /var/www/html/start.sh >> /var/www/html/data/cron.log
+    */5 * * * * /home/pi/YANPIWS/scripts/start.sh >> /home/pi/YANPIWS/data/cron.log
 
     ```
     This step will need some improvement as the ``rtl_433`` process can die and your temps will stop
@@ -167,7 +167,7 @@ Whew that's it!  Enjoy your new weather station. Let me know which awesome case 
  build for it and report any bugs here!
  
  
-![](./product.jpg)
+![](./images/product.jpg)
 
 ### Alternate install steps for attached I2C sensor
 
@@ -177,15 +177,15 @@ you'll need to:
 1. Make sure I2C is enabled by running `sudo raspi-config` -> "Interfacing Options" -> I2C -> "Yes" -> Reboot
 1. Ensure that your BME280 sensor is attached correctly. 
  [Raspberry Pi Spy](https://www.raspberrypi-spy.co.uk/2016/07/using-bme280-i2c-temperature-pressure-sensor-in-python/) 
-provided [this great schematic](./BME280-Module-Setup.png).
-1. Assuming you installed in `/var/www/html`, run `python /var/www/html/bme280.py` and 
+provided [this great schematic](./images/BME280-Module-Setup.png).
+1. Assuming you installed in `/home/pi/YANPIWS/`, run `python /home/pi/YANPIWS/scripts/bme280.py` and 
 ensure you see good data.  This looks like this for me:
     ```bash
     {"time" : "2019-09-05 14:05:00", "model" : "BMP280", "id" : 96, "temperature_F" : 80.456, "humidity" : 40.54}
     ```
 1. If that all looks good, as the `pi` user, set up a cron job to run once a minute and generate the stats:
     ```bash
-    */1 * * * * cd /var/www/html;/usr/bin/python /var/www/html/bme280.py | /usr/bin/php -f read_and_post.php
+    */1 * * * * cd /home/pi/YANPIWS/html;/usr/bin/python /home/pi/YANPIWS/scripts/bme280.py | /usr/bin/php -f read_and_post.php
     ``` 
    
 ### Multiple Sensor Nodes
@@ -267,8 +267,8 @@ The default value is `boxcar-spinning-problem-rockslide-scored`.
 Optionally you may pass:
 * `humidity` - (float) of the humidity
 
-Assuming you installed in the default path of `/var/www/html`, you should use the following URL 
-for your `POST`, replace `IP_ADDRESS` with your real IP address of your server:
+You should use the following URL for your `POST`, replace `IP_ADDRESS` with your real 
+IP address of your server:
 
 * `http://IP_ADDRESS/parse_and_save.php`
 
@@ -318,6 +318,8 @@ Use your IDE of choice to edit and point your browser at ``localhost:8000``
 PRs and Issues welcome!
 
 ## Version History
+* 0.9.8 - May 11,2020
+  * Organize files into directories, update readme accordingly #73
 * 0.9.7 - May 10, 2020 
   * Updated readme, kiosk steps, rtl_433 install steps #70
 * 0.9.6 - Nov 20, 2019
