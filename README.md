@@ -110,46 +110,25 @@ of creating your own config file.  Here we see ID 231:
     _
     ```
    If you get an error `usb_open error -3`, unplug and replug the USB dongle, that should fix it.
-1. Copy the `kiosk.sh` script into systemd with 
-`sudo cp /var/www/html/kisk.service /lib/systemd/system/kiosk.service` to auto start Chromium in incognito and kiosk mode
-on the Pi's web server.  Thanks to [Py My Life Up](https://pimylifeup.com/raspberry-pi-kiosk/) pages for the howto:
-    ```
-    [Unit]
-    Description=Chromium Kiosk
-    Wants=graphical.target
-    After=graphical.target
-    
-    [Service]
-    Environment=DISPLAY=:0.0
-    Environment=XAUTHORITY=/home/pi/.Xauthority
-    Type=simple
-    ExecStart=/bin/bash /var/www/html/kiosk.sh
-    Restart=on-abort
-    User=pi
-    Group=pi
-    
-    [Install]
-    WantedBy=graphical.target
-     ```
-     Upon reboot you should see the default apache page, full screen, with no menu bar at the top.
 1. Remove the default ``index.html``, clone this repo into ``/var/www/html`` and create your own 
 ``config.csv``:
    ```
-   cd /var/html/
-   sudo rm www/index.html
+   cd /var/www
+   sudo rm html/index.html
    sudo git clone https://github.com/Ths2-9Y-LqJt6/YANPIWS.git html
    cd html
-   chown -R pi .
-   chgrp -R www-data .
+   sudo mkdir data
+   sudo chown -R pi:www-data .
+   sudo chmod -R 775 .
    cp config.dist.csv config.csv
    ```
-1. Edit your newly created ``config.csv`` to have the correct values. 
-Specifically, your latitude (``lat``),
-longitude (``lon``) and labels which you 
-got in the step above running ``rtl_433 -q``. As well, you'll need to sign up for an API key
+1. Edit your newly created `config.csv` to have the correct values. 
+Specifically, your latitude (`lat`),
+longitude (`lon`) and labels which you 
+got in the step above running `rtl_433`. As well, you'll need to sign up for an API key
 on [Dark Sky](https://darksky.net/dev/register) and put that in for the `darksky` value below. 
 If you want static icons instead of
-animated ones, set 'animate' to ``false`` instead of ``true`` like below. Here's a sample:
+animated ones, set 'animate' to `false` instead of `true` like below. Here's a sample:
     ```
     lat,31.775554
     lon,-81.822436
@@ -162,7 +141,18 @@ animated ones, set 'animate' to ``false`` instead of ``true`` like below. Here's
     servers_0_url,http://127.0.0.1
     servers_0_password,boxcar-spinning-problem-rockslide-scored
     ```
-1. Reboot your Pi so the browser starts loading the configured YANPIWS app.
+1. Run these commands to copy the `kiosk.sh` script into systemd and enable the service. This 
+will  to auto start Chromium in kiosk mode on the Pi's web server every time you boot:
+
+   ```python
+   sudo cp /var/www/html/kiosk.service /lib/systemd/system/kiosk.service
+   sudo systemctl daemon-reload
+   sudo systemctl start kiosk.service
+   sudo systemctl enable kiosk.service
+   ```
+
+  Thanks to [Py My Life Up](https://pimylifeup.com/raspberry-pi-kiosk/) pages for the howto   
+1. Reboot your Pi so confirm the browser starts loading the configured YANPIWS app.
 1. [Add a cronjob](https://www.raspberrypi.org/documentation/linux/usage/cron.md) 
 for the Pi user to run every 5 minutes to ensure temperature collection is happening:
     ```
