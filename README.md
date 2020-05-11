@@ -122,7 +122,7 @@ of creating your own config file.  Here we see ID 231:
    sudo ln -s /home/pi/YANPIWS/html /var/www/html
    sudo chown -R pi:www-data data
    sudo chmod -R 775 data
-   ```
+   ``` 
 1. Edit your newly created `config.csv` to have the correct values. 
 Specifically, your latitude (`lat`),
 longitude (`lon`) and labels which you 
