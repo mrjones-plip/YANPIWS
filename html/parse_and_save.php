@@ -2,12 +2,6 @@
 require_once 'get_data.php';
 getConfig();
 
-$knownKeys = array(
-    'time',
-    'id',
-    'temperature_F',
-    'humidity',
-);
 
 if (is_array($_POST) && sizeof($_POST) > 0) {
     if (isset($_POST['password']) && $_POST['password'] == $YANPIWS['api_password']){
@@ -15,7 +9,11 @@ if (is_array($_POST) && sizeof($_POST) > 0) {
         if (!isset($dataArray['time'])){
             $dataArray['time'] =  date('Y-m-d G:i:s', time());
         }
+        writeToDisk($dataArray, $YANPIWS);
     } else {
+        if (!isset($_POST['password'])) {
+            $_POST['password'] = NULL;
+        }
         error_log("Bad password sent to parse_and_save. got '"
             . $_POST['password'] . "' expected '" . $YANPIWS['api_password'] ."'");
         header($_SERVER['SERVER_PROTOCOL'] . ' 401 Unauthorized', true, 401);
@@ -24,31 +22,48 @@ if (is_array($_POST) && sizeof($_POST) > 0) {
 } elseif(defined('STDIN')){
     while ($f = fgets(STDIN)) {
         $dataArray = json_decode($f, true);
+        writeToDisk($dataArray, $YANPIWS);
     }
 }
 
-$saveMeArray = array();
-foreach ($knownKeys as $key) {
-    if(isset($dataArray[$key])){
-        $saveMeArray[] = cleanseData($dataArray[$key]);
+
+/**
+ * Save the data to the disk
+ * @param array dataArray
+ * @param array YANPIWS
+ */
+function writeToDisk($dataArray,$YANPIWS){
+    $knownKeys = array(
+        'time',
+        'id',
+        'temperature_F',
+        'humidity',
+    );
+    $saveMeArray = array();
+
+    foreach ($knownKeys as $key) {
+        if(isset($dataArray[$key])){
+            $saveMeArray[] = cleanseData($dataArray[$key]);
+        } else {
+            $saveMeArray[] = null;
+        }
+    }
+
+    if($saveMeArray[0] !== null &&
+        $saveMeArray[1] !== null &&
+        $saveMeArray[2] !== null
+    ) {
+        $today = date('Y-m-d', time());
+        $saveResult = saveArrayToCsv($YANPIWS['dataPath'], $today, $saveMeArray);
+        if ($saveResult){
+            error_log("parse_and_save wrote to {$YANPIWS['dataPath']} this many items:" . sizeof($saveMeArray));
+        }  else {
+            error_log("parse_and_save FAILED  to write to  {$YANPIWS['dataPath']} this many items:" . print_r($saveMeArray,1));
+        }
     } else {
-        $saveMeArray[] = null;
+        error_log("parse_and_save called but no data in 'saveMeArray' array");
     }
-}
-
-if($saveMeArray[0] !== null &&
-    $saveMeArray[1] !== null &&
-    $saveMeArray[2] !== null
-) {
-    $today = date('Y-m-d', time());
-    $saveResult = saveArrayToCsv($YANPIWS['dataPath'], $today, $saveMeArray);
-    if ($saveResult){
-        error_log("parse_and_save wrote to {$YANPIWS['dataPath']} this many items:" . sizeof($saveMeArray));
-    }  else {
-        error_log("parse_and_save FAILED  to write to  {$YANPIWS['dataPath']} this many items:" . print_r($saveMeArray,1));
-    }
-} else {
-    error_log("parse_and_save called but no data in 'saveMeArray' array");
+    return true;
 }
 
 
