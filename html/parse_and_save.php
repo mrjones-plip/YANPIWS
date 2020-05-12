@@ -11,6 +11,9 @@ if (is_array($_POST) && sizeof($_POST) > 0) {
         }
         writeToDisk($dataArray, $YANPIWS);
     } else {
+        if (!isset($_POST['password'])) {
+            $_POST['password'] = NULL;
+        }
         error_log("Bad password sent to parse_and_save. got '"
             . $_POST['password'] . "' expected '" . $YANPIWS['api_password'] ."'");
         header($_SERVER['SERVER_PROTOCOL'] . ' 401 Unauthorized', true, 401);
