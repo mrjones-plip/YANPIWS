@@ -111,7 +111,8 @@ of creating your own config file.  Here we see ID 231:
     Temperature: 35.5 C      Humidity  : 1 %           Integrity : CRC
     _
     ```
-   If you get an error `usb_open error -3`, unplug and replug the USB dongle, that should fix it.
+   If you get an error `usb_open error -3` or `usb_claim_interface error -6`, unplug and 
+   replug the USB dongle, that should fix it.
 1. Clone this repo, symlink `html` into `www` and create your own `config.csv`:
    ```
    cd
