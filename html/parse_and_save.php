@@ -2,12 +2,6 @@
 require_once 'get_data.php';
 getConfig();
 
-$knownKeys = array(
-    'time',
-    'id',
-    'temperature_F',
-    'humidity',
-);
 
 if (is_array($_POST) && sizeof($_POST) > 0) {
     if (isset($_POST['password']) && $_POST['password'] == $YANPIWS['api_password']){
@@ -31,7 +25,14 @@ if (is_array($_POST) && sizeof($_POST) > 0) {
 
 
 function writeToDisk($dataArray,$YANPIWS){
+    $knownKeys = array(
+        'time',
+        'id',
+        'temperature_F',
+        'humidity',
+    );
     $saveMeArray = array();
+    
     foreach ($knownKeys as $key) {
         if(isset($dataArray[$key])){
             $saveMeArray[] = cleanseData($dataArray[$key]);
