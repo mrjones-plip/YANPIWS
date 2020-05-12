@@ -9,7 +9,7 @@ if (is_array($_POST) && sizeof($_POST) > 0) {
         if (!isset($dataArray['time'])){
             $dataArray['time'] =  date('Y-m-d G:i:s', time());
         }
-        writeToDisk($dataArray, $YANPIWS)
+        writeToDisk($dataArray, $YANPIWS);
     } else {
         error_log("Bad password sent to parse_and_save. got '"
             . $_POST['password'] . "' expected '" . $YANPIWS['api_password'] ."'");
@@ -19,11 +19,16 @@ if (is_array($_POST) && sizeof($_POST) > 0) {
 } elseif(defined('STDIN')){
     while ($f = fgets(STDIN)) {
         $dataArray = json_decode($f, true);
-        writeToDisk($dataArray, $YANPIWS)
+        writeToDisk($dataArray, $YANPIWS);
     }
 }
 
 
+/**
+ * Save the data to the disk
+ * @param array dataArray
+ * @param array YANPIWS
+ */
 function writeToDisk($dataArray,$YANPIWS){
     $knownKeys = array(
         'time',
@@ -32,7 +37,7 @@ function writeToDisk($dataArray,$YANPIWS){
         'humidity',
     );
     $saveMeArray = array();
-    
+
     foreach ($knownKeys as $key) {
         if(isset($dataArray[$key])){
             $saveMeArray[] = cleanseData($dataArray[$key]);
@@ -55,6 +60,7 @@ function writeToDisk($dataArray,$YANPIWS){
     } else {
         error_log("parse_and_save called but no data in 'saveMeArray' array");
     }
+    return true;
 }
 
 
