@@ -14,6 +14,7 @@ function getValidConfigs(){
         'dataPath',
         'api_password',
         'temp_count',
+        'font_time_date_wind',
         // we accept these two. listing it here commented out for completeness. see getConfig() below
         // servers_*
         // labels_*
@@ -83,9 +84,18 @@ function configIsValid($validateApi = false)
         $valid['valid'] = false;
         $valid['reason'] .= 'Longitude is invalid. ';
     }
+    if (!isset($YANPIWS['font_time_date_wind'])){
+        $valid['valid'] = false;
+        $valid['reason'] .= 'Font size for time/date/wind is missing. ';
+    } elseif (!validateFontSize($YANPIWS['font_time_date_wind'])){
+        $valid['valid'] = false;
+        $valid['reason'] .= 'Font size for time/date/wind is invalid. ';
+        die('$YANPIWS<pre>' .print_r($YANPIWS,1));
+    }
     if (!isset($YANPIWS['dataPath']) || !is_writable($YANPIWS['dataPath'])){
         $valid['valid'] = false;
-        $valid['reason'] .= 'DataPath does not exist or is not writable. ';}
+        $valid['reason'] .= 'DataPath does not exist or is not writable. ';
+    }
     if ($validateApi){
         $http = curl_init(getDarkSkyUrl(true));
         curl_setopt($http, CURLOPT_NOBODY  , true);
@@ -547,6 +557,16 @@ function validateLatitude($lat) {
  */
 function validateLongitude($long) {
     return preg_match('/^(\+|-)?(?:180(?:(?:\.0{1,6})?)|(?:[0-9]|[1-9][0-9]|1[0-7][0-9])(?:(?:\.[0-9]{1,6})?))$/', $long);
+}
+/**
+ * Validates a given fontsize $font_time_date_wind
+ *
+ * @param int fontSize Font Size (pt)
+ * @return bool `true` if $fontSize is valid, `false` if not
+ */
+function validateFontSize($fontSize) {
+    // thanks https://www.php.net/manual/en/function.is-int.php#82857
+    return(ctype_digit(strval($fontSize)));
 }
 /**
  * Validates a given coordinate

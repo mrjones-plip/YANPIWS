@@ -1,3 +1,10 @@
+<?php
+header("Content-type: text/css");
+global $YANPIWS;
+require_once 'get_data.php';
+getConfig();
+?>
+
 body {
     margin: 10px;
     padding: 10px;
@@ -85,7 +92,8 @@ a.yellow {
     padding-left:20px;
 }
 .date, .time, .label, .wind_now {
-    font-size:35pt;
+    font-size:<?= $YANPIWS['font_time_date_wind']?>pt;
+    font-weight: bold;
 }
 
 .label {

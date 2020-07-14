@@ -11,7 +11,7 @@ getConfig();
     <script>var skycons = new Skycons({'color': 'white'});</script>
 </head>
 <body>
-<link rel="stylesheet" type="text/css" href="styles.css?<?php echo $YANPIWS['cache_bust'] ?>" />
+<link rel="stylesheet" type="text/css" href="styles.php?<?php echo $YANPIWS['cache_bust'] ?>" />
 
 <?php
 
