@@ -15,6 +15,8 @@ function getValidConfigs(){
         'api_password',
         'temp_count',
         'font_time_date_wind',
+        'font_temp',
+        'font_temp_label',
         // we accept these two. listing it here commented out for completeness. see getConfig() below
         // servers_*
         // labels_*
@@ -90,7 +92,20 @@ function configIsValid($validateApi = false)
     } elseif (!validateFontSize($YANPIWS['font_time_date_wind'])){
         $valid['valid'] = false;
         $valid['reason'] .= 'Font size for time/date/wind is invalid. ';
-        die('$YANPIWS<pre>' .print_r($YANPIWS,1));
+    }
+    if (!isset($YANPIWS['font_temp'])){
+        $valid['valid'] = false;
+        $valid['reason'] .= 'Font size for temp is missing. ';
+    } elseif (!validateFontSize($YANPIWS['font_temp'])){
+        $valid['valid'] = false;
+        $valid['reason'] .= 'Font size for temp is invalid. ';
+    }
+    if (!isset($YANPIWS['font_temp_label'])){
+        $valid['valid'] = false;
+        $valid['reason'] .= 'Font size for temp label is missing. ';
+    } elseif (!validateFontSize($YANPIWS['font_temp_label'])){
+        $valid['valid'] = false;
+        $valid['reason'] .= 'Font size for temp label is invalid. ';
     }
     if (!isset($YANPIWS['dataPath']) || !is_writable($YANPIWS['dataPath'])){
         $valid['valid'] = false;

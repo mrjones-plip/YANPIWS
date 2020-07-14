@@ -47,7 +47,7 @@ a.yellow {
 }
 .temp {
     padding-bottom:10px;
-    font-size: 50pt;
+    font-size: <?= $YANPIWS['font_temp']?>pt;
     float: left;
 }
 
@@ -98,7 +98,7 @@ a.yellow {
 
 .label {
     text-transform: uppercase;
-    font-size: 25pt;
+    font-size: <?= $YANPIWS['font_temp_label']?>pt;
 }
 .date, .time{
     float: left;
