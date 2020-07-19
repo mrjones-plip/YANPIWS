@@ -132,13 +132,33 @@ on [Dark Sky](https://darksky.net/dev/register) and put that in for the `darksky
 If you want static icons instead of
 animated ones, set 'animate' to `false` instead of `true` like below. Here's a sample:
     ```
+    # edit these two to be your location.  Use one of these if
+    # you need help! https://duckduckgo.com/?q=what's+my+lat+long+finder
     lat,31.775554
     lon,-81.822436
+    
+    # set your darksky API token - should be a 32 char alpa numeric
     darksky,aabbccddeeffgghhiijj112233445566
+    
+    # should we show animated icons for forecast? should be "true" or "false"
     animate,true
+    
+    # label ID map to human name. Format is "labels_" + ID + "," + NAME
     labels_211,In
-    labels_109,Out
-    dataPath,/home/pi/YANPIWS/data/
+    
+    # How many temperatures to show on the screen (tested with 1, 2 or 3 - watch out if you do more!)
+    temp_count,2
+    
+    # CSS font sizes
+    font_time_date_wind,35
+    font_temp,50
+    font_temp_label,25
+    
+    # likely this won't need to change if you're following default install instructions.
+    dataPath,/home/mrjones/Documents/YANPIWS/data/
+    
+    # unless you're deploying a lot of nodes reporting back to a central server, don't touch these ;)
+    # api_password very likely should match servers_0_password unless, again, you know what you're doing ;)
     api_password,boxcar-spinning-problem-rockslide-scored
     servers_0_url,http://127.0.0.1
     servers_0_password,boxcar-spinning-problem-rockslide-scored

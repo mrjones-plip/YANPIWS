@@ -86,27 +86,29 @@ function configIsValid($validateApi = false)
         $valid['valid'] = false;
         $valid['reason'] .= 'Longitude is invalid. ';
     }
+
+    // for these font sizes ones, lets default to a sane size
+    // and then write and error to the error log. Will make
+    // a much safer upgrade path for Manny ;)
     if (!isset($YANPIWS['font_time_date_wind'])){
-        $valid['valid'] = false;
-        $valid['reason'] .= 'Font size for time/date/wind is missing. ';
+        $YANPIWS['font_time_date_wind'] = 35;
     } elseif (!validateFontSize($YANPIWS['font_time_date_wind'])){
         $valid['valid'] = false;
         $valid['reason'] .= 'Font size for time/date/wind is invalid. ';
     }
     if (!isset($YANPIWS['font_temp'])){
-        $valid['valid'] = false;
-        $valid['reason'] .= 'Font size for temp is missing. ';
+        $YANPIWS['font_temp'] = 50;
     } elseif (!validateFontSize($YANPIWS['font_temp'])){
         $valid['valid'] = false;
         $valid['reason'] .= 'Font size for temp is invalid. ';
     }
     if (!isset($YANPIWS['font_temp_label'])){
-        $valid['valid'] = false;
-        $valid['reason'] .= 'Font size for temp label is missing. ';
+        $YANPIWS['font_temp_label'] = 25;
     } elseif (!validateFontSize($YANPIWS['font_temp_label'])){
         $valid['valid'] = false;
         $valid['reason'] .= 'Font size for temp label is invalid. ';
     }
+
     if (!isset($YANPIWS['dataPath']) || !is_writable($YANPIWS['dataPath'])){
         $valid['valid'] = false;
         $valid['reason'] .= 'DataPath does not exist or is not writable. ';

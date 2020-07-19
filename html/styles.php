@@ -1,8 +1,9 @@
 <?php
-header("Content-type: text/css");
 global $YANPIWS;
 require_once 'get_data.php';
 getConfig();
+configIsValid();
+header("Content-type: text/css");
 ?>
 
 body {
