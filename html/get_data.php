@@ -45,7 +45,7 @@ function getConfig($die = true)
             }
 
         }
-        $YANPIWS['cache_bust'] = '0.9.4';
+        $YANPIWS['cache_bust'] = '0.9.8';
     } elseif ($die) {
         die(
             '<h3>Error</h3><p>No config.csv!  Copy config.dist.csv to config.csv</p>'.
