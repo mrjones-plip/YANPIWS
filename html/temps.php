@@ -3,7 +3,7 @@
 <html lang="en" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="utf-8">
-    <link rel="stylesheet" type="text/css" href="styles.php" />
+    <link rel="stylesheet" type="text/css" href="styles.css.php" />
     <script src="jquery.3.2.1.slim.min.js" ></script>
     <script src="jquery.jqplot.min.js" ></script>
     <link rel="stylesheet" href="HappyHistogram.min.css">
