@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 </head>
 <body>
-<link rel="stylesheet" type="text/css" href="styles.css" />
+<link rel="stylesheet" type="text/css" href="styles.php" />
 <?php
 require_once "get_data.php";
 getConfig();

@@ -14,6 +14,9 @@ function getValidConfigs(){
         'dataPath',
         'api_password',
         'temp_count',
+        'font_time_date_wind',
+        'font_temp',
+        'font_temp_label',
         // we accept these two. listing it here commented out for completeness. see getConfig() below
         // servers_*
         // labels_*
@@ -83,9 +86,33 @@ function configIsValid($validateApi = false)
         $valid['valid'] = false;
         $valid['reason'] .= 'Longitude is invalid. ';
     }
+
+    // for these font sizes ones, lets default to a sane size
+    // and then write and error to the error log. Will make
+    // a much safer upgrade path for Manny ;)
+    if (!isset($YANPIWS['font_time_date_wind'])){
+        $YANPIWS['font_time_date_wind'] = 35;
+    } elseif (!validateFontSize($YANPIWS['font_time_date_wind'])){
+        $valid['valid'] = false;
+        $valid['reason'] .= 'Font size for time/date/wind is invalid. ';
+    }
+    if (!isset($YANPIWS['font_temp'])){
+        $YANPIWS['font_temp'] = 50;
+    } elseif (!validateFontSize($YANPIWS['font_temp'])){
+        $valid['valid'] = false;
+        $valid['reason'] .= 'Font size for temp is invalid. ';
+    }
+    if (!isset($YANPIWS['font_temp_label'])){
+        $YANPIWS['font_temp_label'] = 25;
+    } elseif (!validateFontSize($YANPIWS['font_temp_label'])){
+        $valid['valid'] = false;
+        $valid['reason'] .= 'Font size for temp label is invalid. ';
+    }
+
     if (!isset($YANPIWS['dataPath']) || !is_writable($YANPIWS['dataPath'])){
         $valid['valid'] = false;
-        $valid['reason'] .= 'DataPath does not exist or is not writable. ';}
+        $valid['reason'] .= 'DataPath does not exist or is not writable. ';
+    }
     if ($validateApi){
         $http = curl_init(getDarkSkyUrl(true));
         curl_setopt($http, CURLOPT_NOBODY  , true);
@@ -547,6 +574,16 @@ function validateLatitude($lat) {
  */
 function validateLongitude($long) {
     return preg_match('/^(\+|-)?(?:180(?:(?:\.0{1,6})?)|(?:[0-9]|[1-9][0-9]|1[0-7][0-9])(?:(?:\.[0-9]{1,6})?))$/', $long);
+}
+/**
+ * Validates a given fontsize $font_time_date_wind
+ *
+ * @param int fontSize Font Size (pt)
+ * @return bool `true` if $fontSize is valid, `false` if not
+ */
+function validateFontSize($fontSize) {
+    // thanks https://www.php.net/manual/en/function.is-int.php#82857
+    return(ctype_digit(strval($fontSize)));
 }
 /**
  * Validates a given coordinate

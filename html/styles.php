@@ -1,3 +1,11 @@
+<?php
+global $YANPIWS;
+require_once 'get_data.php';
+getConfig();
+configIsValid();
+header("Content-type: text/css");
+?>
+
 body {
     margin: 10px;
     padding: 10px;
@@ -40,7 +48,7 @@ a.yellow {
 }
 .temp {
     padding-bottom:10px;
-    font-size: 50pt;
+    font-size: <?= $YANPIWS['font_temp']?>pt;
     float: left;
 }
 
@@ -85,12 +93,13 @@ a.yellow {
     padding-left:20px;
 }
 .date, .time, .label, .wind_now {
-    font-size:35pt;
+    font-size:<?= $YANPIWS['font_time_date_wind']?>pt;
+    font-weight: bold;
 }
 
 .label {
     text-transform: uppercase;
-    font-size: 25pt;
+    font-size: <?= $YANPIWS['font_temp_label']?>pt;
 }
 .date, .time{
     float: left;
