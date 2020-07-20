@@ -339,6 +339,8 @@ Use your IDE of choice to edit and point your browser at ``localhost:8000``
 PRs and Issues welcome!
 
 ## Version History
+* 0.9.9 - Jul 20,2020
+  * Add user configurable font sizes #80
 * 0.9.8 - May 11,2020
   * Organize files into directories, update readme accordingly #73
 * 0.9.7 - May 10, 2020 
