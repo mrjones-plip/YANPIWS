@@ -7,11 +7,11 @@ getConfig();
 <html lang="en" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="utf-8">
-    <script src='skycons/skycons.js?<?php echo $YANPIWS['cache_bust'] ?>'></script>
+    <script src='skycons/skycons.js?<?= $YANPIWS['cache_bust'] ?>'></script>
     <script>var skycons = new Skycons({'color': 'white'});</script>
 </head>
 <body>
-<link rel="stylesheet" type="text/css" href="styles.php?<?php echo $YANPIWS['cache_bust'] ?>" />
+<link rel="stylesheet" type="text/css" href="styles.css.php?<?=  $YANPIWS['cache_bust'] ?>" />
 
 <?php
 
@@ -25,12 +25,12 @@ if($status['valid'] != true){
 }
 ?>
 <div class="col">
-    <div class="row">
+    <div class="row temp-row">
         <a href="/temps.php">
 <?php
 $count = 1;
 foreach ($YANPIWS['labels'] as $id => $label){
-        echo "\t<div class='temp temp{$count}' id='temp{$count}'></div>\n";
+        echo "\t\t\t<div class='temp temp{$count}' id='temp{$count}'></div>\n";
         $count++;
         if ($count > $YANPIWS['temp_count']){
             break;

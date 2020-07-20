@@ -3,6 +3,7 @@ global $YANPIWS;
 require_once 'get_data.php';
 getConfig();
 configIsValid();
+$tempWidth = round(100/$YANPIWS['temp_count']);
 header("Content-type: text/css");
 ?>
 
@@ -50,24 +51,15 @@ a.yellow {
     padding-bottom:10px;
     font-size: <?= $YANPIWS['font_temp']?>pt;
     float: left;
+    text-align: center;
+    width: <?= $tempWidth ?>%;
 }
 
 .temp:last-child  {
-    float: right;
+    text-align: right;
 }
 .temp:first-child  {
-    padding-right: 11%;
-}
-
-/*two temps */
-.temp:first-child:nth-last-child(2),
-.temp:first-child:nth-last-child(2) ~ .temp {
-
-}
-/*three temps */
-.temp:first-child:nth-last-child(3),
-.temp:first-child:nth-last-child(3) ~ .temp {
-
+    text-align: left;
 }
 
 .degrees {

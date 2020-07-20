@@ -86,23 +86,30 @@ function configIsValid($validateApi = false)
         $valid['valid'] = false;
         $valid['reason'] .= 'Longitude is invalid. ';
     }
+    if (!isset($YANPIWS['temp_count'])){
+        error_log('temp_count is unset! Defaulting to "1"');
+        $YANPIWS['temp_count'] = 1;
+    }
 
     // for these font sizes ones, lets default to a sane size
     // and then write and error to the error log. Will make
     // a much safer upgrade path for Manny ;)
     if (!isset($YANPIWS['font_time_date_wind'])){
+        error_log('font_time_date_wind is unset! Defaulting to "35"');
         $YANPIWS['font_time_date_wind'] = 35;
     } elseif (!validateFontSize($YANPIWS['font_time_date_wind'])){
         $valid['valid'] = false;
         $valid['reason'] .= 'Font size for time/date/wind is invalid. ';
     }
     if (!isset($YANPIWS['font_temp'])){
+        error_log('font_temp is unset! Defaulting to "50"');
         $YANPIWS['font_temp'] = 50;
     } elseif (!validateFontSize($YANPIWS['font_temp'])){
         $valid['valid'] = false;
         $valid['reason'] .= 'Font size for temp is invalid. ';
     }
     if (!isset($YANPIWS['font_temp_label'])){
+        error_log('font_temp_label is unset! Defaulting to "25"');
         $YANPIWS['font_temp_label'] = 25;
     } elseif (!validateFontSize($YANPIWS['font_temp_label'])){
         $valid['valid'] = false;
