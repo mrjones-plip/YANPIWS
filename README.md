@@ -155,7 +155,7 @@ animated ones, set 'animate' to `false` instead of `true` like below. Here's a s
     font_temp_label,25
     
     # likely this won't need to change if you're following default install instructions.
-    dataPath,/home/mrjones/Documents/YANPIWS/data/
+    dataPath,/home/pi/YANPIWS/data/
     
     # unless you're deploying a lot of nodes reporting back to a central server, don't touch these ;)
     # api_password very likely should match servers_0_password unless, again, you know what you're doing ;)
