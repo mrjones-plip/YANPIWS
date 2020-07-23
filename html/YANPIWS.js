@@ -29,6 +29,13 @@ function loadXMLDoc(URL, targetId, callback) {
 }
 
 /**
+ * handle resizing clock to big then small
+ */
+function bigClock(){
+    $('.time').css('font-size', '200px');
+}
+
+/**
  * AJAX call to get updated forecast
  */
 function refreshForecast(){

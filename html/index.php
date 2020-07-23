@@ -8,6 +8,7 @@ getConfig();
 <head>
     <meta charset="utf-8">
     <script src='skycons/skycons.js?<?= $YANPIWS['cache_bust'] ?>'></script>
+    <script src='jquery.3.2.1.slim.min.js?<?= $YANPIWS['cache_bust'] ?>'></script>
     <script>var skycons = new Skycons({'color': 'white'});</script>
 </head>
 <body>
