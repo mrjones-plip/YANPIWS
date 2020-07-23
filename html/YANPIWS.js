@@ -31,8 +31,23 @@ function loadXMLDoc(URL, targetId, callback) {
 /**
  * handle resizing clock to big then small
  */
-function bigClock(){
-    $('.time').css('font-size', '200px');
+// todo - use class for defaultSize, remove from signature
+function setClockSize(state, defaultSize){
+    if (state === 'big'){
+        // todo - put all this in a class and then just add and remove class
+        $('.time').css('font-size', '167px').css('text-align', 'center').css('width', '100%');
+        $('.date').css('text-align', 'center').css('width', '100%');
+        $('.suntimes').hide();
+        $('#forecast').hide();
+        $('#wind_now').hide();
+    } else {
+        // todo - put all this in a class and then just add and remove class
+        $('.time').css('font-size', defaultSize + 'px').css('text-align', 'left').css('width', 'inherit');
+        $('.date').css('text-align', 'left').css('width', 'inherit');
+        $('.suntimes').show();
+        $('#forecast').show();
+        $('#wind_now').show();
+    }
 }
 
 /**

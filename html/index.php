@@ -45,7 +45,7 @@ foreach ($YANPIWS['labels'] as $id => $label){
     <div class="row"></div>
     <div class="row ">
         <div id="wind_now" class="wind_now"></div>
-        <div  id="datetime"></div>
+        <div id="datetime"></div>
     </div>
     <div class="row suntimes">
         <span id="sunrise" ></span>
@@ -56,6 +56,16 @@ foreach ($YANPIWS['labels'] as $id => $label){
 </div>
 <script src="./YANPIWS.js?<?php echo $YANPIWS['cache_bust'] ?>"></script>
 <script>
+    var clockState = 'small';
+    clockState = $( "#datetime" ).click(function() {
+        if (clockState == 'small'){
+            clockState = 'big';
+        } else {
+            clockState = 'small';
+        }
+        setClockSize(clockState, <?= $YANPIWS['font_time_date_wind']?>);
+        return clockState;
+    });
     function refreshAll() {
         refeshDateTime();
         refreshForecast();
@@ -64,6 +74,8 @@ foreach ($YANPIWS['labels'] as $id => $label){
         refreshCurrentWind();
         checkTempAges();
         refreshLastAjax();
+        // todo - clockState is ont preserved from above, always resets to small and hides forecast
+        setClockSize(clockState, <?= $YANPIWS['font_time_date_wind']?>);
 <?php
         $count = 1;
 foreach ($YANPIWS['labels'] as $id => $label){
