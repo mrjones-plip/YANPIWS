@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <link rel="stylesheet" type="text/css" href="styles.css.php" />
-    <script src="jquery.3.2.1.slim.min.js" ></script>
+    <script src="jquery-3.5.1.min.js" ></script>
     <script src="jquery.jqplot.min.js" ></script>
     <link rel="stylesheet" href="HappyHistogram.min.css">
     <link rel="stylesheet" href="jquery.jqplot.min.css">

@@ -75,7 +75,8 @@ if (isset($_GET['content'])){
 
         case "datetime":
             if($raw){
-                print json_encode(array($date, $time));
+                header('Content-Type: application/json');
+                print json_encode(array('date' => $date, 'time' => $time));
             } else {
                 print "<div class='time'>$time</div><div class='date'> $date</div>";
             }
