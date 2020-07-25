@@ -28,7 +28,7 @@ if (isset($_GET['content'])){
         case "wind_now":;
             if (isset($forecast->currently)) {
                 if ($raw){
-                    print json_encode(array(getCurrentWind($forecast->currently)));
+                    print json_encode(array('wind' => getCurrentWind($forecast->currently)));
                 } else {
                     print getCurrentWind($forecast->currently);
                 }
@@ -39,7 +39,8 @@ if (isset($_GET['content'])){
         case "sunset":
             if (isset($forecast->daily->data[0]->sunsetTime)){
                 if ($raw){
-                    print json_encode(array($forecast->daily->data[0]->sunsetTime));
+                    $time = date('g:i A', $forecast->daily->data[0]->sunsetTime);
+                    print json_encode(array('sunset' => $time));
                 } else {
                     print getSunsetHtml($forecast->daily->data[0]->sunsetTime);
                 }
@@ -49,7 +50,8 @@ if (isset($_GET['content'])){
         case "sunrise":
             if (isset($forecast->daily->data[0]->sunriseTime)){
                 if ($raw){
-                    print json_encode(array($forecast->daily->data[0]->sunriseTime));
+                    $time = date('g:i A', $forecast->daily->data[0]->sunriseTime);
+                    print json_encode(array('sunrise' => $time));
                 } else {
                     print getSunriseHtml($forecast->daily->data[0]->sunriseTime);
                 }

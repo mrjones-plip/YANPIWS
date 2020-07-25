@@ -52,11 +52,11 @@ function refreshSunrise(){
 /**
  * AJAX call to get updated date and time
  */
-function refeshData(endpoint, dataElement, targetId){
+function refeshData(endpoint, dataElement, target){
     let baseUrl = './ajax.php?raw=1&content=';
     $.getJSON( baseUrl + endpoint, function( data ) {
-        console.log(JSON.stringify(data));
-        $('#' + targetId).html(data[dataElement]);
+        console.log('from endpoint ' + endpoint + ' got: ' + JSON.stringify(data) + ' will push into: ' + target) ;
+        $(target).html(data[dataElement]);
     });
 }
 /**

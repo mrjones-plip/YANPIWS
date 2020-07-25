@@ -57,25 +57,30 @@ foreach ($YANPIWS['labels'] as $id => $label) {
         </div>
     </div>
     <div class="row suntimes">
-        <span id="sunrise" ></span>
-        <span id="sunset" ></span>
+        <span><img src="sun.svg" class="sun" /> <span id="sunrise" ></span></span>
+        <span><img src="moon.svg" class="sun" /> <span id="sunset" ></span></span>
     </div>
 </div>
 <div class="col rigthtCol" id="forecast">
 </div>
 <script>
     function refreshAll() {
-        // refeshData('datetime', 'date', 'date');
-        // refeshData('datetime', 'time', 'time');
-        refeshData('sunrise', 'sunrise', 'sunrise');
+        //          Endpoint    data    DOM
+        refeshData('sunrise', 'sunrise', '#sunrise');
+        refeshData('sunset', 'sunset', '#sunset');
+        refeshData('wind_now', 'wind', '#wind_now');
+        // todo - date and time aren't being formatted correctly
+        refeshData('datetime', 'date', '#date');
+        refeshData('datetime', 'time', '#time');
 
-        // refreshSunrise();
-        // refreshForecast();
-        // refreshSunset();
-        // refreshCurrentWind();
-        // checkTempAges();
-        // refreshLastAjax();
+        // todo - migrate this to use refreshData()
+        refreshForecast();
+
+        // todo - migrate this to use refreshData() instead of refreshTemp() above
         <?= $refreshTempJS ?>
+
+        checkTempAges();
+        refreshLastAjax();
     }
     refreshAll();
     setInterval ( refreshAll, 60000 );
