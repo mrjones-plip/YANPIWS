@@ -127,8 +127,7 @@ input {
     width:70%;
 }
 #last_ajax {
-    color: black;
-    font-size: .4em;
+    display: none;
 }
 @media only screen and (max-width : 480px) {
     body {
