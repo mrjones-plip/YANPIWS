@@ -5,8 +5,9 @@ getConfig();
 
 $forecast = getDarkSkyData();
 $status = configIsValid();
+$statusHtml = '';
 if ($status['valid'] != true) {
-    $statusHtml = "<div class='error'>ERROR: {$status['reason']}</div>";
+    $statusHtml .= "<div class='error'>ERROR: {$status['reason']}</div>";
     $statusHtml .= "<style>.temp,.suntimes{display:none;}</style>";
 }
 

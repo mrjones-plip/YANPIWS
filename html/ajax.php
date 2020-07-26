@@ -1,6 +1,4 @@
 <?php
-
-
 require_once ("get_data.php");
 getConfig();
 if (isset($_GET['content'])){
@@ -10,51 +8,31 @@ if (isset($_GET['content'])){
     $date = date('D M j', time());
     $forecast = getDarkSkyData();
 
-    if (isset($_GET['raw']) && $_GET['raw'] === '1'){
-        $raw = true;
-    } else {
-        $raw = false;
-    }
-
     switch ($_GET['content']){
         case "forecast":
-            if ($raw){
+            if (isset($forecast->daily)) {
+                // todo - refactor calls to not expect cooked HTML in respone, just raw JSON
                 print json_encode(array('forecast' => getDailyForecastHtml($forecast->daily)));
-            } else {
-                print getDailyForecastHtml($forecast->daily);
             }
             break;
 
         case "wind_now":;
             if (isset($forecast->currently)) {
-                if ($raw){
-                    print json_encode(array('wind' => getCurrentWind($forecast->currently)));
-                } else {
-                    print getCurrentWind($forecast->currently);
-                }
-
+                print json_encode(array('wind' => getCurrentWind($forecast->currently)));
             }
             break;
 
         case "sunset":
             if (isset($forecast->daily->data[0]->sunsetTime)){
-                if ($raw){
-                    $time = date('g:i A', $forecast->daily->data[0]->sunsetTime);
-                    print json_encode(array('sunset' => $time));
-                } else {
-                    print getSunsetHtml($forecast->daily->data[0]->sunsetTime);
-                }
+                $time = date('g:i A', $forecast->daily->data[0]->sunsetTime);
+                print json_encode(array('sunset' => $time));
             }
             break;
 
         case "sunrise":
             if (isset($forecast->daily->data[0]->sunriseTime)){
-                if ($raw){
-                    $time = date('g:i A', $forecast->daily->data[0]->sunriseTime);
-                    print json_encode(array('sunrise' => $time));
-                } else {
-                    print getSunriseHtml($forecast->daily->data[0]->sunriseTime);
-                }
+                $time = date('g:i A', $forecast->daily->data[0]->sunriseTime);
+                print json_encode(array('sunrise' => $time));
             }
             break;
 
@@ -69,6 +47,7 @@ if (isset($_GET['content'])){
                 }
             }
             if ($currentTempAge > 600 || $maxTempAge > 600){
+                // todo - refactor calls to not expect cooked HTML in respone, just raw JSON
                 $result['age'] = '<span style="color: yellow">YANPIWS</span>';
             } else {
                 $result['age'] = 'YANPIWS';
@@ -77,20 +56,17 @@ if (isset($_GET['content'])){
             break;
 
         case "datetime":
-            if($raw){
-                print json_encode(array('date' => $date, 'time' => $time));
-            } else {
-                print "<div class='time'>$time</div><div class='date'> $date</div>";
-            }
+            print json_encode(array('date' => $date, 'time' => $time));
             break;
 
         case "temp":
             if (isset($_GET['id']) && isset($YANPIWS['labels'][$_GET['id']])){
                 $tempLine = getMostRecentTemp($_GET['id']);
-                if($raw){
-                    print json_encode(array('temp' => getTempHtml($tempLine)));
-                } else {
+                if(isset($_GET['cooked'])){
                     print getTempHtml($tempLine);
+                } else {
+                    // todo - refactor calls to not expect cooked HTML in respone, just raw JSON
+                    print json_encode(array('temp' => getTempHtml($tempLine)));
                 }
             }
             break;
@@ -98,11 +74,7 @@ if (isset($_GET['content'])){
         case "humidity":
             if (isset($_GET['id']) && isset($YANPIWS['labels'][$_GET['id']])){
                 $tempLine = getMostRecentTemp($_GET['id']);
-                if($raw){
-                    print json_encode(array($tempLine));
-                } else {
-                    print getHumidityHtml($tempLine);
-                }
+                print json_encode(array($tempLine));
             }
             break;
 

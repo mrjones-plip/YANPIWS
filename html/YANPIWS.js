@@ -31,7 +31,7 @@ function loadXMLDoc(URL, targetId, callback) {
  * AJAX call to get updated content and return JSON
  */
 function refeshData(endpoint, dataElement, target, callback = false){
-    let baseUrl = './ajax.php?raw=1&content=';
+    let baseUrl = './ajax.php?content=';
     $.getJSON( baseUrl + endpoint, function( data ) {
         $(target).html(data[dataElement]);
         if (typeof callback === "function") {
