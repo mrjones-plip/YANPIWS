@@ -27,52 +27,18 @@ function loadXMLDoc(URL, targetId, callback) {
     xmlhttp.send();
 
 }
-
 /**
- * AJAX call to get updated forecast
+ * AJAX call to get updated content and return JSON
  */
-function refreshForecast(){
-    loadXMLDoc('./ajax.php?content=forecast', 'forecast', animateForecast);
+function refeshData(endpoint, dataElement, target, callback = false){
+    let baseUrl = './ajax.php?content=';
+    $.getJSON( baseUrl + endpoint, function( data ) {
+        $(target).html(data[dataElement]);
+        if (typeof callback === "function") {
+            callback();
+        }
+    });
 }
-
-/**
- * AJAX call to get updated sunset time
- */
-function refreshSunset(){
-    loadXMLDoc('./ajax.php?content=sunset', 'sunset');
-}
-
-/**
- * AJAX call to get updated sunrise time
- */
-function refreshSunrise(){
-    loadXMLDoc('./ajax.php?content=sunrise', 'sunrise');
-}
-
-/**
- * AJAX call to get updated date and time
- */
-function refeshDateTime(){
-    loadXMLDoc('./ajax.php?content=datetime', 'datetime');
-}
-
-/**
- * AJAX call to get updated temps
- *
- * @param id int of sensor ID
- * @param id2 string of the DOM ID to put the results in - will concat "temp" + id2
- */
-function refreshTemp(id, id2){
-    loadXMLDoc('./ajax.php?content=temp&id=' + id, 'temp' + id2);
-}
-
-/**
- * AJAX call to get updated wind speed
- */
-function refreshCurrentWind(){
-    loadXMLDoc('./ajax.php?content=wind_now', 'wind_now');
-}
-
 /**
  * start the dark sky canvas DOM elements animating. intended to call if
  * canvas elements have been updated from refreshForecast()
@@ -87,17 +53,4 @@ function animateForecast() {
         }
     );
     skycons.play();
-}
-
-/**
- * check that temps aren't old.  if they are, change text to yellow
- */
-function checkTempAges(){
-    loadXMLDoc('./ajax.php?content=age', 'YANPIWS');
-}
-/**
- * check that temps aren't old.  if they are, change text to yellow
- */
-function refreshLastAjax(){
-    loadXMLDoc('./ajax.php?content=last_ajax', 'dev_null');
 }

@@ -45,7 +45,7 @@ function getConfig($die = true)
             }
 
         }
-        $YANPIWS['cache_bust'] = '0.9.9';
+        $YANPIWS['cache_bust'] = '0.9.10';
     } elseif ($die) {
         die(
             '<h3>Error</h3><p>No config.csv!  Copy config.dist.csv to config.csv</p>'.
@@ -452,7 +452,7 @@ function getDailyForecastHtml($daily = null, $days = 5)
             }
             $html .= "<div class='forecastday'>";
             $html .= "<div class='forcastDay'>$today</div>";
-            if ($animate) {
+            if ($animate === 'true') {
                 $html .= "<canvas id='$today.$day->icon' class='forecasticon' width='70' height='70'></canvas>";
             } else {
                 $html .= "<img src='./skycons/{$day->icon}.png' width='70' height='70' />";
