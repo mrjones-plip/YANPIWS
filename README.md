@@ -339,6 +339,8 @@ Use your IDE of choice to edit and point your browser at ``localhost:8000``
 PRs and Issues welcome!
 
 ## Version History
+* 0.9.10 - Jul 20,2020
+  * Convert to more JSON, less HTML over AJAX calls #89
 * 0.9.9 - Jul 20,2020
   * Add user configurable font sizes #80
   * Better temp layouts #83

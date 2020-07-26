@@ -29,7 +29,7 @@ $darkskytime= getCacheAge();
         <p>
             <a href="/" class="homeLink"><-  Weather</a>
         </p>
-        <a href="https://github.com/mrjones-plip/YANPIWS">YANPIS 0.9.9</a> - Released Jul 20, 2020<br />
+        <a href="https://github.com/mrjones-plip/YANPIWS">YANPIS 0.9.10</a> - Released Jul 26, 2020<br />
         <a href="https://darksky.net/poweredby/">Powered by Dark Sky</a><br />
         <?php echo $currentTempHtml ?>
         Dark Sky Cache Age: <?php echo $darkskytime ?><br/>

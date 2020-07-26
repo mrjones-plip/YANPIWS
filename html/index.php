@@ -57,8 +57,8 @@ foreach ($YANPIWS['labels'] as $id => $label) {
         </div>
     </div>
     <div class="row suntimes">
-        <span><img src="sun.svg" class="sun" /> <span id="sunrise" ></span></span>
-        <span><img src="moon.svg" class="sun" /> <span id="sunset" ></span></span>
+        <span><img src="sun.svg" class="sun" /> <span id="sunrise" ></span> </span>
+        <span> <img src="moon.svg" class="moon" /> <span id="sunset" ></span></span>
     </div>
 </div>
 <div class="col rigthtCol" id="forecast">
