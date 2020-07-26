@@ -84,7 +84,7 @@ a.yellow {
     width:25px;
     padding-left:20px;
 }
-.date, .time, .label, .wind_now {
+#date, #time, .label, .wind_now {
     font-size:<?= $YANPIWS['font_time_date_wind']?>pt;
     font-weight: bold;
 }
@@ -93,13 +93,13 @@ a.yellow {
     text-transform: uppercase;
     font-size: <?= $YANPIWS['font_temp_label']?>pt;
 }
-.date, .time{
+#date, #time{
     float: left;
 }
 .wind_now {
     float: right;
 }
-.date {
+#date {
     padding-left: 20px;
 }
 .lowt {
@@ -122,6 +122,10 @@ label {
 }
 input {
     width:70%;
+}
+#last_ajax {
+    color: black;
+    font-size: .4em;
 }
 @media only screen and (max-width : 480px) {
     body {
