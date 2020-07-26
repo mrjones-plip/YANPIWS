@@ -96,6 +96,9 @@ a.yellow {
 #date, #time{
     float: left;
 }
+#time:hover{
+    cursor: pointer;
+}
 .wind_now {
     float: right;
 }
