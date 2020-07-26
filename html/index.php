@@ -50,21 +50,31 @@ foreach ($YANPIWS['labels'] as $id => $label) {
 <div class="col">
     <div class="row"></div>
     <div class="row ">
-        <div id="wind_now" class="wind_now"></div>
+        <div id="wind_now" class="wind_now big_clock_hide"></div>
         <div  id="datetime">
             <div id='time'></div>
             <div id='date'></div>
         </div>
     </div>
-    <div class="row suntimes">
+    <div class="row suntimes big_clock_hide">
         <span><img src="sun.svg" class="sun" /> <span id="sunrise" ></span> </span>
         <span> <img src="moon.svg" class="moon" /> <span id="sunset" ></span></span>
     </div>
 </div>
-<div class="col rigthtCol" id="forecast">
+<div class="col rigthtCol big_clock_hide" id="forecast">
 </div>
 <span id="last_ajax"></span>
 <script>
+    var clockState = 'small';
+    clockState = $( "#datetime" ).click(function() {
+        if (clockState == 'small'){
+            clockState = 'big';
+        } else {
+            clockState = 'small';
+        }
+        setClockSize(clockState, <?= $YANPIWS['font_time_date_wind']?>);
+        return clockState;
+    });
     function refreshAll() {
         //          Endpoint    data        DOM Location    callback
         refeshData('sunrise',   'sunrise',  '#sunrise');
@@ -75,6 +85,7 @@ foreach ($YANPIWS['labels'] as $id => $label) {
         refeshData('forecast',  'forecast', '#forecast', animateForecast);
         refeshData('age',       'age',      '#YANPIWS a');
         refeshData('last_ajax', 'last_ajax','#last_ajax');
+        setClockSize(clockState, <?= $YANPIWS['font_time_date_wind']?>);
 <?= $refreshTempJS ?>
     }
     refreshAll();

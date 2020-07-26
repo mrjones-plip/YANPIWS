@@ -27,6 +27,47 @@ function loadXMLDoc(URL, targetId, callback) {
     xmlhttp.send();
 
 }
+
+/**
+ * handle resizing clock to big then small
+ */
+// todo - use class for defaultSize, remove from signature
+function setClockSize(state, defaultSize){
+    if (state == 'big'){
+        // todo - put all this in a class and then just add and remove class
+        $('#time').css('font-size', '127pt').css('text-align', 'center').css('width', '100%');
+        $('#date').css('text-align', 'center').css('width', '100%');
+        $('.big_clock_hide').hide();
+    } else {
+        // todo - put all this in a class and then just add and remove class
+        $('#time').css('font-size', defaultSize + 'pt').css('text-align', 'left').css('width', 'inherit');
+        $('#date').css('text-align', 'left').css('width', 'inherit');
+        $('.big_clock_hide').show();
+        console.log('using small size: ' + defaultSize);
+    }
+}
+
+/**
+ * AJAX call to get updated forecast
+ */
+function refreshForecast(){
+    loadXMLDoc('./ajax.php?content=forecast', 'forecast', animateForecast);
+}
+
+/**
+ * AJAX call to get updated sunset time
+ */
+function refreshSunset(){
+    loadXMLDoc('./ajax.php?content=sunset', 'sunset');
+}
+
+/**
+ * AJAX call to get updated sunrise time
+ */
+function refreshSunrise(){
+    loadXMLDoc('./ajax.php?content=sunrise', 'sunrise');
+}
+
 /**
  * AJAX call to get updated content and return JSON
  */
