@@ -19,7 +19,7 @@ if (isset($_GET['content'])){
     switch ($_GET['content']){
         case "forecast":
             if ($raw){
-                print getDailyForecast($forecast->daily);
+                print json_encode(array('forecast' => getDailyForecastHtml($forecast->daily)));
             } else {
                 print getDailyForecastHtml($forecast->daily);
             }
@@ -69,15 +69,15 @@ if (isset($_GET['content'])){
                 }
             }
             if ($currentTempAge > 600 || $maxTempAge > 600){
-                print '<a class="yellow" href="/stats.php">YANPIWS</a>';
+                $result['age'] = '<span style="color: yellow">YANPIWS</span>';
             } else {
-                print '<a  href="/stats.php">YANPIWS</a>';
+                $result['age'] = 'YANPIWS';
             }
+            print json_encode($result);
             break;
 
         case "datetime":
             if($raw){
-                header('Content-Type: application/json');
                 print json_encode(array('date' => $date, 'time' => $time));
             } else {
                 print "<div class='time'>$time</div><div class='date'> $date</div>";
@@ -88,7 +88,7 @@ if (isset($_GET['content'])){
             if (isset($_GET['id']) && isset($YANPIWS['labels'][$_GET['id']])){
                 $tempLine = getMostRecentTemp($_GET['id']);
                 if($raw){
-                    print json_encode($tempLine);
+                    print json_encode(array('temp' => getTempHtml($tempLine)));
                 } else {
                     print getTempHtml($tempLine);
                 }
@@ -109,12 +109,8 @@ if (isset($_GET['content'])){
         case "last_ajax":
             // update this ajax file per #61 https://github.com/Ths2-9Y-LqJt6/YANPIWS/issues/61
             touch($YANPIWS['dataPath'] . '/' . 'last_ajax');
-            print "<!-- " .  time() . "-->";
+            print json_encode(array('last_ajax' => time()));
             break;
-
-        // todo do catch all somehow?
-        // print print "No AJAX here";
-
     }
 }
 exit;

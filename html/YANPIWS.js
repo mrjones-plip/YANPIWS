@@ -32,7 +32,7 @@ function loadXMLDoc(URL, targetId, callback) {
  * AJAX call to get updated forecast
  */
 function refreshForecast(){
-    loadXMLDoc('./ajax.php?content=forecast', 'forecast', animateForecast);
+    loadXMLDoc('./ajax.php?content=forecast', 'forecast', );
 }
 
 /**
@@ -52,11 +52,15 @@ function refreshSunrise(){
 /**
  * AJAX call to get updated date and time
  */
-function refeshData(endpoint, dataElement, target){
+function refeshData(endpoint, dataElement, target, callback = false){
     let baseUrl = './ajax.php?raw=1&content=';
     $.getJSON( baseUrl + endpoint, function( data ) {
         console.log('from endpoint ' + endpoint + ' got: ' + JSON.stringify(data) + ' will push into: ' + target) ;
         $(target).html(data[dataElement]);
+        if (typeof callback === "function") {
+            console.log('calling: callback' );
+            callback();
+        }
     });
 }
 /**

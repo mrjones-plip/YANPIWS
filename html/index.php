@@ -5,12 +5,9 @@ getConfig();
 
 $forecast = getDarkSkyData();
 $status = configIsValid();
-$statusHtml = '';
 if ($status['valid'] != true) {
-    $statusHtml .= "<div class='error'>ERROR: {$status['reason']}</div>";
+    $statusHtml = "<div class='error'>ERROR: {$status['reason']}</div>";
     $statusHtml .= "<style>.temp,.suntimes{display:none;}</style>";
-} else {
-    $statusHtml .= '<div id="YANPIWS" class="YANPIWS"></div>';
 }
 
 $count = 1;
@@ -18,7 +15,7 @@ $refreshTempJS = '';
 $tempsHtml = '';
 foreach ($YANPIWS['labels'] as $id => $label) {
     $tempsHtml .= "\t\t\t<div class='temp temp{$count}' id='temp{$count}'></div>\n";
-    $refreshTempJS .= "\t\trefreshTemp($id,$count);\n";
+    $refreshTempJS .= "\t\trefeshData('temp&id={$id}',\t'temp',\t'#temp{$count}');\n";
     $count++;
     if ($count > $YANPIWS['temp_count']) {
         break;
@@ -39,6 +36,8 @@ foreach ($YANPIWS['labels'] as $id => $label) {
 <link rel="stylesheet" type="text/css" href="styles.css.php?<?=  $YANPIWS['cache_bust'] ?>" />
 
 <?= $statusHtml ?>
+
+<div id="YANPIWS" class="YANPIWS"><a href="/stats.php">YANPIWS</a></div>
 
 <div class="col">
     <div class="row temp-row">
@@ -63,28 +62,22 @@ foreach ($YANPIWS['labels'] as $id => $label) {
 </div>
 <div class="col rigthtCol" id="forecast">
 </div>
+<span id="last_ajax"></span>
 <script>
     function refreshAll() {
-        //          Endpoint    data    DOM
-        refeshData('sunrise', 'sunrise', '#sunrise');
-        refeshData('sunset', 'sunset', '#sunset');
-        refeshData('wind_now', 'wind', '#wind_now');
-        // todo - date and time aren't being formatted correctly
-        refeshData('datetime', 'date', '#date');
-        refeshData('datetime', 'time', '#time');
-
-        // todo - migrate this to use refreshData()
-        refreshForecast();
-
-        // todo - migrate this to use refreshData() instead of refreshTemp() above
-        <?= $refreshTempJS ?>
-
-        checkTempAges();
-        refreshLastAjax();
+        //          Endpoint    data        DOM Location    callback
+        refeshData('sunrise',   'sunrise',  '#sunrise');
+        refeshData('sunset',    'sunset',   '#sunset');
+        refeshData('wind_now',  'wind',     '#wind_now');
+        refeshData('datetime',  'date',     '#date');
+        refeshData('datetime',  'time',     '#time');
+        refeshData('forecast',  'forecast', '#forecast', animateForecast);
+        refeshData('age',       'age',      '#YANPIWS a');
+        refeshData('last_ajax', 'last_ajax','#last_ajax');
+<?= $refreshTempJS ?>
     }
     refreshAll();
     setInterval ( refreshAll, 60000 );
 </script>
-<span id="dev_null"></span>
 </body>
 </html>

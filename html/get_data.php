@@ -452,7 +452,7 @@ function getDailyForecastHtml($daily = null, $days = 5)
             }
             $html .= "<div class='forecastday'>";
             $html .= "<div class='forcastDay'>$today</div>";
-            if ($animate) {
+            if ($animate === 'true') {
                 $html .= "<canvas id='$today.$day->icon' class='forecasticon' width='70' height='70'></canvas>";
             } else {
                 $html .= "<img src='./skycons/{$day->icon}.png' width='70' height='70' />";
