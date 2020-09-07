@@ -11,8 +11,12 @@ if (isset($_GET['content'])){
     switch ($_GET['content']){
         case "forecast":
             if (isset($forecast->daily)) {
-                // todo - refactor calls to not expect cooked HTML in respone, just raw JSON
                 print json_encode(array('forecast' => getDailyForecastHtml($forecast->daily)));
+            }
+            break;
+        case "forecast_full_json":
+            if (isset($forecast->daily)) {
+                print json_encode($forecast->daily->data);
             }
             break;
 
