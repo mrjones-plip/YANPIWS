@@ -51,7 +51,7 @@ foreach ($YANPIWS['labels'] as $id => $label) {
     <div class="row"></div>
     <div class="row ">
         <div id='datetimewind'>
-            <div id="wind_now" class="wind_now small_time big_clock_hide">31 mph</div>     
+            <div id="wind_now" class="wind_now small_time big_clock_hide"></div>     
             <div id='datetime'>
                 <div id='time' class='small_time'></div>
                 <div id='date' class='small_time'></div>
