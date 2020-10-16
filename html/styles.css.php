@@ -104,12 +104,8 @@ a.yellow {
     display: inline-block;
 }
 
-.small_time_parent {
-    width: 100%;
-}
-
-.big_clock_hide {
-    display: block;
+.big_clock_hide.big_time {
+    display: none;
 }
 
 .label {
