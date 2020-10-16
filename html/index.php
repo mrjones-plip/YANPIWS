@@ -50,8 +50,8 @@ foreach ($YANPIWS['labels'] as $id => $label) {
 <div class="col">
     <div class="row"></div>
     <div class="row ">
-        <div id='datetimewind' class='small_time_parent'>
-            <div id="wind_now" class="wind_now small_time">31 mph</div>     
+        <div id='datetimewind'>
+            <div id="wind_now" class="wind_now small_time big_clock_hide">31 mph</div>     
             <div id='datetime'>
                 <div id='time' class='small_time'></div>
                 <div id='date' class='small_time'></div>
@@ -75,7 +75,6 @@ foreach ($YANPIWS['labels'] as $id => $label) {
             clockState = 'small';
         }
         setClockSize(clockState, <?= $YANPIWS['font_time_date_wind']?>);
-        return clockState;
     });
     function refreshAll() {
         //          Endpoint    data        DOM Location    callback
