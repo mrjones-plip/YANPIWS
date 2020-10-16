@@ -29,27 +29,21 @@ function loadXMLDoc(URL, targetId, callback) {
 }
 
 /**
- * handle resizing clock to big then small
+ * handle resizing clock to big then small 
+ * by toggling between big_time and small_time classes
  */
-// todo - use class for defaultSize, remove from signature
 function setClockSize(state, defaultSize){
     if (state == 'big'){
-        $('#time').removeClass("small_time")
-        $('#date').removeClass("small_time")    
-        $('#datetimewind').removeClass("small_time_parent")      
-        $('#time').addClass("big_time")
-        $('#date').addClass("big_time")
+        var small_times = $('.small_time')
+        small_times.addClass("big_time")
+        small_times.removeClass("small_time")
 
-        $('.big_clock_hide').hide();
         console.log('using big size');
     } else {
-        $('#time').removeClass("big_time")
-        $('#date').removeClass("big_time")   
-        $('#datetimewind').addClass("small_time_parent")           
-        $('#time').addClass("small_time")
-        $('#date').addClass("small_time")        
+        var big_times = $('.big_time')
+        big_times.addClass("small_time")
+        big_times.removeClass("big_time")
 
-        $('.big_clock_hide').show();
         console.log('using small size: ' + defaultSize);
     }
 }
