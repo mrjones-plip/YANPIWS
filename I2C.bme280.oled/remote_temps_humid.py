@@ -40,35 +40,25 @@ def get_string_from_url(url):
 # fetch the cooked up json -> strings
 import json
 humidAndTemp1 = json.loads(get_string_from_url(humidAndTemp1url))
-temp1final = str(int(float(humidAndTemp1[0]['temp']))) + '°' + humidAndTemp1[0]['label']
-if 'humidity' in humidAndTemp1[0]:
-    temp1final = str(int(float(humidAndTemp1[0]['humidity']))) + '% ' + temp1final;
-if yanpiws_temp_2 is not None and humidAndTemp1[0]['humidity'] != '':
+
+if humidAndTemp1[0]['temp'] != 'NA':
+    temp1final = str(int(float(humidAndTemp1[0]['temp']))) + '°' + humidAndTemp1[0]['label']
+    if 'humidity' in humidAndTemp1[0]:
+        temp1final = str(int(float(humidAndTemp1[0]['humidity']))) + '% ' + temp1final
+if yanpiws_temp_2 is not None and humidAndTemp1[0]['humidity'] != '' and humidAndTemp1[0]['temp'] != 'NA':
     humidAndTemp2 = json.loads(get_string_from_url(humidAndTemp2url))
     temp2final = str(int(float(humidAndTemp2[0]['temp']))) + '°' \
         + str(humidAndTemp2[0]['label'])
     if 'humidity' in humidAndTemp2[0] and humidAndTemp2[0]['humidity'] != '':
-        temp2final = str(int(float(humidAndTemp2[0]['humidity']))) + '% ' + temp2final;
+        temp2final = str(int(float(humidAndTemp2[0]['humidity']))) + '% ' + temp2final
 
 date_time = json.loads(get_string_from_url(datetime))
 
-import smbus
-import time
-from ctypes import c_short
-from ctypes import c_byte
-from ctypes import c_ubyte
-import json
-
-import time
 import os
-from random import *
-import Adafruit_GPIO.SPI as SPI
 import Adafruit_SSD1306
 from PIL import Image
 from PIL import ImageDraw
 from PIL import ImageFont
-import random
-import subprocess
 
 # set full puth for incling libs below
 full_path = os.path.dirname(os.path.abspath(__file__)) + "/"

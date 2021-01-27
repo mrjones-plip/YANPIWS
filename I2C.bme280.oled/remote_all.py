@@ -35,6 +35,7 @@ sunsetUrl = 'http://' + str(yanpiws_ip) + '/ajax.php?content=sunset'
 sunriseUrl = 'http://' + str(yanpiws_ip) + '/ajax.php?content=sunrise'
 datetimeUrl = 'http://' + str(yanpiws_ip) + '/ajax.php?content=datetime'
 
+
 def get_string_from_url(url):
     import urllib.request
     raw_html = urllib.request.urlopen(url).read().decode('utf-8').rstrip()
@@ -43,11 +44,18 @@ def get_string_from_url(url):
 # fetch the cooked up html -> strings
 import json
 temp1 = json.loads(get_string_from_url(temp1url))
-temp1final = str(int(float(temp1[0]['temp']))) + temp1[0]['label']
+
+if temp1[0]['temp'] != 'NA':
+    temp1final = str(int(float(temp1[0]['temp']))) + temp1[0]['label']
+else:
+    temp1final = 'NA'
 
 if yanpiws_temp_2 != None:
     temp2 = json.loads(get_string_from_url(temp2url))
-    temp2final = ' ' + str(int(float(temp2[0]['temp']))) + temp2[0]['label']
+    if temp2[0]['temp'] != 'NA':
+        temp2final = ' ' + str(int(float(temp2[0]['temp']))) + temp2[0]['label']
+    else:
+        temp2final = ''
 else:
     temp2final = ''
 
@@ -58,23 +66,11 @@ sunrise = json.loads(get_string_from_url(sunriseUrl))
 
 date_time = json.loads(get_string_from_url(datetimeUrl))
 
-import smbus
-import time
-from ctypes import c_short
-from ctypes import c_byte
-from ctypes import c_ubyte
-import json
-
-import time
 import os
-from random import *
-import Adafruit_GPIO.SPI as SPI
 import Adafruit_SSD1306
 from PIL import Image
 from PIL import ImageDraw
 from PIL import ImageFont
-import random
-import subprocess
 
 # set full puth for incling libs below
 full_path = os.path.dirname(os.path.abspath(__file__)) + "/"
