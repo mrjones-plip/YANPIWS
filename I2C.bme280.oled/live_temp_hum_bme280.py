@@ -26,22 +26,15 @@ args = parser.parse_args()
 temp_sensor_id = args.device
 
 import smbus
-import time
 from ctypes import c_short
-from ctypes import c_byte
-from ctypes import c_ubyte
 import json
 
 import time
 import os
-from random import *
-import Adafruit_GPIO.SPI as SPI
 import Adafruit_SSD1306
 from PIL import Image
 from PIL import ImageDraw
 from PIL import ImageFont
-import random
-import subprocess
 
 # set full puth for incling libs below
 full_path = os.path.dirname(os.path.abspath(__file__)) + "/"
