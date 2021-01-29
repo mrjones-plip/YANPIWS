@@ -1,11 +1,14 @@
 #!/usr/bin/python3
 
-from luma.core.interface.serial import i2c, spi, pcf8574
+from luma.core.interface.serial import i2c
 from luma.core.render import canvas
 from luma.oled.device import ssd1306
+from PIL import ImageFont
+import os
 import argparse
 import json
 import time
+
 
 parser = argparse.ArgumentParser()
 
@@ -64,34 +67,49 @@ def get_temp_string(temp_id):
 
 def get_date_time():
     url = 'http://' + str(yanpiws_ip) + '/ajax.php?content=datetime'
-    return json.loads(get_string_from_url(url))
+    date_time = json.loads(get_string_from_url(url))
+    string = date_time['date'] + ' ' + date_time['time']
+    return string
 
 
-def showInfo(device):
-    date_time = get_date_time(datetimeUrl)
+def show_info(device):
+    first_line = get_date_time()
     temp1final = get_temp_string(yanpiws_temp_1)
     temp2final = get_temp_string(yanpiws_temp_2)
-    sunriseFinal = get_sunrise_sunset('sunrise')
-    sunsetFinal = get_sunrise_sunset('sunset')
+    sunrise_final = get_sunrise_sunset('sunrise')
+    sunset_final = get_sunrise_sunset('sunset')
     forecast = get_forecast()
 
+    full_path = os.path.dirname(os.path.abspath(__file__)) + "/"
+    font2 = ImageFont.truetype(full_path + "Lato-Heavy.ttf", 12)
+
+    second_line = temp1final + temp2final + ' ' + sunrise_final + ' ' + sunset_final
+    third_line = 'H: ' + str(int(forecast[0]['temperatureHigh'])) + ' L: ' + str(int(forecast[0]['temperatureLow'])) +\
+        ' ' + forecast[0]['icon']
+    fourth_line = 'H: ' + str(int(forecast[1]['temperatureHigh'])) + ' L: ' + str(int(forecast[1]['temperatureLow'])) +\
+        ' ' + forecast[1]['icon']
+
     with canvas(device) as draw:
-        draw.rectangle(device.bounding_box, outline="white", fill="black")
-        draw.text((0, 0), date_time['date'] + ' ' + date_time['time'], fill="white")
-        draw.text((0, 17), temp1final + temp2final + ' ' + sunriseFinal + ' ' + sunsetFinal, fill="white")
-        draw.text((0, 35), 'H: ' + str(int(forecast[0]['temperatureHigh'])) + ' L: ' + str(int(forecast[0]['temperatureLow'])) + ' ' + forecast[0]['icon'], fill="white")
-        draw.text((0, 52), 'H: ' + str(int(forecast[1]['temperatureHigh'])) + ' L: ' + str(int(forecast[1]['temperatureLow'])) + ' ' + forecast[1]['icon'], fill="white")
+        # draw.rectangle(device.bounding_box, outline="white", fill="black")
+        draw.text((0, 0),  first_line,  font=font2, fill="white")
+        draw.text((0, 17), second_line, font=font2, fill="white")
+        draw.text((0, 35), third_line,  font=font2, fill="white")
+        draw.text((0, 52), fourth_line, font=font2, fill="white")
 
 
 def main():
-    # rev.1 users set port=0
-    # substitute spi(device=0, port=0) below if using that interface
-    # substitute bitbang_6800(RS=7, E=8, PINS=[25,24,23,27]) below if using that interface
-    serial = i2c(bus_number, address=0x3C)
+    serial = i2c(port=bus_number, address=0x3C)
 
     # substitute ssd1331(...) or sh1106(...) below if using that device
     device = ssd1306(serial)
 
     while True:
-        showInfo(device)
-        time.sleep(30)
+        show_info(device)
+        time.sleep(5)
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except KeyboardInterrupt:
+        pass
