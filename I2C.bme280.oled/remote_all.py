@@ -8,7 +8,12 @@ import os
 import argparse
 import json
 import time
+import logging.handlers
 
+my_logger = logging.getLogger('MyLogger')
+my_logger.setLevel(logging.DEBUG)
+handler = logging.handlers.SysLogHandler(address='/dev/log')
+my_logger.addHandler(handler)
 
 parser = argparse.ArgumentParser()
 
@@ -73,6 +78,7 @@ def get_date_time():
 
 
 def show_info(device):
+    my_logger.debug("Weathercaster: show_info start")
     first_line = get_date_time()
     temp1final = get_temp_string(yanpiws_temp_1)
     temp2final = get_temp_string(yanpiws_temp_2)
@@ -89,6 +95,8 @@ def show_info(device):
     fourth_line = 'H: ' + str(int(forecast[1]['temperatureHigh'])) + ' L: ' + str(int(forecast[1]['temperatureLow'])) +\
         ' ' + forecast[1]['icon']
 
+    my_logger.debug("Weathercaster: show_info draw")
+
     with canvas(device) as draw:
         # draw.rectangle(device.bounding_box, outline="white", fill="black")
         draw.text((0, 0),  first_line,  font=font2, fill="white")
@@ -97,19 +105,38 @@ def show_info(device):
         draw.text((0, 52), fourth_line, font=font2, fill="white")
 
 
-def main():
-    serial = i2c(port=bus_number, address=0x3C)
+def full_stack():
+    import traceback, sys
+    exc = sys.exc_info()[0]
+    stack = traceback.extract_stack()[:-1]  # last one would be full_stack()
+    if exc is not None:  # i.e. an exception is present
+        del stack[-1]       # remove call of full_stack, the printed exception
+                            # will contain the caught exception caller instead
+    trc = 'Traceback (most recent call last):\n'
+    stackstr = trc + ''.join(traceback.format_list(stack))
+    if exc is not None:
+         stackstr += '  ' + traceback.format_exc().lstrip(trc)
+    return stackstr
 
-    # substitute ssd1331(...) or sh1106(...) below if using that device
-    device = ssd1306(serial)
+
+def main(device):
 
     while True:
         show_info(device)
         time.sleep(5)
 
 
+
+
 if __name__ == "__main__":
     try:
-        main()
+        my_logger.debug('Weathercaster: Starting')
+        serial = i2c(port=bus_number, address=0x3C)
+        device = ssd1306(serial)
+
+        main(device)
     except KeyboardInterrupt:
+        my_logger.debug("Weathercaster: Stopping(Ctrl + C)")
         pass
+    finally:
+        my_logger.debug("Weathercaster exit trace: " + full_stack())
