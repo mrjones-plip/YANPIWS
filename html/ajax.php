@@ -68,8 +68,11 @@ if (isset($_GET['content'])){
                 $tempLine = getMostRecentTemp($_GET['id']);
                 if(isset($_GET['cooked'])){
                     print getTempHtml($tempLine);
+                } elseif(isset($_GET['raw'])) {
+                    print json_encode($tempLine);
                 } else {
                     // todo - refactor calls to not expect cooked HTML in respone, just raw JSON
+                    // per 'raw' above
                     print json_encode(array('temp' => getTempHtml($tempLine)));
                 }
             }
