@@ -78,7 +78,6 @@ def get_date_time():
 
 
 def show_info(device):
-    my_logger.debug("Weathercaster: show_info start")
     first_line = get_date_time()
     temp1final = get_temp_string(yanpiws_temp_1)
     temp2final = get_temp_string(yanpiws_temp_2)
@@ -94,8 +93,6 @@ def show_info(device):
         ' ' + forecast[0]['icon']
     fourth_line = 'H: ' + str(int(forecast[1]['temperatureHigh'])) + ' L: ' + str(int(forecast[1]['temperatureLow'])) +\
         ' ' + forecast[1]['icon']
-
-    my_logger.debug("Weathercaster: show_info draw")
 
     with canvas(device) as draw:
         # draw.rectangle(device.bounding_box, outline="white", fill="black")
@@ -123,9 +120,7 @@ def main(device):
 
     while True:
         show_info(device)
-        time.sleep(5)
-
-
+        time.sleep(50)
 
 
 if __name__ == "__main__":
