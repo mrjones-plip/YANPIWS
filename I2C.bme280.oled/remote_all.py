@@ -125,13 +125,13 @@ def main(device):
 
 if __name__ == "__main__":
     try:
-        my_logger.debug('Weathercaster: Starting')
+        my_logger.debug('YANPIWS: Starting')
         serial = i2c(port=bus_number, address=0x3C)
         device = ssd1306(serial)
 
         main(device)
     except KeyboardInterrupt:
-        my_logger.debug("Weathercaster: Stopping(Ctrl + C)")
+        my_logger.debug("YANPIWS: Stopping(Ctrl + C)")
         pass
     finally:
-        my_logger.debug("Weathercaster exit trace: " + full_stack())
+        my_logger.debug("YANPIWS exit trace: " + full_stack())

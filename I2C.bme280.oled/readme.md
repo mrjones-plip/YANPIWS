@@ -67,7 +67,7 @@ device IDs after running `i2cdetect 0` or `i2cdetect 1`. These are likley `76` f
    It defaults to `--bus/-b` of `1` and `--device/-d` of `0x76`.  Likely if you're on a Pi, you 
    won't need to change anything, so you can just call it with out any arguments.
    
- 1. `remote_all.py` takes teh following arguments:
+1. `remote_all.py` takes teh following arguments:
     ```$xslt
     usage: remote_all.py [-h] [--bus BUS] [--remote_ip REMOTE_IP]
                          [--temp_id1 TEMP_ID1] [--temp_id2 TEMP_ID2]
