@@ -1,8 +1,19 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
-
-# grab args from CLI
+from luma.core.interface.serial import i2c
+from luma.core.render import canvas
+from luma.oled.device import ssd1306
+from PIL import ImageFont
+import os
 import argparse
+import json
+import time
+import logging.handlers
+
+my_logger = logging.getLogger('MyLogger')
+my_logger.setLevel(logging.DEBUG)
+handler = logging.handlers.SysLogHandler(address='/dev/log')
+my_logger.addHandler(handler)
 
 parser = argparse.ArgumentParser()
 
@@ -21,19 +32,10 @@ parser.add_argument('--temp_id1', '-id1', default='231', type=int, help='remote 
 parser.add_argument('--temp_id2', '-id2', type=int, help='remote temp ID #2, defaults to 63')
 
 args = parser.parse_args()
-
 yanpiws_ip = args.remote_ip
 yanpiws_temp_1 = args.temp_id1
 yanpiws_temp_2 = args.temp_id2
-
 bus_number = args.bus
-
-temp1url = 'http://' + str(yanpiws_ip) + '/ajax.php?content=humidity&id=' + str(yanpiws_temp_1)
-temp2url = 'http://' + str(yanpiws_ip) + '/ajax.php?content=humidity&id=' + str(yanpiws_temp_2)
-forecastUrl = 'http://' + str(yanpiws_ip) + '/ajax.php?content=forecast_full_json'
-sunsetUrl = 'http://' + str(yanpiws_ip) + '/ajax.php?content=sunset'
-sunriseUrl = 'http://' + str(yanpiws_ip) + '/ajax.php?content=sunrise'
-datetimeUrl = 'http://' + str(yanpiws_ip) + '/ajax.php?content=datetime'
 
 
 def get_string_from_url(url):
@@ -41,97 +43,95 @@ def get_string_from_url(url):
     raw_html = urllib.request.urlopen(url).read().decode('utf-8').rstrip()
     return raw_html
 
-# fetch the cooked up html -> strings
-import json
-temp1 = json.loads(get_string_from_url(temp1url))
 
-if temp1[0]['temp'] != 'NA':
-    temp1final = str(int(float(temp1[0]['temp']))) + temp1[0]['label']
-else:
-    temp1final = 'NA'
+def get_forecast():
+    forecastUrl = 'http://' + str(yanpiws_ip) + '/ajax.php?content=forecast_full_json'
+    return json.loads(get_string_from_url(forecastUrl))
 
-if yanpiws_temp_2 != None:
-    temp2 = json.loads(get_string_from_url(temp2url))
-    if temp2[0]['temp'] != 'NA':
-        temp2final = ' ' + str(int(float(temp2[0]['temp']))) + temp2[0]['label']
+
+def get_sunrise_sunset(string):
+    url = 'http://' + str(yanpiws_ip) + '/ajax.php?content=' + string
+    data = json.loads(get_string_from_url(url))
+    string = data[string].split(' ')[0]
+    return string
+
+
+def get_temp_string(temp_id):
+    if temp_id != None:
+        url = 'http://' + str(yanpiws_ip) + '/ajax.php?content=humidity&id=' + str(temp_id)
+        temp = json.loads(get_string_from_url(url))
+        if temp[0]['temp'] != 'NA':
+            the_string = ' ' + str(int(float(temp[0]['temp']))) + temp[0]['label']
+        else:
+            the_string = ''
     else:
-        temp2final = ''
-else:
-    temp2final = ''
+        the_string = ''
 
-forecast = json.loads(get_string_from_url(forecastUrl))
+    return the_string
 
-sunset = json.loads(get_string_from_url(sunsetUrl))
-sunrise = json.loads(get_string_from_url(sunriseUrl))
 
-date_time = json.loads(get_string_from_url(datetimeUrl))
+def get_date_time():
+    url = 'http://' + str(yanpiws_ip) + '/ajax.php?content=datetime'
+    date_time = json.loads(get_string_from_url(url))
+    string = date_time['date'] + ' ' + date_time['time']
+    return string
 
-import os
-import Adafruit_SSD1306
-from PIL import Image
-from PIL import ImageDraw
-from PIL import ImageFont
 
-# set full puth for incling libs below
-full_path = os.path.dirname(os.path.abspath(__file__)) + "/"
+def show_info(device):
+    first_line = get_date_time()
+    temp1final = get_temp_string(yanpiws_temp_1)
+    temp2final = get_temp_string(yanpiws_temp_2)
+    sunrise_final = get_sunrise_sunset('sunrise')
+    sunset_final = get_sunrise_sunset('sunset')
+    forecast = get_forecast()
 
-# Raspberry Pi pin configuration:
-RST = None     # on the PiOLED this pin isnt used
-# Note the following are only used with SPI:
-DC = 23
-SPI_PORT = 0
-SPI_DEVICE = 0
+    full_path = os.path.dirname(os.path.abspath(__file__)) + "/"
+    font2 = ImageFont.truetype(full_path + "Lato-Heavy.ttf", 12)
 
-# Rev 2 Pi, Pi 2 & Pi 3 uses bus 1
-# Rev 1 Pi uses bus 0
-# Orange Pi Zero uses bus 0 for pins 1-5 (other pins for bus 1 & 2)
-disp = Adafruit_SSD1306.SSD1306_128_64(rst=RST, i2c_bus=bus_number)
+    second_line = temp1final + temp2final + ' ' + sunrise_final + ' ' + sunset_final
+    third_line = 'H: ' + str(int(forecast[0]['temperatureHigh'])) + ' L: ' + str(int(forecast[0]['temperatureLow'])) +\
+        ' ' + forecast[0]['icon']
+    fourth_line = 'H: ' + str(int(forecast[1]['temperatureHigh'])) + ' L: ' + str(int(forecast[1]['temperatureLow'])) +\
+        ' ' + forecast[1]['icon']
 
-# Initialize library.
-disp.begin()
+    with canvas(device) as draw:
+        # draw.rectangle(device.bounding_box, outline="white", fill="black")
+        draw.text((0, 0),  first_line,  font=font2, fill="white")
+        draw.text((0, 17), second_line, font=font2, fill="white")
+        draw.text((0, 35), third_line,  font=font2, fill="white")
+        draw.text((0, 52), fourth_line, font=font2, fill="white")
 
-# Clear display.
-disp.clear()
-disp.display()
 
-# Create blank image for drawing.
-# Make sure to create image with mode '1' for 1-bit color.
-width = disp.width
-height = disp.height
-image = Image.new('1', (width, height))
+def full_stack():
+    import traceback, sys
+    exc = sys.exc_info()[0]
+    stack = traceback.extract_stack()[:-1]  # last one would be full_stack()
+    if exc is not None:  # i.e. an exception is present
+        del stack[-1]       # remove call of full_stack, the printed exception
+                            # will contain the caught exception caller instead
+    trc = 'Traceback (most recent call last):\n'
+    stackstr = trc + ''.join(traceback.format_list(stack))
+    if exc is not None:
+         stackstr += '  ' + traceback.format_exc().lstrip(trc)
+    return stackstr
 
-# Get drawing object to draw on image.
-draw = ImageDraw.Draw(image)
 
-# Draw a black filled box to clear the image.
-draw.rectangle((-20,-20,width,height), outline=0, fill=0)
+def main(device):
 
-# Draw some shapes.
-# First define some constants to allow easy resizing of shapes.
-padding = -2
-top = padding
-bottom = height-padding
+    while True:
+        show_info(device)
+        time.sleep(50)
 
-# Load default font.
-font = ImageFont.truetype(full_path + "Lato-Heavy.ttf", 10)
-font_small = ImageFont.truetype(full_path + "Lato-Heavy.ttf", 12)
-# Alternatively load a TTF font.  Make sure the .ttf font file is in the same directory as the python script!
-# Some other nice fonts to try: http://www.dafont.com/bitmap.php
-# font = ImageFont.truetype('Minecraftia.ttf', 8)
 
-# Draw a black filled box to clear the image.
-draw.rectangle((0,0,width,height), outline=0, fill=0)
-sunriseFinal =  sunrise['sunrise'].split(' ')[0]
-sunsetFinal =  sunset['sunset'].split(' ')[0]
+if __name__ == "__main__":
+    try:
+        my_logger.debug('YANPIWS: Starting')
+        serial = i2c(port=bus_number, address=0x3C)
+        device = ssd1306(serial)
 
-# render the data
-draw.text((0, top ), date_time['date'] + ' ' + date_time['time'] , font=font_small, fill=255)
-draw.text((0, top + 17), temp1final + temp2final + ' ' + sunriseFinal + ' ' + sunsetFinal, font=font_small, fill=255)
-draw.text((0, top + 35), 'H: ' + str(int(forecast[0]['temperatureHigh'])) + ' L: '
-          + str(int(forecast[0]['temperatureLow'])) + ' ' + forecast[0]['icon'], font=font_small, fill=255)
-draw.text((0, top + 52), 'H: ' + str(int(forecast[1]['temperatureHigh'])) + ' L: '
-          + str(int(forecast[1]['temperatureLow'])) + ' ' + forecast[1]['icon'], font=font_small, fill=255)
-
-# Display image.
-disp.image(image)
-disp.display()
+        main(device)
+    except KeyboardInterrupt:
+        my_logger.debug("YANPIWS: Stopping(Ctrl + C)")
+        pass
+    finally:
+        my_logger.debug("YANPIWS exit trace: " + full_stack())

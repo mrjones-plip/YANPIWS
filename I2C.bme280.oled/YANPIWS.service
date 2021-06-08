@@ -1,0 +1,14 @@
+[Unit]
+Description=YANPIWS
+After=network-online.target
+
+[Service]
+ExecStart=/usr/bin/python3 /home/pi/YANPIWS/I2C.bme280.oled/remote_all.py -b 1 -ip 192.168.2.30 -id1 57 -id2 74
+# todo - the After above doesn't seem to work so we put this sleep in here :(
+ExecStartPre=/bin/sleep 10
+ExecStop=/usr/bin/python3 /home/pi/YANPIWS/I2C.bme280.oled/clear_scren.py -b 1
+Restart=always
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.etarget

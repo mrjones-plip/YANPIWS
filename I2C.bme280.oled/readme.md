@@ -67,7 +67,7 @@ device IDs after running `i2cdetect 0` or `i2cdetect 1`. These are likley `76` f
    It defaults to `--bus/-b` of `1` and `--device/-d` of `0x76`.  Likely if you're on a Pi, you 
    won't need to change anything, so you can just call it with out any arguments.
    
- 1. `remote_all.py` takes teh following arguments:
+1. `remote_all.py` takes teh following arguments:
     ```$xslt
     usage: remote_all.py [-h] [--bus BUS] [--remote_ip REMOTE_IP]
                          [--temp_id1 TEMP_ID1] [--temp_id2 TEMP_ID2]
@@ -84,6 +84,16 @@ device IDs after running `i2cdetect 0` or `i2cdetect 1`. These are likley `76` f
     * * * * * cd /var/www/html/I2C.bme280.oled; /usr/bin/python3 live_temp_hum_bme280.py 
     * * * * * /usr/bin/python3 /var/www/html/I2C.bme280.oled/remote_all.py -ip  192.168.68.105 -id1 73 -id2 231
     ``` 
+    
+todo - implement this systmed based crontab:
+
+```
+* * * * * cd /var/www/html/I2C.bme280.oled; /usr/bin/python3 remote_temps_humid.py -b 0 -ip 10.0.40.219 -id1 96 -id2 97 
+# at 8pm turn off screen                                                                          
+0 20 * * * /usr/bin/systemctl stop weathercaster                                                  
+# at 6am start screen                                                                             
+0 6 * * * /usr/bin/systemctl start weathercaster   
+```
  
 If you need more help - read up on the "Long Start" below.
  
