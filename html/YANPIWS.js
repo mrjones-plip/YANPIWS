@@ -40,11 +40,7 @@ function setClockSize(state, defaultSize){
 
         console.log('using big size');
     } else {
-        var big_times = $('.big_time')
-        big_times.addClass("small_time")
-        big_times.removeClass("big_time")
-
-        console.log('using small size: ' + defaultSize);
+        $('.big_time').addClass("small_time").removeClass("big_time");
     }
 }
 
