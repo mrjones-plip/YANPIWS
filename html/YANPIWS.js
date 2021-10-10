@@ -34,11 +34,7 @@ function loadXMLDoc(URL, targetId, callback) {
  */
 function setClockSize(state, defaultSize){
     if (state == 'big'){
-        var small_times = $('.small_time')
-        small_times.addClass("big_time")
-        small_times.removeClass("small_time")
-
-        console.log('using big size');
+        $('.small_time').addClass("big_time").removeClass("small_time");
     } else {
         $('.big_time').addClass("small_time").removeClass("big_time");
     }
