@@ -137,8 +137,11 @@ animated ones, set 'animate' to `false` instead of `true` like below. Here's a s
     lat,31.775554
     lon,-81.822436
     
-    # set your forecast API token - should be a 32 char alpa numeric
-    forecast_api,aabbccddeeffgghhiijj112233445566
+    # set your forecast API token - should be a 32-40 char alpha numeric
+    forecast_api_token,aabbccddeeffgghhiijj112233445566
+   
+    # set your forecast API URL
+    forecast_api_url,https://api.pirateweather.net
     
     # should we show animated icons for forecast? should be "true" or "false"
     animate,true
