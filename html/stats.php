@@ -15,7 +15,7 @@ if (isset($_SERVER['SERVER_ADDR'])) {
     $address = 'NA';
 }
 
-$darkskytime= getCacheAge();
+$cachetime= getCacheAge();
 ?>
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/html">
@@ -30,9 +30,9 @@ $darkskytime= getCacheAge();
             <a href="/" class="homeLink"><-  Weather</a>
         </p>
         <a href="https://github.com/mrjones-plip/YANPIWS">YANPIS 0.9.10</a> - Released Jul 26, 2020<br />
-        <a href="https://darksky.net/poweredby/">Powered by Dark Sky</a><br />
+        <a href="http://pirateweather.net/en/latest/#introduction/">Powered by Pirate Weather</a><br />
         <?php echo $currentTempHtml ?>
-        Dark Sky Cache Age: <?php echo $darkskytime ?><br/>
+        Forecast Cache Age: <?php echo $cachetime ?><br/>
         IP: <?php echo $address ?>
     </div>
 </div>
