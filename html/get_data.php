@@ -8,7 +8,8 @@ function getValidConfigs(){
     return array(
         'lat',
         'lon',
-        'darksky',
+        'forecast_api_token',
+        'forecast_api_url',
         'labels',
         'animate',
         'dataPath',
@@ -68,9 +69,13 @@ function configIsValid($validateApi = false)
         $valid['valid'] = false;
         $valid['reason'] .= 'Missing required option. ';
     }
-    if (!isset($YANPIWS['darksky']) || strlen($YANPIWS['darksky']) != 32){
+    if (!isset($YANPIWS['forecast_api_url']) || strlen($YANPIWS['forecast_api_url']) < 10){
         $valid['valid'] = false;
-        $valid['reason'] .= 'Dark Sky API Key is wrong length or missing. ';
+        $valid['reason'] .= 'Forecast API URL is wrong length or missing.  (<pre>forecast_api_url</pre>)';
+    }
+    if (!isset($YANPIWS['forecast_api_token']) || strlen($YANPIWS['forecast_api_token']) < 32 || strlen($YANPIWS['forecast_api_token']) > 41){
+        $valid['valid'] = false;
+        $valid['reason'] .= 'Forecast API Key is wrong length or missing. (<pre>forecast_api_token</pre>)';
     }
     if(!isset($YANPIWS['lat'])) {
         $valid['valid'] = false;
@@ -121,13 +126,13 @@ function configIsValid($validateApi = false)
         $valid['reason'] .= 'DataPath does not exist or is not writable. ';
     }
     if ($validateApi){
-        $http = curl_init(getDarkSkyUrl(true));
+        $http = curl_init(getForecastUrl(true));
         curl_setopt($http, CURLOPT_NOBODY  , true);
         curl_exec($http);
         $http_status = curl_getinfo($http, CURLINFO_HTTP_CODE);
         if ($http_status != 200){
             $valid['valid'] = false;
-            $valid['reason'] .= 'Dark Sky API call failed: Either invalid API key or invalid Lat/Long ' .
+            $valid['reason'] .= 'Forecast API call failed: Either invalid API key or invalid Lat/Long ' .
                 "(status: $http_status). ";
         }
     }
@@ -300,17 +305,17 @@ function getHumidityHtml($tempLine, $useLabel = false)
 }
 
 /**
- * Get the age in human time (sec, min, hour etc) of the dark sky cache
+ * Get the age in human time (sec, min, hour etc) of the Forecast cache
  * @param $returnSeconds boolean to return int of seconds if true, otherwise string of human time
  */
 function getCacheAge($returnSeconds = false){
     global $YANPIWS;
     $path = $YANPIWS['dataPath'];
-    $darkskytime =  filemtime($path . 'darksky.cache');
+    $forecast_cache_time =  filemtime($path . 'forecast.cache');
     if (!$returnSeconds) {
-        return getHumanTime(time() - $darkskytime);
+        return getHumanTime(time() - $forecast_cache_time);
     } else {
-        return (time() - $darkskytime);
+        return (time() - $forecast_cache_time);
     }
 }
 
@@ -367,21 +372,21 @@ function getSunriseHtml($time)
 }
 
 /**
- * get data from dark sky.  will cache data and refresh it every 10 minutes
+ * get data from Forecast API.  will cache data and refresh it every 10 minutes
  *
  * @return stdClass of either resutls or very lightly populated error object
  */
-function getDarkSkyData()
+function getForecastData()
 {
     global $YANPIWS;
     $path = $YANPIWS['dataPath'];
-    $cache = $path . 'darksky.cache';
+    $cache = $path . 'forecast.cache';
     $hourAgo = time() - (60*10); // 10 minutes
     $data = false;
     $configStatus = configIsValid();
     if($configStatus['valid'] === true) {
         if ((!is_file($cache) || filectime($cache) < $hourAgo)) {
-            $http = curl_init(getDarkSkyUrl());
+            $http = curl_init(getForecastUrl());
             curl_setopt($http, CURLOPT_RETURNTRANSFER, 1);
             $dataFromRemote = curl_exec($http);
             $http_status = curl_getinfo($http, CURLINFO_HTTP_CODE);
@@ -406,11 +411,11 @@ function getDarkSkyData()
 }
 
 /**
- * Simple wrapper to concat the string for the Dark Sky API endpoint
+ * Simple wrapper to concat the string for the Forecast API endpoint
  *
  * @return string of URL
  */
-function getDarkSkyUrl($useTestLatLong = false){
+function getForecastUrl($useTestLatLong = false){
     global $YANPIWS;
     if ($useTestLatLong){
         $lat = "31.775554";
@@ -419,13 +424,13 @@ function getDarkSkyUrl($useTestLatLong = false){
         $lat = $YANPIWS['lat'];
         $lon = $YANPIWS['lon'];
     }
-    return 'https://api.darksky.net/forecast/' . $YANPIWS['darksky'] . '/' . $lat . ',' . $lon;
+    return $YANPIWS['forecast_api_url'] . '/forecast/' . $YANPIWS['forecast_api_token'] . '/' . $lat . ',' . $lon;
 }
 
 /**
- * expects the $data->daily object from getDarkSkyData(), returns $days (default 5) of forecast HTML
+ * expects the $data->daily object from getForecastData(), returns $days (default 5) of forecast HTML
  *
- * @param null $daily $data->daily object from getDarkSkyData()
+ * @param null $daily $data->daily object from getForecastData()
  * @param int $days how many days of forecast to return
  * @return string of HTML
  */
@@ -437,7 +442,7 @@ function getDailyForecastHtml($daily = null, $days = 5)
     if ($daily == null) {
         // show rain for error
         $html .= "<img src='./skycons/rain.png' class='errorImg'  /> ";
-        $html .= "No Dark Sky Data for forecast.";
+        $html .= "No Data for forecast.";
     } else {
         $count = 1;
         foreach ($daily->data as $day) {
@@ -468,9 +473,9 @@ function getDailyForecastHtml($daily = null, $days = 5)
 }
 
 /**
- * expects the $data->daily object from getDarkSkyData(), returns $days (default 5) of forecast HTML
+ * expects the $data->daily object from getForecastData(), returns $days (default 5) of forecast HTML
  *
- * @param null $daily $data->daily object from getDarkSkyData()
+ * @param null $daily $data->daily object from getForecastData()
  * @param int $days how many days of forecast to return
  * @return string of HTML
  */
@@ -478,7 +483,7 @@ function getDailyForecast($daily = null, $days = 5)
 {
     $result = array();
     if ($daily == null) {
-        $result['result'] = "No Dark Sky Data for forecast.";
+        $result['result'] = "No Data for forecast.";
     } else {
 
         $count = 1;
@@ -541,9 +546,9 @@ function getHumanTime($s)
 
 
 /**
- * expects the $data->currently object from getDarkSkyData(), returns windspeed HTML
+ * expects the $data->currently object from getForecastData(), returns windspeed HTML
  *
- * @param null $daily $data->currently object from getDarkSkyData()
+ * @param null $daily $data->currently object from getForecastData()
  * @return string of HTML
  */
 function getCurrentWind($currentlyObject)

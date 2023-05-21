@@ -16,11 +16,11 @@ to DIY a weather station.
 
 Goals for this project are:
 
-* Use cheap hardware (e.g. Rasberry Pi)
+* Use cheap hardware (e.g. Rasberry Pi from 2017)
 * Show live weather from local, wireless sensors
 * Show time
 * Show today's sunset/sunrise times
-* Show weather forecast from [Dark Sky API](https://darksky.net/dev/)
+* Show weather forecast from a forecast API ([Dark Sky](https://darksky.net/dev/) or  [Pirate Weather](pirateweather.net/))
 
 ## Hardware
 
@@ -32,7 +32,7 @@ Here's the parts I used and prices at time of publishing (March 2017):
 * $43 - [Rasberry Pi 3 Model B and Power Adapter](http://amzn.to/2nklto3)
 * $11 - [8GB Micro SD card](http://amzn.to/2nRE9Pt)
 
-Total for this is $127, so, erm, not that cheap.  Ideally you'd have a lot of 
+Total for this is $127, so, erm, not _that_ cheap.  Ideally you'd have a lot of 
 parts around you could re-use for this project. As well, you could reduce the price by going with a 
 3.5" screen ([only $17](http://amzn.to/2mCIxlg)) and Pi B+ ([only $30](http://amzn.to/2n5nioJ))
 . For the B+ you'd have to use ethernet or bring your own USB WiFi 
@@ -128,7 +128,7 @@ of creating your own config file.  Here we see ID 231:
 Specifically, your latitude (`lat`),
 longitude (`lon`) and labels which you 
 got in the step above running `rtl_433`. As well, you'll need to sign up for an API key
-on [Dark Sky](https://darksky.net/dev/register) and put that in for the `darksky` value below. 
+on [Dark Sky](https://darksky.net/dev/register) or [Pirate Weather](pirateweather.net/) and put that in for the `forecast_api` value below. 
 If you want static icons instead of
 animated ones, set 'animate' to `false` instead of `true` like below. Here's a sample:
     ```
@@ -137,8 +137,11 @@ animated ones, set 'animate' to `false` instead of `true` like below. Here's a s
     lat,31.775554
     lon,-81.822436
     
-    # set your darksky API token - should be a 32 char alpa numeric
-    darksky,aabbccddeeffgghhiijj112233445566
+    # set your forecast API token - should be a 32-40 char alpha numeric
+    forecast_api_token,aabbccddeeffgghhiijj112233445566
+   
+    # set your forecast API URL
+    forecast_api_url,https://api.pirateweather.net
     
     # should we show animated icons for forecast? should be "true" or "false"
     animate,true
@@ -295,10 +298,10 @@ IP address of your server:
 
 ## Development
 
-Check out this repo, ``cd`` into and start a web server:
+Check out this repo, `cd` into the `html` directory and start a web server:
 
 ```
-sudo php -S  localhost:8000
+php -S  localhost:8000
 ```
 
 The rtl_433 works great on Ubuntu for desktop/laptop development.  Manually kick off the input 
@@ -339,6 +342,9 @@ Use your IDE of choice to edit and point your browser at ``localhost:8000``
 PRs and Issues welcome!
 
 ## Version History
+* 0.10.0 - Apr 3,2023
+  * Support Pirate Weather by default #69
+  * Move to SemVer versioning (MAJOR.MINOR.PATCH)
 * 0.9.10 - Jul 20,2020
   * Convert to more JSON, less HTML over AJAX calls #89
   * Allow big clock mode by clicking time #82

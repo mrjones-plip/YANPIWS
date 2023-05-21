@@ -3,3 +3,4 @@ venv
 config.php
 config.csv
 datadarksky.cache
+forecast.cache

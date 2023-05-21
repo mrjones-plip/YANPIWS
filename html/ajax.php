@@ -6,7 +6,7 @@ if (isset($_GET['content'])){
     $today = date('Y-m-d', time());
     $time = date('g:i A', time());
     $date = date('D M j', time());
-    $forecast = getDarkSkyData();
+    $forecast = getForecastData();
 
     switch ($_GET['content']){
         case "forecast":

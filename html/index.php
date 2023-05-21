@@ -3,7 +3,7 @@ global $YANPIWS;
 require_once 'get_data.php';
 getConfig();
 
-$forecast = getDarkSkyData();
+$forecast = getForecastData();
 $status = configIsValid();
 $statusHtml = '';
 if ($status['valid'] != true) {
