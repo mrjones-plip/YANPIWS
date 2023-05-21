@@ -381,7 +381,7 @@ function getForecastData()
     global $YANPIWS;
     $path = $YANPIWS['dataPath'];
     $cache = $path . 'forecast.cache';
-    $hourAgo = time() - (60*10); // 10 minutes
+    $hourAgo = time() - (60*60); // 60 minutes, ~144 API calls/month
     $data = false;
     $configStatus = configIsValid();
     if($configStatus['valid'] === true) {
