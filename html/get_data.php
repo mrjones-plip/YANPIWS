@@ -393,7 +393,7 @@ function getForecastData()
             if ($http_status == 200){
                 file_put_contents($cache, serialize(json_decode($dataFromRemote)));
             } else {
-                // do error handling/logging here
+                error_log('[ERROR] Tried to get info from ' . getForecastUrl() . ', did not get 200 HTTP Code, instead got: ' . $http_status);
             }
         }
 
