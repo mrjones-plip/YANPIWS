@@ -342,6 +342,8 @@ Use your IDE of choice to edit and point your browser at ``localhost:8000``
 PRs and Issues welcome!
 
 ## Version History
+* 0.10.1 - Sep 3,2023
+  * Fix pirate weather overage per #100
 * 0.10.0 - Apr 3,2023
   * Support Pirate Weather by default #69
   * Move to SemVer versioning (MAJOR.MINOR.PATCH)
