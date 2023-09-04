@@ -73,7 +73,7 @@ function configIsValid($validateApi = false)
         $valid['valid'] = false;
         $valid['reason'] .= 'Forecast API URL is wrong length or missing.  (<pre>forecast_api_url</pre>)';
     }
-    if (!isset($YANPIWS['forecast_api_token']) || strlen($YANPIWS['forecast_api_token']) < 32 || strlen($YANPIWS['forecast_api_token']) > 41){
+    if (!isset($YANPIWS['forecast_api_token']) || strlen($YANPIWS['forecast_api_token']) < 16 || strlen($YANPIWS['forecast_api_token']) > 41){
         $valid['valid'] = false;
         $valid['reason'] .= 'Forecast API Key is wrong length or missing. (<pre>forecast_api_token</pre>)';
     }

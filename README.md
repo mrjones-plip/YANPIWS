@@ -342,6 +342,8 @@ Use your IDE of choice to edit and point your browser at ``localhost:8000``
 PRs and Issues welcome!
 
 ## Version History
+* 0.10.2 - Sep 3,2023
+  * Fix API string length per #102
 * 0.10.1 - Sep 3,2023
   * Fix pirate weather overage per #100
 * 0.10.0 - Apr 3,2023
