@@ -453,7 +453,7 @@ function getDailyForecastHtml($daily = null, $days = 5)
             if ($count == 1) {
                 $today = "Today";
             } else {
-                $today = substr(date('D', $day->time), 0, 3);
+                $today = date('D',strtotime("+".($count-1)." day"));
             }
             $html .= "<div class='forecastday'>";
             $html .= "<div class='forcastDay'>$today</div>";
