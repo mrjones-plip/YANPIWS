@@ -88,12 +88,13 @@ full screen(some of which may be installed already). Note, this assumes you're
 using the easy method to install `rtl_433` instead of compiling from source:
 
    ```
-   sudo apt-get install -y curl git chromium-browser apache2 php php-curl unclutter sed
+   sudo apt-get install -y curl git chromium-browser apache2 php php-curl unclutter sed 
    ```
-1. Download, compile and install [rtl_433](https://github.com/merbanan/rtl_433). Consider installing using the faster 
+1. **Update** - If you're on a recent enough distro you should be able to install `rtl_433` with just
+an `apt-get install rtl-433`.  If not, follow these compile/download steps: Download, compile and install [rtl_433](https://github.com/merbanan/rtl_433). Consider installing using the faster 
 method cited on [tech.borpin.co.uk](https://tech.borpin.co.uk/2019/12/17/install-a-package-from-the-testing-repository/)
 which involves adding a testing apt repo.  Note that the last apt call should be `apt install rtl-433` with a dash
-not an underscore.  Also on that page note that `/etc/apt/preferences` should be `/etc/apt/preferences.d/`.
+not an underscore.  Also on that page note that `/etc/apt/preferences` should be `/etc/apt/preferences.d/`. 
 1. With your wireless temp sensor(s) powered up and the USB Dongle attached, make sure your 
 sensors are read with `rtl_433`. Let it run for a while an note the IDs returned for the later step
 of creating your own config file.  Here we see ID 231:
