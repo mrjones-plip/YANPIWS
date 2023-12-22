@@ -29,6 +29,9 @@ font_temp_label,25
 # likely this won't need to change if you're following default install instructions.
 dataPath,/home/pi/YANPIWS/data/
 
+# set dark or light theme. if unset or unrecognized, defaults to dark
+theme,dark
+
 # unless you're deploying a lot of nodes reporting back to a central server, don't touch these ;)
 # api_password very likely should match servers_0_password unless, again, you know what you're doing ;)
 api_password,boxcar-spinning-problem-rockslide-scored

@@ -5,18 +5,27 @@ getConfig();
 configIsValid();
 $tempWidth = round(100/$YANPIWS['temp_count']);
 header("Content-type: text/css");
+if ($YANPIWS['theme'] === 'light'){
+    $background_color = 'white';
+    $font_color = 'black';
+    $sun_moon_forecast = 'filter: invert(100%);';
+} else {
+    $background_color = 'black';
+    $font_color = 'white';
+    $sun_moon_forecast = '';
+}
 ?>
 
 body {
     margin: 10px;
     padding: 10px;
-    background-color: black;
-    color: white;
+    background-color: <?= $background_color?>;
+    color: <?= $font_color?>;
     font-size: 22pt;
     font-family: sans-serif;
 }
 a {
-    color: white;
+    color: <?= $font_color?>;
 }
 .error {
     color: red;
@@ -41,6 +50,9 @@ a.yellow {
     z-index: 10000;
     left: 42%;
     top: -10px;
+}
+.suntimes img, #forecast canvas {
+    <?= $sun_moon_forecast ?>
 }
 .forecastday {
     width:20%;

@@ -10,6 +10,11 @@ $tempsHtml = '';
 $forecast = getForecastData();
 $status = configIsValid();
 $statusHtml = getStatusHTML($status['valid']);
+if(isset($_GET['toggle_theme'])){
+    $cssToggleQuery = '&toggle_theme=1';
+} else {
+    $cssToggleQuery = '';
+}
 
 foreach ($YANPIWS['labels'] as $id => $label) {
     $tempsHtml .= "\t\t\t<div class='temp temp{$count}' id='temp{$count}'></div>\n";
@@ -31,7 +36,7 @@ foreach ($YANPIWS['labels'] as $id => $label) {
     <title>YANPIWS</title>
 </head>
 <body>
-<link rel="stylesheet" type="text/css" href="styles.css.php?<?=  $YANPIWS['cache_bust'] ?>" />
+<link rel="stylesheet" type="text/css" href="styles.css.php?<?=  $YANPIWS['cache_bust'] . $cssToggleQuery ?>" />
 
 <?= $statusHtml ?>
 

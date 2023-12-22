@@ -18,6 +18,7 @@ function getValidConfigs(){
         'font_time_date_wind',
         'font_temp',
         'font_temp_label',
+        'theme',
         // we accept these two. listing it here commented out for completeness. see getConfig() below
         // servers_*
         // labels_*
@@ -116,6 +117,17 @@ function configIsValid($validateApi = false)
     // for these font sizes ones, lets default to a sane size
     // and then write and error to the error log. Will make
     // a much safer upgrade path for Manny ;)
+    if (!isset($YANPIWS['theme']) || !in_array($YANPIWS['theme'], array('dark','light'))){
+        error_log('theme is unset or not recognized! Defaulting to "dark"');
+        $YANPIWS['theme'] = 'dark';
+    }
+    if (isset($_GET['toggle_theme'])){
+        if($YANPIWS['theme'] == 'dark') {
+            $YANPIWS['theme'] = 'light';
+        } else {
+            $YANPIWS['theme'] = 'dark';
+        }
+    }
     if (!isset($YANPIWS['font_time_date_wind'])){
         error_log('font_time_date_wind is unset! Defaulting to "35"');
         $YANPIWS['font_time_date_wind'] = 35;
