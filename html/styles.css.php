@@ -69,7 +69,7 @@ a.yellow {
     float:left;
     width: 100%;
 }
-.rigthtCol{
+.rightCol{
     padding-top:20px;
 }
 .row {
@@ -170,7 +170,7 @@ input {
     .temp {
         font-size: 25pt;
     }
-    .rigthtCol{
+    .rightCol{
         padding-top:10px;
     }
     .date, .time, .label, .wind_now {

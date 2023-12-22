@@ -23,6 +23,23 @@ function getValidConfigs(){
         // labels_*
     );
 }
+
+/**
+ * Generate status HTML with error if config is not valid
+ *
+ * @param $status boolean from configIsValid
+ * @return string of html to show upon error, returns empty if no error
+ */
+function getStatusHTML($status){
+    if ($status != true) {
+        $statusHtml = "<div class='error'>ERROR: {$status['reason']}</div>";
+        $statusHtml .= "<style>.temp,.suntimes{display:none;}</style>";
+    } else {
+        $statusHtml = '';
+    }
+    return $statusHtml;
+}
+
 /**
  * include the config file
  * @param boolean $die prints error and exits if fails

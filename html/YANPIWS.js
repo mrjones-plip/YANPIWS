@@ -64,7 +64,7 @@ function refreshSunrise(){
 /**
  * AJAX call to get updated content and return JSON
  */
-function refeshData(endpoint, dataElement, target, callback = false){
+function refreshData(endpoint, dataElement, target, callback = false){
     let baseUrl = './ajax.php?content=';
     $.getJSON( baseUrl + endpoint, function( data ) {
         $(target).html(data[dataElement]);
