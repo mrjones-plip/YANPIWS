@@ -16,6 +16,11 @@ if(isset($_GET['toggle_theme'])){
     $cssToggleQuery = '';
 }
 
+function get_json_inline($content){
+    $tmp = json_decode(fetch_json($content, $YANPIWS));
+    return $tmp->$content;
+}
+
 foreach ($YANPIWS['labels'] as $id => $label) {
     $tempsHtml .= "\t\t\t<div class='temp temp{$count}' id='temp{$count}'></div>\n";
     $refreshTempJS .= "\t\t refreshData('temp&id={$id}',\t'temp',\t'#temp{$count}');\n";
@@ -53,16 +58,20 @@ foreach ($YANPIWS['labels'] as $id => $label) {
     <div class="row"></div>
     <div class="row ">
         <div id='datetimewind'>
-            <div id="wind_now" class="wind_now small_time big_clock_hide"></div>     
+            <div id="wind_now" class="wind_now small_time big_clock_hide"><?= get_json_inline('wind_now') ?></div>
             <div id='datetime'>
-                <div id='time' class='small_time'></div>
-                <div id='date' class='small_time'></div>
+                <div id='time' class='small_time'><?= get_json_inline('time') ?></div>
+                <div id='date' class='small_time'<?= get_json_inline('date') ?>></div>
             </div>
         </div>
     </div>
     <div class="row suntimes big_clock_hide">
-        <span><img src="sun.svg" class="sun" alt="Sunrise Time"/> <span id="sunrise" ></span> </span>
-        <span><img src="moon.svg" class="moon" alt="Sunset Time"/> <span id="sunset" ></span></span>
+        <span><img src="sun.svg" class="sun" alt="Sunrise Time"/>
+            <span id="sunrise" ><?= get_json_inline('sunrise') ?></span>
+        </span>
+        <span><img src="moon.svg" class="moon" alt="Sunset Time"/>
+            <span id="sunset" ><?= get_json_inline('sunset') ?></span>
+        </span>
     </div>
 </div>
 <div class="col rightCol big_clock_hide" id="forecast">
@@ -82,16 +91,16 @@ foreach ($YANPIWS['labels'] as $id => $label) {
         //          Endpoint    data        DOM Location    callback
         refreshData('sunrise',   'sunrise',  '#sunrise');
         refreshData('sunset',    'sunset',   '#sunset');
-        refreshData('wind_now',  'wind',     '#wind_now');
-        refreshData('datetime',  'date',     '#date');
-        refreshData('datetime',  'time',     '#time');
+        refreshData('wind_now',  'wind_now', '#wind_now');
+        refreshData('date',      'date',     '#date');
+        refreshData('time',      'time',     '#time');
         refreshData('forecast',  'forecast', '#forecast', animateForecast);
         refreshData('age',       'age',      '#YANPIWS a');
         refreshData('last_ajax', 'last_ajax','#last_ajax');
         setClockSize(clockState, <?= $YANPIWS['font_time_date_wind']?>);
 <?= $refreshTempJS ?>
     }
-    refreshAll();
+    // refreshAll();
     setInterval ( refreshAll, 60000 );
 </script>
 </body>

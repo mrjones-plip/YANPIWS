@@ -595,6 +595,102 @@ function getConfigValue($key){
 }
 
 /**
+ * fetch JSON contentfor use on the main DOM to render content
+ *
+ * @param $content which piece of content you want
+ * @param $YANPIWS global from getConfig()
+ * @return false|string|void
+ */
+function fetch_json($content, $YANPIWS){
+    $time = date('g:i A', time());
+    $forecast = getForecastData();
+
+    switch ($content){
+        case "forecast":
+            if (isset($forecast->daily)) {
+                return json_encode(array('forecast' => getDailyForecastHtml($forecast->daily)));
+            }
+            break;
+        case "forecast_full_json":
+            if (isset($forecast->daily)) {
+                return json_encode($forecast->daily->data);
+            }
+            break;
+
+        case "wind_now":;
+            if (isset($forecast->currently)) {
+                return json_encode(array('wind_now' => getCurrentWind($forecast->currently)));
+            }
+            break;
+
+        case "sunset":
+            if (isset($forecast->daily->data[0]->sunsetTime)){
+                $time = date('g:i A', $forecast->daily->data[0]->sunsetTime);
+                return json_encode(array('sunset' => $time));
+            }
+            break;
+
+        case "sunrise":
+            if (isset($forecast->daily->data[0]->sunriseTime)){
+                $time = date('g:i A', $forecast->daily->data[0]->sunriseTime);
+                return json_encode(array('sunrise' => $time));
+            }
+            break;
+
+        case "age":
+            $maxTempAge = 0;
+            foreach ($YANPIWS['labels'] as $id => $label){
+                $tempLine = getMostRecentTemp($id);
+                $currentTempAge = getTempLastHtml($tempLine, true);
+                if ($maxTempAge < $currentTempAge){
+                    $maxTempAge = $currentTempAge;
+                }
+            }
+            if ($currentTempAge > 600 || $maxTempAge > 600){
+                // todo - refactor calls to not expect cooked HTML in respone, just raw JSON
+                $result['age'] = '<span style="color: yellow">YANPIWS</span>';
+            } else {
+                $result['age'] = 'YANPIWS';
+            }
+            return json_encode($result);
+
+        case "date":
+            return json_encode(array('date' => date('D M j', time())));
+
+        case "time":
+            return json_encode(array('time' => $time));
+
+        case "temp":
+            if (isset($_GET['id']) && isset($YANPIWS['labels'][$_GET['id']])){
+                $tempLine = getMostRecentTemp($_GET['id']);
+                if(isset($_GET['cooked'])){
+                    return getTempHtml($tempLine);
+                } elseif(isset($_GET['raw'])) {
+                    return json_encode($tempLine);
+                } else {
+                    // todo - refactor calls to not expect cooked HTML in respone, just raw JSON
+                    // per 'raw' above
+                    return json_encode(array('temp' => getTempHtml($tempLine)));
+                }
+            }
+            break;
+
+        case "humidity":
+            if (isset($_GET['id']) && isset($YANPIWS['labels'][$_GET['id']])){
+                $tempLine = getMostRecentTemp($_GET['id']);
+                return json_encode(array($tempLine));
+            }
+            break;
+
+        case "last_ajax":
+            // update this ajax file per #61 https://github.com/Ths2-9Y-LqJt6/YANPIWS/issues/61
+            touch($YANPIWS['dataPath'] . '/' . 'last_ajax');
+            return json_encode(array('last_ajax' => time()));
+    }
+
+}
+
+/**
  * Thanks to https://gist.github.com/arubacao/b5683b1dab4e4a47ee18fd55d9efbdd1 for these
  * next three lat long funcions
  */
