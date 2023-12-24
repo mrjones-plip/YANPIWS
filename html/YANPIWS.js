@@ -42,10 +42,10 @@ function setClockSize(state, defaultSize){
 /**
  * AJAX call to get updated content and return JSON
  */
-function refreshData(endpoint, dataElement, target, callback = false){
+function refreshData(endpoint, target, callback = false){
     let baseUrl = './ajax.php?content=';
     $.getJSON( baseUrl + endpoint, function( data ) {
-        $(target).html(data[dataElement]);
+        $(target).html(data[endpoint]);
         if (typeof callback === "function") {
             callback();
         }

@@ -51,7 +51,7 @@ a.yellow {
     left: 42%;
     top: -10px;
 }
-.suntimes img, #forecast canvas {
+.suntimes img, #forecast canvas, #forecast img {
     <?= $sun_moon_forecast ?>
 }
 .forecastday {

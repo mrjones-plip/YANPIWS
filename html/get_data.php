@@ -457,17 +457,21 @@ function getForecastUrl($useTestLatLong = false){
 }
 
 /**
+ * /**
  * expects the $data->daily object from getForecastData(), returns $days (default 5) of forecast HTML
  *
  * @param null $daily $data->daily object from getForecastData()
  * @param int $days how many days of forecast to return
+ * @param string $animate show animation or not: 'true' or 'false' literal string
  * @return string of HTML
  */
-function getDailyForecastHtml($daily = null, $days = 5)
+function getDailyForecastHtml($daily = null, $days = 5, $animate = null)
 {
     global $YANPIWS;
     $html = '';
-    $animate = $YANPIWS['animate'];
+    if ($animate === null) {
+        $animate = $YANPIWS['animate'];
+    }
     if ($daily == null) {
         // show rain for error
         $html .= "<img src='./skycons/rain.png' class='errorImg'  /> ";
@@ -601,14 +605,18 @@ function getConfigValue($key){
  * @param $YANPIWS global from getConfig()
  * @return false|string|void
  */
-function fetch_json($content, $YANPIWS){
+function fetch_json($content, $animate = null, $tempID = null){
+    global $YANPIWS;
     $time = date('g:i A', time());
     $forecast = getForecastData();
+    if(isset($_GET['id'])){
+        $tempID = $_GET['id'];
+    }
 
     switch ($content){
         case "forecast":
             if (isset($forecast->daily)) {
-                return json_encode(array('forecast' => getDailyForecastHtml($forecast->daily)));
+                return json_encode(array('forecast' => getDailyForecastHtml($forecast->daily,5 , $animate)));
             }
             break;
         case "forecast_full_json":
@@ -661,11 +669,11 @@ function fetch_json($content, $YANPIWS){
             return json_encode(array('time' => $time));
 
         case "temp":
-            if (isset($_GET['id']) && isset($YANPIWS['labels'][$_GET['id']])){
-                $tempLine = getMostRecentTemp($_GET['id']);
+            if (isset($YANPIWS['labels'][$tempID])){
+                $tempLine = getMostRecentTemp($tempID);
                 if(isset($_GET['cooked'])){
                     return getTempHtml($tempLine);
-                } elseif(isset($_GET['raw'])) {
+                } elseif (isset($_GET['raw'])) {
                     return json_encode($tempLine);
                 } else {
                     // todo - refactor calls to not expect cooked HTML in respone, just raw JSON

@@ -7,7 +7,6 @@ $count = 1;
 $refreshTempJS = '';
 $tempsHtml = '';
 
-$forecast = getForecastData();
 $status = configIsValid();
 $statusHtml = getStatusHTML($status['valid']);
 if(isset($_GET['toggle_theme'])){
@@ -16,14 +15,15 @@ if(isset($_GET['toggle_theme'])){
     $cssToggleQuery = '';
 }
 
-function get_json_inline($content){
-    $tmp = json_decode(fetch_json($content, $YANPIWS));
+function get_json_inline($content, $tempID = null){
+    global $YANPIWS;
+    $tmp = json_decode(fetch_json($content, 'false', $tempID));
     return $tmp->$content;
 }
 
 foreach ($YANPIWS['labels'] as $id => $label) {
-    $tempsHtml .= "\t\t\t<div class='temp temp{$count}' id='temp{$count}'></div>\n";
-    $refreshTempJS .= "\t\t refreshData('temp&id={$id}',\t'temp',\t'#temp{$count}');\n";
+    $tempsHtml .= "\t\t\t<div class='temp temp{$count}' id='temp{$count}'>" . get_json_inline('temp', $id) . "</div>\n";
+    $refreshTempJS .= "\t\trefreshData('temp&id={$id}',\t'#temp{$count}');\n";
     $count++;
     if ($count > $YANPIWS['temp_count']) {
         break;
@@ -45,12 +45,12 @@ foreach ($YANPIWS['labels'] as $id => $label) {
 
 <?= $statusHtml ?>
 
-<div id="YANPIWS" class="YANPIWS"><a href="stats.php">YANPIWS</a></div>
+<div id="YANPIWS" class="YANPIWS"><a href="stats.php" id="age">YANPIWS</a></div>
 
 <div class="col">
     <div class="row temp-row">
         <a href="temps.php">
-            <?= $tempsHtml ?>
+          <?= $tempsHtml ?>
         </a>
     </div>
 </div>
@@ -61,7 +61,7 @@ foreach ($YANPIWS['labels'] as $id => $label) {
             <div id="wind_now" class="wind_now small_time big_clock_hide"><?= get_json_inline('wind_now') ?></div>
             <div id='datetime'>
                 <div id='time' class='small_time'><?= get_json_inline('time') ?></div>
-                <div id='date' class='small_time'<?= get_json_inline('date') ?>></div>
+                <div id='date' class='small_time'><?= get_json_inline('date') ?></div>
             </div>
         </div>
     </div>
@@ -75,6 +75,7 @@ foreach ($YANPIWS['labels'] as $id => $label) {
     </div>
 </div>
 <div class="col rightCol big_clock_hide" id="forecast">
+    <?= get_json_inline('forecast') ?>
 </div>
 <span id="last_ajax"></span>
 <script>
@@ -88,19 +89,18 @@ foreach ($YANPIWS['labels'] as $id => $label) {
         setClockSize(clockState, <?= $YANPIWS['font_time_date_wind']?>);
     });
     function refreshAll() {
-        //          Endpoint    data        DOM Location    callback
-        refreshData('sunrise',   'sunrise',  '#sunrise');
-        refreshData('sunset',    'sunset',   '#sunset');
-        refreshData('wind_now',  'wind_now', '#wind_now');
-        refreshData('date',      'date',     '#date');
-        refreshData('time',      'time',     '#time');
-        refreshData('forecast',  'forecast', '#forecast', animateForecast);
-        refreshData('age',       'age',      '#YANPIWS a');
-        refreshData('last_ajax', 'last_ajax','#last_ajax');
+        //          Endpoint        DOM Location    callback
+        refreshData('sunrise',      '#sunrise');
+        refreshData('sunset',       '#sunset');
+        refreshData('wind_now',     '#wind_now');
+        refreshData('date',         '#date');
+        refreshData('time',         '#time');
+        refreshData('forecast',     '#forecast',   animateForecast);
+        refreshData('age',          '#age');
+        refreshData('last_ajax',    '#last_ajax');
+<?=     $refreshTempJS ?>
         setClockSize(clockState, <?= $YANPIWS['font_time_date_wind']?>);
-<?= $refreshTempJS ?>
     }
-    // refreshAll();
     setInterval ( refreshAll, 60000 );
 </script>
 </body>
