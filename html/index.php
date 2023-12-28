@@ -1,49 +1,59 @@
 <?php
 global $YANPIWS;
+$path = realpath(dirname(__FILE__)) . "/php/";
+set_include_path(get_include_path() . PATH_SEPARATOR . $path);
 require_once 'get_data.php';
 getConfig();
-
-$forecast = getForecastData();
-$status = configIsValid();
-$statusHtml = '';
-if ($status['valid'] != true) {
-    $statusHtml .= "<div class='error'>ERROR: {$status['reason']}</div>";
-    $statusHtml .= "<style>.temp,.suntimes{display:none;}</style>";
-}
 
 $count = 1;
 $refreshTempJS = '';
 $tempsHtml = '';
+$animateJS = '';
+
+$status = configIsValid();
+$statusHtml = getStatusHTML($status['valid']);
+if(isset($_GET['toggle_theme'])){
+    $cssToggleQuery = '&toggle_theme=1';
+} else {
+    $cssToggleQuery = '';
+}
+
 foreach ($YANPIWS['labels'] as $id => $label) {
-    $tempsHtml .= "\t\t\t<div class='temp temp{$count}' id='temp{$count}'></div>\n";
-    $refreshTempJS .= "\t\trefeshData('temp&id={$id}',\t'temp',\t'#temp{$count}');\n";
+    $tempsHtml .= "\t\t\t<div class='temp temp{$count}' id='temp{$count}'>" . get_json_inline('temp', $id) . "</div>\n";
+    $refreshTempJS .= "\t\trefreshData('temp&id={$id}',\t'#temp{$count}');\n";
     $count++;
     if ($count > $YANPIWS['temp_count']) {
         break;
     }
 }
 
+
+if($YANPIWS['animate'] === 'true'){
+    $animateJS .= "\trefreshData('forecast', '#forecast', animateForecast);\n";
+}
 ?>
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="utf-8">
-    <script src='skycons/skycons.js?<?= $YANPIWS['cache_bust'] ?>'></script>
-    <script src='jquery-3.5.1.min.js?<?= $YANPIWS['cache_bust'] ?>'></script>
-    <script src="./YANPIWS.js?<?php echo $YANPIWS['cache_bust'] ?>"></script>
-    <script>var skycons = new Skycons({'color': 'white'});</script>
+    <script src="skycons/skycons.js?<?= $YANPIWS['cache_bust'] ?>"></script>
+    <script src="js/jquery-3.5.1.min.js?<?= $YANPIWS['cache_bust']?>"></script>
+    <script src="js/YANPIWS.js?<?= $YANPIWS['cache_bust'] ?>"></script>
+    <script>const skycons = new Skycons({'color': 'white'});</script>
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+    <title>YANPIWS</title>
 </head>
 <body>
-<link rel="stylesheet" type="text/css" href="styles.css.php?<?=  $YANPIWS['cache_bust'] ?>" />
+<link rel="stylesheet" type="text/css" href="css/styles.css.php?<?=  $YANPIWS['cache_bust'] . $cssToggleQuery ?>" />
 
 <?= $statusHtml ?>
 
-<div id="YANPIWS" class="YANPIWS"><a href="/stats.php">YANPIWS</a></div>
+<div id="YANPIWS" class="YANPIWS"><a href="php/stats.php" id="age">YANPIWS</a></div>
 
 <div class="col">
     <div class="row temp-row">
-        <a href="/temps.php">
-            <?= $tempsHtml ?>
+        <a href="php/temps.php">
+          <?= $tempsHtml ?>
         </a>
     </div>
 </div>
@@ -51,25 +61,30 @@ foreach ($YANPIWS['labels'] as $id => $label) {
     <div class="row"></div>
     <div class="row ">
         <div id='datetimewind'>
-            <div id="wind_now" class="wind_now small_time big_clock_hide"></div>     
+            <div id="wind_now" class="wind_now small_time big_clock_hide"><?= get_json_inline('wind_now') ?></div>
             <div id='datetime'>
-                <div id='time' class='small_time'></div>
-                <div id='date' class='small_time'></div>
+                <div id='time' class='small_time'><?= get_json_inline('time') ?></div>
+                <div id='date' class='small_time'><?= get_json_inline('date') ?></div>
             </div>
         </div>
     </div>
     <div class="row suntimes big_clock_hide">
-        <span><img src="sun.svg" class="sun" /> <span id="sunrise" ></span> </span>
-        <span> <img src="moon.svg" class="moon" /> <span id="sunset" ></span></span>
+        <span><img src="images/sun.svg" class="sun" alt="Sunrise Time"/>
+            <span id="sunrise" ><?= get_json_inline('sunrise') ?></span>
+        </span>
+        <span><img src="images/moon.svg" class="moon" alt="Sunset Time"/>
+            <span id="sunset" ><?= get_json_inline('sunset') ?></span>
+        </span>
     </div>
 </div>
-<div class="col rigthtCol big_clock_hide" id="forecast">
+<div class="col rightCol big_clock_hide" id="forecast">
+    <?= get_json_inline('forecast') ?>
 </div>
 <span id="last_ajax"></span>
 <script>
-    var clockState = 'small';
+    let clockState = 'small';
     $( "#datetime" ).click(function() {
-        if (clockState == 'small'){
+        if (clockState === 'small'){
             clockState = 'big';
         } else {
             clockState = 'small';
@@ -77,19 +92,19 @@ foreach ($YANPIWS['labels'] as $id => $label) {
         setClockSize(clockState, <?= $YANPIWS['font_time_date_wind']?>);
     });
     function refreshAll() {
-        //          Endpoint    data        DOM Location    callback
-        refeshData('sunrise',   'sunrise',  '#sunrise');
-        refeshData('sunset',    'sunset',   '#sunset');
-        refeshData('wind_now',  'wind',     '#wind_now');
-        refeshData('datetime',  'date',     '#date');
-        refeshData('datetime',  'time',     '#time');
-        refeshData('forecast',  'forecast', '#forecast', animateForecast);
-        refeshData('age',       'age',      '#YANPIWS a');
-        refeshData('last_ajax', 'last_ajax','#last_ajax');
+        //          Endpoint        DOM Location    callback
+        refreshData('sunrise',      '#sunrise');
+        refreshData('sunset',       '#sunset');
+        refreshData('wind_now',     '#wind_now');
+        refreshData('date',         '#date');
+        refreshData('time',         '#time');
+        refreshData('forecast',     '#forecast',   animateForecast);
+        refreshData('age',          '#age');
+        refreshData('last_ajax',    '#last_ajax');
+<?=     $refreshTempJS ?>
         setClockSize(clockState, <?= $YANPIWS['font_time_date_wind']?>);
-<?= $refreshTempJS ?>
     }
-    refreshAll();
+<?= $animateJS ?>
     setInterval ( refreshAll, 60000 );
 </script>
 </body>

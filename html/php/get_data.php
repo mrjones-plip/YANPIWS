@@ -18,21 +18,40 @@ function getValidConfigs(){
         'font_time_date_wind',
         'font_temp',
         'font_temp_label',
+        'theme',
         // we accept these two. listing it here commented out for completeness. see getConfig() below
         // servers_*
         // labels_*
     );
 }
+
+/**
+ * Generate status HTML with error if config is not valid
+ *
+ * @param $status boolean from configIsValid
+ * @return string of html to show upon error, returns empty if no error
+ */
+function getStatusHTML($status){
+    if ($status != true) {
+        $statusHtml = "<div class='error'>ERROR: {$status['reason']}</div>";
+        $statusHtml .= "<style>.temp,.suntimes{display:none;}</style>";
+    } else {
+        $statusHtml = '';
+    }
+    return $statusHtml;
+}
+
 /**
  * include the config file
  * @param boolean $die prints error and exits if fails
  */
-function getConfig($die = true)
+function getConfig($baseDir = '../', $die = true)
 {
-    if(is_file('../config.csv')) {
+    $fullPath = $baseDir . 'config.csv';
+    if(is_file($fullPath)) {
         global $YANPIWS ;
         $options = getValidConfigs();
-        $YANPIWStmp = array_map('str_getcsv', file('../config.csv'));
+        $YANPIWStmp = array_map('str_getcsv', file($fullPath));
         foreach ($YANPIWStmp as $config){
 
             if (substr($config[0],0,6) === 'labels'){
@@ -46,7 +65,7 @@ function getConfig($die = true)
             }
 
         }
-        $YANPIWS['cache_bust'] = '0.9.10';
+        $YANPIWS['cache_bust'] = '0.11.0';
     } elseif ($die) {
         die(
             '<h3>Error</h3><p>No config.csv!  Copy config.dist.csv to config.csv</p>'.
@@ -99,6 +118,17 @@ function configIsValid($validateApi = false)
     // for these font sizes ones, lets default to a sane size
     // and then write and error to the error log. Will make
     // a much safer upgrade path for Manny ;)
+    if (!isset($YANPIWS['theme']) || !in_array($YANPIWS['theme'], array('dark','light'))){
+        error_log('theme is unset or not recognized! Defaulting to "dark"');
+        $YANPIWS['theme'] = 'dark';
+    }
+    if (isset($_GET['toggle_theme'])){
+        if($YANPIWS['theme'] == 'dark') {
+            $YANPIWS['theme'] = 'light';
+        } else {
+            $YANPIWS['theme'] = 'dark';
+        }
+    }
     if (!isset($YANPIWS['font_time_date_wind'])){
         error_log('font_time_date_wind is unset! Defaulting to "35"');
         $YANPIWS['font_time_date_wind'] = 35;
@@ -356,7 +386,7 @@ function getTempLastHtml($tempLine, $returnOnlySeconds = false)
 function getSunsetHtml($time)
 {
     $time = date('g:i A', $time);
-    return '<img src="moon.svg" class="moon" /> '. $time;
+    return '<img src="../images/moon.svg" class="moon" /> ' . $time;
 }
 
 /**
@@ -368,7 +398,7 @@ function getSunsetHtml($time)
 function getSunriseHtml($time)
 {
     $time = date('g:i A', $time);
-    return '<img src="sun.svg" class="sun" /> '. $time;
+    return '<img src="../images/sun.svg" class="sun" /> ' . $time;
 }
 
 /**
@@ -428,20 +458,24 @@ function getForecastUrl($useTestLatLong = false){
 }
 
 /**
+ * /**
  * expects the $data->daily object from getForecastData(), returns $days (default 5) of forecast HTML
  *
  * @param null $daily $data->daily object from getForecastData()
  * @param int $days how many days of forecast to return
+ * @param string $animate show animation or not: 'true' or 'false' literal string
  * @return string of HTML
  */
-function getDailyForecastHtml($daily = null, $days = 5)
+function getDailyForecastHtml($daily = null, $days = 5, $animate = null)
 {
     global $YANPIWS;
     $html = '';
-    $animate = $YANPIWS['animate'];
+    if ($animate === null) {
+        $animate = $YANPIWS['animate'];
+    }
     if ($daily == null) {
         // show rain for error
-        $html .= "<img src='./skycons/rain.png' class='errorImg'  /> ";
+        $html .= "<img src='../skycons/rain.png' class='errorImg'  /> ";
         $html .= "No Data for forecast.";
     } else {
         $count = 1;
@@ -556,6 +590,10 @@ function getCurrentWind($currentlyObject)
     return number_format($currentlyObject->windSpeed, 0) . " mph";
 }
 
+/**
+ * @param $key
+ * @return int|string
+ */
 function getConfigValue($key){
     global $YANPIWS;
     if (in_array($key,getValidConfigs())){
@@ -563,6 +601,117 @@ function getConfigValue($key){
     } else {
         return 'Invalid Config Requested';
     }
+}
+
+/**
+ * @param $content
+ * @param $tempID
+ * @return mixed
+ */
+function get_json_inline($content, $tempID = null){
+    global $YANPIWS;
+    $tmp = json_decode(fetch_json($content, 'false', $tempID));
+    return $tmp->$content;
+}
+
+/**
+ * fetch JSON contentfor use on the main DOM to render content
+ *
+ * @param $content which piece of content you want
+ * @param $YANPIWS global from getConfig()
+ * @return false|string|void
+ */
+function fetch_json($content, $animate = null, $tempID = null){
+    global $YANPIWS;
+    $time = date('g:i A', time());
+    $forecast = getForecastData();
+    if(isset($_GET['id'])){
+        $tempID = $_GET['id'];
+    }
+
+    switch ($content){
+        case "forecast":
+            if (isset($forecast->daily)) {
+                return json_encode(array('forecast' => getDailyForecastHtml($forecast->daily,5 , $animate)));
+            }
+            break;
+        case "forecast_full_json":
+            if (isset($forecast->daily)) {
+                return json_encode($forecast->daily->data);
+            }
+            break;
+
+        case "wind_now":;
+            if (isset($forecast->currently)) {
+                return json_encode(array('wind_now' => getCurrentWind($forecast->currently)));
+            }
+            break;
+
+        case "sunset":
+            if (isset($forecast->daily->data[0]->sunsetTime)){
+                $time = date('g:i A', $forecast->daily->data[0]->sunsetTime);
+                return json_encode(array('sunset' => $time));
+            }
+            break;
+
+        case "sunrise":
+            if (isset($forecast->daily->data[0]->sunriseTime)){
+                $time = date('g:i A', $forecast->daily->data[0]->sunriseTime);
+                return json_encode(array('sunrise' => $time));
+            }
+            break;
+
+        case "age":
+            $maxTempAge = 0;
+            foreach ($YANPIWS['labels'] as $id => $label){
+                $tempLine = getMostRecentTemp($id);
+                $currentTempAge = getTempLastHtml($tempLine, true);
+                if ($maxTempAge < $currentTempAge){
+                    $maxTempAge = $currentTempAge;
+                }
+            }
+            if ($currentTempAge > 600 || $maxTempAge > 600){
+                // todo - refactor calls to not expect cooked HTML in respone, just raw JSON
+                $result['age'] = '<span style="color: yellow">YANPIWS</span>';
+            } else {
+                $result['age'] = 'YANPIWS';
+            }
+            return json_encode($result);
+
+        case "date":
+            return json_encode(array('date' => date('D M j', time())));
+
+        case "time":
+            return json_encode(array('time' => $time));
+
+        case "temp":
+            if (isset($YANPIWS['labels'][$tempID])){
+                $tempLine = getMostRecentTemp($tempID);
+                if(isset($_GET['cooked'])){
+                    return getTempHtml($tempLine);
+                } elseif (isset($_GET['raw'])) {
+                    return json_encode($tempLine);
+                } else {
+                    // todo - refactor calls to not expect cooked HTML in respone, just raw JSON
+                    // per 'raw' above
+                    return json_encode(array('temp' => getTempHtml($tempLine)));
+                }
+            }
+            break;
+
+        case "humidity":
+            if (isset($_GET['id']) && isset($YANPIWS['labels'][$_GET['id']])){
+                $tempLine = getMostRecentTemp($_GET['id']);
+                return json_encode(array($tempLine));
+            }
+            break;
+
+        case "last_ajax":
+            // update this ajax file per #61 https://github.com/Ths2-9Y-LqJt6/YANPIWS/issues/61
+            touch($YANPIWS['dataPath'] . '/' . 'last_ajax');
+            return json_encode(array('last_ajax' => time()));
+    }
+
 }
 
 /**

@@ -25,7 +25,6 @@ function loadXMLDoc(URL, targetId, callback) {
 
     xmlhttp.open("GET", URL, true);
     xmlhttp.send();
-
 }
 
 /**
@@ -41,45 +40,25 @@ function setClockSize(state, defaultSize){
 }
 
 /**
- * AJAX call to get updated forecast
- */
-function refreshForecast(){
-    loadXMLDoc('./ajax.php?content=forecast', 'forecast', animateForecast);
-}
-
-/**
- * AJAX call to get updated sunset time
- */
-function refreshSunset(){
-    loadXMLDoc('./ajax.php?content=sunset', 'sunset');
-}
-
-/**
- * AJAX call to get updated sunrise time
- */
-function refreshSunrise(){
-    loadXMLDoc('./ajax.php?content=sunrise', 'sunrise');
-}
-
-/**
  * AJAX call to get updated content and return JSON
  */
-function refeshData(endpoint, dataElement, target, callback = false){
-    let baseUrl = './ajax.php?content=';
+function refreshData(endpoint, target, callback = false){
+    let baseUrl = './php/ajax.php?content=';
     $.getJSON( baseUrl + endpoint, function( data ) {
-        $(target).html(data[dataElement]);
+        $(target).html(data[endpoint]);
         if (typeof callback === "function") {
             callback();
         }
     });
 }
+
 /**
  * start the dark sky canvas DOM elements animating. intended to call if
  * canvas elements have been updated from refreshForecast()
  */
 function animateForecast() {
-    var elements = document.querySelectorAll('.forecasticon');
-    var canvasArray;
+    const elements = document.querySelectorAll('.forecasticon');
+    let canvasArray;
     Array.prototype.forEach.call(
         elements, function(el, i){
             canvasArray = el.getAttribute('id').split('.');

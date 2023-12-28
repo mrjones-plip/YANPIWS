@@ -1,6 +1,6 @@
 <?php
 require_once "get_data.php";
-getConfig();
+getConfig('../../');
 
 $currentTempHtml = '<ul>';
 foreach ($YANPIWS['labels'] as $id => $label){
@@ -23,13 +23,13 @@ $cachetime= getCacheAge();
     <meta charset="utf-8">
 </head>
 <body>
-<link rel="stylesheet" type="text/css" href="styles.css.php?<?= $YANPIWS['cache_bust'] ?>" />
+<link rel="stylesheet" type="text/css" href="../css/styles.css.php?<?= $YANPIWS['cache_bust'] ?>" />
 <div class="col">
     <div class="row">
         <p>
             <a href="/" class="homeLink"><-  Weather</a>
         </p>
-        <a href="https://github.com/mrjones-plip/YANPIWS">YANPIWS 0.10.2</a> - Released Sep 4, 2023<br />
+        <a href="https://github.com/mrjones-plip/YANPIWS">YANPIWS 0.11.0</a> - Released Sep 4, 2023<br />
         <a href="http://pirateweather.net/en/latest/#introduction/">Powered by Pirate Weather</a><br />
         <?php echo $currentTempHtml ?>
         Forecast Cache Age: <?php echo $cachetime ?><br/>
