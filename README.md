@@ -205,7 +205,7 @@ ensure you see good data.  This looks like this for me:
     ```
 1. If that all looks good, as the `pi` user, set up a cron job to run once a minute and generate the stats:
     ```bash
-    */1 * * * * cd /home/pi/YANPIWS/html;/usr/bin/python /home/pi/YANPIWS/scripts/bme280.py | /usr/bin/php -f read_and_post.php
+    */1 * * * * cd /home/pi/YANPIWS/html/php;/usr/bin/python /home/pi/YANPIWS/scripts/bme280.py | /usr/bin/php -f read_and_post.php
     ``` 
    
 ### Multiple Sensor Nodes
@@ -304,6 +304,7 @@ The rtl_433 works great on Ubuntu for desktop/laptop development.  Manually kick
 script and leave it running while you code to gather live temps:
 
 ```
+cd html/php
 rtl_433 -f 433820000 -C customary -F json -q | php -f read_and_post.php
 ```
 
@@ -316,19 +317,21 @@ Note that we're using the default password, you may need to change this if you'v
 deployment:
 
 ```bash
-curl --data "password=boxcar-spinning-problem-rockslide-scored&temperature_F=44.08&id=2&time=2019-09-18 23:59:02" http://localhost:8000/parse_and_save.php
+curl --data "password=boxcar-spinning-problem-rockslide-scored&temperature_F=44.08&id=2&time=2019-09-18 23:59:02" http://localhost:8000/php/parse_and_save.php
 ```
 
 As the `bme280.py` script outputs JSON, if you want to more closely similate the cron job that's run, incluidng using
 the config vars and a real `POST`, you can use this:
 
 ```bash
+cd html/php
 echo '{"temperature_F":"44.08","id":"2","time":"2019-09-18 23:59:02"}' | php read_and_post.php
 ```
 
 Conversely, if you want to use the now deprecated `STDIN` method, you can use `echo` to pipe in JSON: 
 
 ```bash
+cd html/php
 echo '{"temperature_F":"44.08","id":"2","time":"2019-09-18 23:59:02"}' | php parse_and_save.php
 ```
 
