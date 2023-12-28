@@ -684,6 +684,9 @@ function fetch_json($content, $animate = null, $tempID = null){
         case "time":
             return json_encode(array('time' => $time));
 
+        case "datetime":
+            return json_encode(array('date' => date('D M j', time()), 'time' => $time));
+
         case "temp":
             if (isset($YANPIWS['labels'][$tempID])){
                 $tempLine = getMostRecentTemp($tempID);
