@@ -1,6 +1,6 @@
 <?php
 global $YANPIWS;
-$path = realpath(dirname(__FILE__)) . "/../php/";
+$path = realpath(dirname(__FILE__)) . "/../";
 set_include_path(get_include_path() . PATH_SEPARATOR . $path);
 require_once 'get_data.php';
 getConfig('../../');

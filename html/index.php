@@ -1,6 +1,6 @@
 <?php
 global $YANPIWS;
-$path = realpath(dirname(__FILE__)) . "/php/";
+$path = realpath(dirname(__FILE__));
 set_include_path(get_include_path() . PATH_SEPARATOR . $path);
 require_once 'get_data.php';
 getConfig();
@@ -48,11 +48,11 @@ if($YANPIWS['animate'] === 'true'){
 
 <?= $statusHtml ?>
 
-<div id="YANPIWS" class="YANPIWS"><a href="php/stats.php" id="age">YANPIWS</a></div>
+<div id="YANPIWS" class="YANPIWS"><a href="stats.php" id="age">YANPIWS</a></div>
 
 <div class="col">
     <div class="row temp-row">
-        <a href="php/temps.php">
+        <a href="temps.php">
           <?= $tempsHtml ?>
         </a>
     </div>
