@@ -1,7 +1,7 @@
 <?php
 error_log('YANPIWS Start read_and_post');
 require_once 'get_data.php';
-getConfig();
+getConfig('../../');
 
 error_log('config loaded');
 if(defined('STDIN')){

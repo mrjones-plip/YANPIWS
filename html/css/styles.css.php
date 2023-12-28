@@ -1,7 +1,9 @@
 <?php
 global $YANPIWS;
+$path = realpath(dirname(__FILE__)) . "/../php/";
+set_include_path(get_include_path() . PATH_SEPARATOR . $path);
 require_once 'get_data.php';
-getConfig();
+getConfig('../../');
 configIsValid();
 $tempWidth = round(100/$YANPIWS['temp_count']);
 header("Content-type: text/css");

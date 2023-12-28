@@ -45,12 +45,13 @@ function getStatusHTML($status){
  * include the config file
  * @param boolean $die prints error and exits if fails
  */
-function getConfig($die = true)
+function getConfig($baseDir = '../', $die = true)
 {
-    if(is_file('../config.csv')) {
+    $fullPath = $baseDir . 'config.csv';
+    if(is_file($fullPath)) {
         global $YANPIWS ;
         $options = getValidConfigs();
-        $YANPIWStmp = array_map('str_getcsv', file('../config.csv'));
+        $YANPIWStmp = array_map('str_getcsv', file($fullPath));
         foreach ($YANPIWStmp as $config){
 
             if (substr($config[0],0,6) === 'labels'){
@@ -64,7 +65,7 @@ function getConfig($die = true)
             }
 
         }
-        $YANPIWS['cache_bust'] = '0.9.10';
+        $YANPIWS['cache_bust'] = '0.11.0';
     } elseif ($die) {
         die(
             '<h3>Error</h3><p>No config.csv!  Copy config.dist.csv to config.csv</p>'.
@@ -385,7 +386,7 @@ function getTempLastHtml($tempLine, $returnOnlySeconds = false)
 function getSunsetHtml($time)
 {
     $time = date('g:i A', $time);
-    return '<img src="moon.svg" class="moon" /> '. $time;
+    return '<img src="../images/moon.svg" class="moon" /> ' . $time;
 }
 
 /**
@@ -397,7 +398,7 @@ function getSunsetHtml($time)
 function getSunriseHtml($time)
 {
     $time = date('g:i A', $time);
-    return '<img src="sun.svg" class="sun" /> '. $time;
+    return '<img src="../images/sun.svg" class="sun" /> ' . $time;
 }
 
 /**
@@ -474,7 +475,7 @@ function getDailyForecastHtml($daily = null, $days = 5, $animate = null)
     }
     if ($daily == null) {
         // show rain for error
-        $html .= "<img src='./skycons/rain.png' class='errorImg'  /> ";
+        $html .= "<img src='../skycons/rain.png' class='errorImg'  /> ";
         $html .= "No Data for forecast.";
     } else {
         $count = 1;
@@ -589,6 +590,10 @@ function getCurrentWind($currentlyObject)
     return number_format($currentlyObject->windSpeed, 0) . " mph";
 }
 
+/**
+ * @param $key
+ * @return int|string
+ */
 function getConfigValue($key){
     global $YANPIWS;
     if (in_array($key,getValidConfigs())){
@@ -596,6 +601,17 @@ function getConfigValue($key){
     } else {
         return 'Invalid Config Requested';
     }
+}
+
+/**
+ * @param $content
+ * @param $tempID
+ * @return mixed
+ */
+function get_json_inline($content, $tempID = null){
+    global $YANPIWS;
+    $tmp = json_decode(fetch_json($content, 'false', $tempID));
+    return $tmp->$content;
 }
 
 /**

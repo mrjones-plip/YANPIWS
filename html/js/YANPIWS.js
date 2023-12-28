@@ -43,7 +43,7 @@ function setClockSize(state, defaultSize){
  * AJAX call to get updated content and return JSON
  */
 function refreshData(endpoint, target, callback = false){
-    let baseUrl = './ajax.php?content=';
+    let baseUrl = './php/ajax.php?content=';
     $.getJSON( baseUrl + endpoint, function( data ) {
         $(target).html(data[endpoint]);
         if (typeof callback === "function") {

@@ -1,11 +1,14 @@
 <?php
 global $YANPIWS;
+$path = realpath(dirname(__FILE__)) . "/php/";
+set_include_path(get_include_path() . PATH_SEPARATOR . $path);
 require_once 'get_data.php';
 getConfig();
 
 $count = 1;
 $refreshTempJS = '';
 $tempsHtml = '';
+$animateJS = '';
 
 $status = configIsValid();
 $statusHtml = getStatusHTML($status['valid']);
@@ -13,12 +16,6 @@ if(isset($_GET['toggle_theme'])){
     $cssToggleQuery = '&toggle_theme=1';
 } else {
     $cssToggleQuery = '';
-}
-
-function get_json_inline($content, $tempID = null){
-    global $YANPIWS;
-    $tmp = json_decode(fetch_json($content, 'false', $tempID));
-    return $tmp->$content;
 }
 
 foreach ($YANPIWS['labels'] as $id => $label) {
@@ -29,27 +26,33 @@ foreach ($YANPIWS['labels'] as $id => $label) {
         break;
     }
 }
+
+
+if($YANPIWS['animate'] === 'true'){
+    $animateJS .= "\trefreshData('forecast', '#forecast', animateForecast);\n";
+}
 ?>
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="utf-8">
-    <script src='skycons/skycons.js?<?= $YANPIWS['cache_bust'] ?>'></script>
-    <script src='jquery-3.5.1.min.js?<?= $YANPIWS['cache_bust'] ?>'></script>
-    <script src="YANPIWS.js?<?php echo $YANPIWS['cache_bust'] ?>"></script>
+    <script src="skycons/skycons.js?<?= $YANPIWS['cache_bust'] ?>"></script>
+    <script src="js/jquery-3.5.1.min.js?<?= $YANPIWS['cache_bust']?>"></script>
+    <script src="js/YANPIWS.js?<?= $YANPIWS['cache_bust'] ?>"></script>
     <script>const skycons = new Skycons({'color': 'white'});</script>
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
     <title>YANPIWS</title>
 </head>
 <body>
-<link rel="stylesheet" type="text/css" href="styles.css.php?<?=  $YANPIWS['cache_bust'] . $cssToggleQuery ?>" />
+<link rel="stylesheet" type="text/css" href="css/styles.css.php?<?=  $YANPIWS['cache_bust'] . $cssToggleQuery ?>" />
 
 <?= $statusHtml ?>
 
-<div id="YANPIWS" class="YANPIWS"><a href="stats.php" id="age">YANPIWS</a></div>
+<div id="YANPIWS" class="YANPIWS"><a href="php/stats.php" id="age">YANPIWS</a></div>
 
 <div class="col">
     <div class="row temp-row">
-        <a href="temps.php">
+        <a href="php/temps.php">
           <?= $tempsHtml ?>
         </a>
     </div>
@@ -66,10 +69,10 @@ foreach ($YANPIWS['labels'] as $id => $label) {
         </div>
     </div>
     <div class="row suntimes big_clock_hide">
-        <span><img src="sun.svg" class="sun" alt="Sunrise Time"/>
+        <span><img src="images/sun.svg" class="sun" alt="Sunrise Time"/>
             <span id="sunrise" ><?= get_json_inline('sunrise') ?></span>
         </span>
-        <span><img src="moon.svg" class="moon" alt="Sunset Time"/>
+        <span><img src="images/moon.svg" class="moon" alt="Sunset Time"/>
             <span id="sunset" ><?= get_json_inline('sunset') ?></span>
         </span>
     </div>
@@ -101,6 +104,7 @@ foreach ($YANPIWS['labels'] as $id => $label) {
 <?=     $refreshTempJS ?>
         setClockSize(clockState, <?= $YANPIWS['font_time_date_wind']?>);
     }
+<?= $animateJS ?>
     setInterval ( refreshAll, 60000 );
 </script>
 </body>

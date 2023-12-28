@@ -1,7 +1,6 @@
 <?php
 require_once 'get_data.php';
-getConfig();
-
+getConfig('../../');
 
 if (is_array($_POST) && sizeof($_POST) > 0) {
     if (isset($_POST['password']) && $_POST['password'] == $YANPIWS['api_password']){
