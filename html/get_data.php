@@ -386,7 +386,7 @@ function getTempLastHtml($tempLine, $returnOnlySeconds = false)
 function getSunsetHtml($time)
 {
     $time = date('g:i A', $time);
-    return '<img src="../images/moon.svg" class="moon" /> ' . $time;
+    return '<img src="images/moon.svg" class="moon" /> ' . $time;
 }
 
 /**
@@ -398,7 +398,7 @@ function getSunsetHtml($time)
 function getSunriseHtml($time)
 {
     $time = date('g:i A', $time);
-    return '<img src="../images/sun.svg" class="sun" /> ' . $time;
+    return '<img src="images/sun.svg" class="sun" /> ' . $time;
 }
 
 /**
@@ -475,7 +475,7 @@ function getDailyForecastHtml($daily = null, $days = 5, $animate = null)
     }
     if ($daily == null) {
         // show rain for error
-        $html .= "<img src='../skycons/rain.png' class='errorImg'  /> ";
+        $html .= "<img src='skycons/rain.png' class='errorImg'  /> ";
         $html .= "No Data for forecast.";
     } else {
         $count = 1;

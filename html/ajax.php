@@ -2,7 +2,7 @@
 
 if (isset($_GET['content'])){
     require_once("get_data.php");
-    getConfig('../../');
+    getConfig();
     print fetch_json($_GET['content']);
 }
 exit;

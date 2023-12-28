@@ -3,11 +3,11 @@
 <html lang="en" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="utf-8">
-    <link rel="stylesheet" type="text/css" href="../css/styles.css.php" />
-    <script src="../js/jquery-3.5.1.min.js" ></script>
-    <script src="../js/jquery.jqplot.min.js" ></script>
-    <link rel="stylesheet" href="../css/HappyHistogram.min.css">
-    <link rel="stylesheet" href="../css/jquery.jqplot.min.css">
+    <link rel="stylesheet" type="text/css" href="css/styles.css.php" />
+    <script src="js/jquery-3.5.1.min.js" ></script>
+    <script src="js/jquery.jqplot.min.js" ></script>
+    <link rel="stylesheet" href="css/HappyHistogram.min.css">
+    <link rel="stylesheet" href="css/jquery.jqplot.min.css">
     <style>
         .chart { height: 98%; width:70%; float:left;}
         .temp, .temp .label { font-size: 15pt; float: right; clear: right;}
@@ -45,7 +45,7 @@ $colors = array(null,'white','red','yellow','blue');
     </div>
 </div>
 
-<script src="../js/YANPIWS.js"></script>
+<script src="js/YANPIWS.js"></script>
 <script>
     <?php
     $count = 1;
