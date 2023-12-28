@@ -341,6 +341,8 @@ Use your IDE of choice to edit and point your browser at ``localhost:8000``
 PRs and Issues welcome!
 
 ## Version History
+* 0.11.1 - Dec 28,2023
+  * fixes 404s per #108
 * 0.11.0 - Dec 28,2023
   * Adds a static page feature per #106
   * Does some general cleanup like fixing variable name typos, var -> let etc
