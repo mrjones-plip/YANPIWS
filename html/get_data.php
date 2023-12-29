@@ -65,7 +65,7 @@ function getConfig($baseDir = '../', $die = true)
             }
 
         }
-        $YANPIWS['cache_bust'] = '0.11.0';
+        $YANPIWS['cache_bust'] = '0.11.2';
     } elseif ($die) {
         die(
             '<h3>Error</h3><p>No config.csv!  Copy config.dist.csv to config.csv</p>'.
