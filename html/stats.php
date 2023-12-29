@@ -29,7 +29,7 @@ $cachetime= getCacheAge();
         <p>
             <a href="/" class="homeLink"><-  Weather</a>
         </p>
-        <a href="https://github.com/mrjones-plip/YANPIWS">YANPIWS 0.11.1</a> - Released Dec 28, 2023<br />
+        <a href="https://github.com/mrjones-plip/YANPIWS">YANPIWS 0.11.2</a> - Released Dec 29, 2023<br />
         <a href="http://pirateweather.net/en/latest/#introduction/">Powered by Pirate Weather</a><br />
         <?php echo $currentTempHtml ?>
         Forecast Cache Age: <?php echo $cachetime ?><br/>
