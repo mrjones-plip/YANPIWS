@@ -20,7 +20,7 @@ if(isset($_GET['toggle_theme'])){
 
 foreach ($YANPIWS['labels'] as $id => $label) {
     $tempsHtml .= "\t\t\t<div class='temp temp{$count}' id='temp{$count}'>" . get_json_inline('temp', $id) . "</div>\n";
-    $refreshTempJS .= "\t\trefreshData('temp&id={$id}',\t'#temp{$count}');\n";
+    $refreshTempJS .= "\t\trefreshData('temp&id={$id}',\t'#temp{$count}',\tfalse,\t'temp');\n";
     $count++;
     if ($count > $YANPIWS['temp_count']) {
         break;

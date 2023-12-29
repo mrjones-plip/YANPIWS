@@ -41,11 +41,19 @@ function setClockSize(state, defaultSize){
 
 /**
  * AJAX call to get updated content and return JSON
+ * @param endpoint URL key where AJAX call lives on server
+ * @param target DOM element to push response into
+ * @param callback JS function to call upon success
+ * @param keyname if JSON key  doesn't match endpoint, override with this
  */
-function refreshData(endpoint, target, callback = false){
+function refreshData(endpoint, target, callback = false, keyname = false){
     let baseUrl = './ajax.php?content=';
     $.getJSON( baseUrl + endpoint, function( data ) {
-        $(target).html(data[endpoint]);
+        // if no keyname was passed, use endpoint as keyname
+        if (keyname === false){
+            keyname = endpoint;
+        }
+        $(target).html(data[keyname]);
         if (typeof callback === "function") {
             callback();
         }
