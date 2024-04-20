@@ -87,7 +87,7 @@ from "raspberry" ;)
 full screen (some of which may be installed already):
 
    ```
-   sudo apt-get install -y curl git chromium-browser apache2 php php-curl unclutter sed rtl_433
+   sudo apt-get install -y curl git chromium-browser apache2 php php-curl unclutter sed rtl-433
    ```
    **RTL Note:** If your distro doesn't have the `rtl_433` package available via `apt`, follow these compile/download steps: Download, compile and install [rtl_433](https://github.com/merbanan/rtl_433) or use the faster method cited on [tech.borpin.co.uk](https://tech.borpin.co.uk/2019/12/17/install-a-package-from-the-testing-repository/) which involves adding a testing apt repo.  Note that the last apt call should be `apt install rtl-433` with a dash not an underscore.  Also on that page note that `/etc/apt/preferences` should be `/etc/apt/preferences.d/`. 
 1. With your wireless temp sensor(s) powered up and the USB Dongle attached, make sure your 
