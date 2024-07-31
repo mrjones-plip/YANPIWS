@@ -661,6 +661,13 @@ function fetch_json($content, $animate = null, $tempID = null){
             }
             break;
 
+        case "moonphase":
+            if (isset($forecast->daily->data[0]->moonPhase)){
+                $moonPhase = 360 - floor($forecast->daily->data[0]->moonPhase * 360);
+                return json_encode(array('moonphase' => $moonPhase));
+            }
+            break;
+
         case "age":
             $maxTempAge = 0;
             foreach ($YANPIWS['labels'] as $id => $label){

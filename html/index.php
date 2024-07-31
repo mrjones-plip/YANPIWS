@@ -75,6 +75,11 @@ if($YANPIWS['animate'] === 'true'){
         <span><img src="images/moon.svg" class="moon" alt="Sunset Time"/>
             <span id="sunset" ><?= get_json_inline('sunset') ?></span>
         </span>
+        <span class="moonphase">
+            <span class="light hemisphere"></span>
+            <span class="dark hemisphere"></span>
+            <span class="divider"></span>
+        </span>
     </div>
 </div>
 <div class="col rightCol big_clock_hide" id="forecast">
@@ -103,9 +108,11 @@ if($YANPIWS['animate'] === 'true'){
         refreshData('last_ajax',    '#last_ajax');
 <?=     $refreshTempJS ?>
         setClockSize(clockState, <?= $YANPIWS['font_time_date_wind']?>);
+        setMoonRotation('<?= get_json_inline('moonphase') ?>'); // todo - make this dynamic
     }
 <?= $animateJS ?>
     setInterval ( refreshAll, 60000 );
+    setMoonRotation('<?= get_json_inline('moonphase') ?>');
 </script>
 </body>
 </html>
