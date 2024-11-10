@@ -53,6 +53,9 @@ function getConfig($baseDir = '../', $die = true)
         $options = getValidConfigs();
         $YANPIWStmp = array_map('str_getcsv', file($fullPath));
         foreach ($YANPIWStmp as $config){
+            if(!isset($config[0])){
+                continue;
+            }
 
             if (substr($config[0],0,6) === 'labels'){
                 $label = explode('_',$config[0]);
