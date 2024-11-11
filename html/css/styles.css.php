@@ -92,11 +92,7 @@ a.yellow {
     width: 100%;
 }
 .sun {
-    width:33px;
-}
-.moon {
-    width:25px;
-    padding-left:20px;
+    width:53px;
 }
 
 .label, .wind_now {
@@ -180,7 +176,18 @@ input {
     overflow: hidden;
     align-items: center;
     position: relative;
+    margin: 0 20px 0 20px;
+}
+
+.moontimes span {
     float: right;
+}
+.moontimes #moonphase {
+    margin-right: 20px;
+    margin-left: 20px;
+}
+.moontimes .time {
+    margin-top: 24px;
 }
 .hemisphere {
     width: 50%;

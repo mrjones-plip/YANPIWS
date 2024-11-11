@@ -68,16 +68,25 @@ if($YANPIWS['animate'] === 'true'){
         </div>
     </div>
     <div class="row suntimes big_clock_hide">
+        <span>
+            <span id="sunrise" ><?= get_json_inline('sunrise') ?></span> ↑
+        </span>
         <span><img src="images/sun.svg" class="sun" alt="Sunrise Time"/>
-            <span id="sunrise" ><?= get_json_inline('sunrise') ?></span>
+             ↓ <span id="sunset" ><?= get_json_inline('sunset') ?></span>
         </span>
-        <span><img src="images/moon.svg" class="moon" alt="Sunset Time"/>
-            <span id="sunset" ><?= get_json_inline('sunset') ?></span>
-        </span>
-        <span class="moonphase">
-            <span class="light hemisphere"></span>
-            <span class="dark hemisphere"></span>
-            <span class="divider"></span>
+
+        <span class="moontimes">
+            <span class="time">
+                <span id="moonset" ><?= get_json_inline('sunset') ?></span>  ↓
+            </span>
+            <span class="moonphase">
+                <span class="light hemisphere"></span>
+                <span class="dark hemisphere"></span>
+                <span class="divider"></span>
+            </span>
+            <span class="time">
+                 ↑  <span id="moonrise" ><?= get_json_inline('sunrise') ?></span>
+            </span>
         </span>
     </div>
 </div>
