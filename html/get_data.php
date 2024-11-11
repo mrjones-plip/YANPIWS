@@ -28,17 +28,18 @@ function getValidConfigs(){
 /**
  * Generate status HTML with error if config is not valid
  *
- * @param $status boolean from configIsValid
+ * @param $status array from configIsValid
  * @return string of html to show upon error, returns empty if no error
  */
-function getStatusHTML($status){
-    if ($status != true) {
+function getStatusHTML(array $status): string
+{
+    if ($status['valid'] === false && isset($status['reason'])) {
         $statusHtml = "<div class='error'>ERROR: {$status['reason']}</div>";
         $statusHtml .= "<style>.temp,.suntimes{display:none;}</style>";
+        return $statusHtml;
     } else {
-        $statusHtml = '';
+        return '';
     }
-    return $statusHtml;
 }
 
 /**
@@ -53,6 +54,9 @@ function getConfig($baseDir = '../', $die = true)
         $options = getValidConfigs();
         $YANPIWStmp = array_map('str_getcsv', file($fullPath));
         foreach ($YANPIWStmp as $config){
+            if(!isset($config[0])){
+                continue;
+            }
 
             if (substr($config[0],0,6) === 'labels'){
                 $label = explode('_',$config[0]);
@@ -154,6 +158,9 @@ function configIsValid($validateApi = false)
     if (!isset($YANPIWS['dataPath']) || !is_writable($YANPIWS['dataPath'])){
         $valid['valid'] = false;
         $valid['reason'] .= 'DataPath does not exist or is not writable. ';
+    } elseif (sizeof(getTodaysData()) === 0) {
+        $valid['valid'] = false;
+        $valid['reason'] .= 'Failed to get data for today. Check DataPath for valid data.';
     }
     if ($validateApi){
         $http = curl_init(getForecastUrl(true));
@@ -169,6 +176,16 @@ function configIsValid($validateApi = false)
     return $valid;
 }
 
+function getTodaysData(){
+    global $YANPIWS;
+    $date = date('Y-m-d', time());
+    return getData($YANPIWS['dataPath'] . $date);
+}
+function getYesterdaysData(){
+    global $YANPIWS;
+    $date = date('Y-m-d', strtotime('yesterday'));
+    return getData($YANPIWS['dataPath'] . $date);
+}
 /**
  * Assuming a CSV of this structure:
  *  2017-03-22 23:11:43,211,72.5,34
@@ -250,24 +267,20 @@ function convertDataToHourly($data){
     foreach ($counts as $hour => $count){
         $result[$hour] = $result[$hour]/$counts[$hour];
     }
-//    die('daily temps:'.print_r($result,1));
     return $result;
 }
 
 /**
- * assuming theere's many temps for a day for a given sensor, get an array of the most current
+ * assuming there's many temps for a day for a given sensor, get an array of the most current
  *
  * @param $id int of ID of the sensor
  * @param null $date string in YEAR-MO-DAY format, defaults to today if none passed
  * @return array of results - if no data found, array of "No Data Found" returned
  */
-function getMostRecentTemp($id, $date = null)
+function getMostRecentTemp($id)
 {
     global $YANPIWS;
-    if ($date == null) {
-        $date = date('Y-m-d', time());
-    }
-    $allData = getData($YANPIWS['dataPath'] . $date);
+    $allData = getTodaysData();
     if (isset($allData[$id])) {
         $result = array_pop($allData[$id]);
 
@@ -299,12 +312,12 @@ function getMostRecentTemp($id, $date = null)
  */
 function getTempHtml($tempLine)
 {
-    if (isset($tempLine['temp']) && $tempLine != null) {
+    if (isset($tempLine['temp']) && is_numeric($tempLine['temp'])) {
         $temp = number_format($tempLine['temp'], 0);
         return "<span class='degrees'>{$temp}°</span>" .
             "<span class='label'>{$tempLine['label']}</span>\n";
     } else {
-        return "NA\n";
+        return "NA";
     }
 }
 /**
@@ -330,7 +343,7 @@ function getHumidityHtml($tempLine, $useLabel = false)
         }
         return $result;
     } else {
-        return "NA\n";
+        return "NA";
     }
 }
 
@@ -609,9 +622,12 @@ function getConfigValue($key){
  * @return mixed
  */
 function get_json_inline($content, $tempID = null){
-    global $YANPIWS;
-    $tmp = json_decode(fetch_json($content, 'false', $tempID));
-    return $tmp->$content;
+    $result = fetch_json($content, 'false', $tempID);
+    if ( $content === null || $result === null || !json_validate($result) ) {
+        return null;
+    }
+    $fetchResults = json_decode($result);
+    return $fetchResults->$content;
 }
 
 /**

@@ -10,8 +10,7 @@ $refreshTempJS = '';
 $tempsHtml = '';
 $animateJS = '';
 
-$status = configIsValid();
-$statusHtml = getStatusHTML($status['valid']);
+$statusHtml = getStatusHTML(configIsValid());
 if(isset($_GET['toggle_theme'])){
     $cssToggleQuery = '&toggle_theme=1';
 } else {
