@@ -19,6 +19,7 @@ function getValidConfigs(){
         'font_temp',
         'font_temp_label',
         'theme',
+        'moondata_api_URL',
         // we accept these two. listing it here commented out for completeness. see getConfig() below
         // servers_*
         // labels_*
@@ -416,39 +417,50 @@ function getSunriseHtml($time)
 
 /**
  * get data from Forecast API.  will cache data and refresh it every 10 minutes
- *
- * @return stdClass of either resutls or very lightly populated error object
+ * @param $type string of either `moon` or `weather`
+ * @return stdClass of either results or very lightly populated error object
  */
-function getForecastData()
-{
+function fetchRemoteApiDataAndSave($type){
     global $YANPIWS;
-    $path = $YANPIWS['dataPath'];
-    $cache = $path . 'forecast.cache';
-    $hourAgo = time() - (60*60); // 60 minutes, ~144 API calls/month
+
+    $noDataFound = new stdClass();
+    $noDataFound->daily = null;
+    $noDataFound->currently = null;
+
+    if ($type === 'moon') {
+        $cache = $YANPIWS['dataPath'] . 'moondata.cache';
+        $url = getMoondataUrl();
+        $timeAgo = time() - (60*60*12); // 60 seconds x 60 minutes * 12 = 12 hours
+    } elseif ($type === 'weather') {
+        $cache = $YANPIWS['dataPath'] . 'forecast.cache';
+        $timeAgo = time() - (60*60); // 60 minutes, ~144 API calls/month
+        $url = getForecastUrl();
+    } else {
+        return $noDataFound;
+    }
+
     $data = false;
     $configStatus = configIsValid();
     if($configStatus['valid'] === true) {
-        if ((!is_file($cache) || filectime($cache) < $hourAgo)) {
-            $http = curl_init(getForecastUrl());
+        if ((!is_file($cache) || filectime($cache) < $timeAgo)) {
+            $http = curl_init($url);
             curl_setopt($http, CURLOPT_RETURNTRANSFER, 1);
             $dataFromRemote = curl_exec($http);
             $http_status = curl_getinfo($http, CURLINFO_HTTP_CODE);
             if ($http_status == 200){
                 file_put_contents($cache, serialize(json_decode($dataFromRemote)));
             } else {
-                error_log('[ERROR] Tried to get info from ' . getForecastUrl() . ', did not get 200 HTTP Code, instead got: ' . $http_status);
+                error_log('[ERROR] Tried to get info from ' . $url . ', did not get 200 HTTP Code, instead got: ' . $http_status);
             }
         }
 
-        // alwasy vetch from
+        // always fetch from file if present
         if (is_file($cache)) {
             $data = unserialize(file_get_contents($cache));
         }
     }
     if ($data === false || $data === null) {
-        $data = new stdClass();
-        $data->daily = null;
-        $data->currently = null;
+        $data = $noDataFound;
     }
     return $data;
 }
@@ -471,10 +483,29 @@ function getForecastUrl($useTestLatLong = false){
 }
 
 /**
- * /**
- * expects the $data->daily object from getForecastData(), returns $days (default 5) of forecast HTML
+ * Simple wrapper to concat the string for the Forecast API endpoint
  *
- * @param null $daily $data->daily object from getForecastData()
+ * @return string of URL
+ */
+function getMoondataUrl($useTestLatLong = false){
+    global $YANPIWS;
+    if ($useTestLatLong){
+        $lat = "31.775554";
+        $lon = "81.822436";
+    } else {
+        $lat = $YANPIWS['lat'];
+        $lon = $YANPIWS['lon'];
+    }
+    $date = date('Y-m-d', time());
+//    https://aa.usno.navy.mil/api/rstt/oneday?date=2016-12-1&coords=41.89,12.48
+    return $YANPIWS['moondata_api_URL'] . '?date=' . $date . '&coords=' . $lat . ',' . $lon;
+}
+
+/**
+ * /**
+ * expects the $data->daily object from fetchRemoteApiDataAndSave('weather'), returns $days (default 5) of forecast HTML
+ *
+ * @param null $daily $data->daily object from fetchRemoteApiDataAndSave('weather')
  * @param int $days how many days of forecast to return
  * @param string $animate show animation or not: 'true' or 'false' literal string
  * @return string of HTML
@@ -520,9 +551,9 @@ function getDailyForecastHtml($daily = null, $days = 5, $animate = null)
 }
 
 /**
- * expects the $data->daily object from getForecastData(), returns $days (default 5) of forecast HTML
+ * expects the $data->daily object from fetchRemoteApiDataAndSave('weather'), returns $days (default 5) of forecast HTML
  *
- * @param null $daily $data->daily object from getForecastData()
+ * @param null $daily $data->daily object from fetchRemoteApiDataAndSave('weather')
  * @param int $days how many days of forecast to return
  * @return string of HTML
  */
@@ -593,9 +624,9 @@ function getHumanTime($s)
 
 
 /**
- * expects the $data->currently object from getForecastData(), returns windspeed HTML
+ * expects the $data->currently object from fetchRemoteApiDataAndSave('weather'), returns windspeed HTML
  *
- * @param null $daily $data->currently object from getForecastData()
+ * @param null $daily $data->currently object from fetchRemoteApiDataAndSave('weather')
  * @return string of HTML
  */
 function getCurrentWind($currentlyObject)
@@ -640,7 +671,8 @@ function get_json_inline($content, $tempID = null){
 function fetch_json($content, $animate = null, $tempID = null){
     global $YANPIWS;
     $time = date('g:i A', time());
-    $forecast = getForecastData();
+    $forecast = fetchRemoteApiDataAndSave('weather');
+    $moondata = fetchRemoteApiDataAndSave('moon');
     if(isset($_GET['id'])){
         $tempID = $_GET['id'];
     }
@@ -674,6 +706,24 @@ function fetch_json($content, $animate = null, $tempID = null){
             if (isset($forecast->daily->data[0]->sunriseTime)){
                 $time = date('g:i A', $forecast->daily->data[0]->sunriseTime);
                 return json_encode(array('sunrise' => $time));
+            }
+            break;
+
+        case "moonrise":
+        case "moonset":
+            if (isset($moondata->properties->data->moondata)){
+                if($content === 'moonset'){
+                    $search = 'Set';
+                } else {
+                    $search = 'Rise';
+                }
+                foreach ($moondata->properties->data->moondata as $moonItem){
+                    if ($moonItem->phen && $moonItem->phen === $search){
+                        $time = date('g:i A', strtotime($moonItem->time));;
+                        return json_encode(array((string) $content => $time));
+                    }
+                }
+
             }
             break;
 

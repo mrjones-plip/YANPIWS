@@ -77,7 +77,7 @@ if($YANPIWS['animate'] === 'true'){
 
         <span class="moontimes">
             <span class="time">
-                <span id="moonset" ><?= get_json_inline('sunset') ?></span>  ↓
+                  ↓ <span id="moonset" ><?= get_json_inline('moonset') ?></span>
             </span>
             <span class="moonphase">
                 <span class="light hemisphere"></span>
@@ -85,7 +85,7 @@ if($YANPIWS['animate'] === 'true'){
                 <span class="divider"></span>
             </span>
             <span class="time">
-                 ↑  <span id="moonrise" ><?= get_json_inline('sunrise') ?></span>
+               <span id="moonrise" ><?= get_json_inline('moonrise') ?></span>  ↑
             </span>
         </span>
     </div>
@@ -108,6 +108,8 @@ if($YANPIWS['animate'] === 'true'){
         //          Endpoint        DOM Location    callback
         refreshData('sunrise',      '#sunrise');
         refreshData('sunset',       '#sunset');
+        refreshData('moonrise',     '#moonrise');
+        refreshData('moonset',      '#moonset');
         refreshData('wind_now',     '#wind_now');
         refreshData('date',         '#date');
         refreshData('time',         '#time');
