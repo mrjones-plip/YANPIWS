@@ -3,6 +3,9 @@
 lat,31.775554
 lon,-81.822436
 
+# check https://www.php.net/manual/en/timezones.php for available timezones
+timezone,America/Los_Angeles
+
 # set your forecast API token from either Dark Sky or Pirate Weather
 forecast_api_token,aabbccddeeffgghhiijj112233445566
 

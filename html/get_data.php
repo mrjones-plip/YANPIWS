@@ -20,6 +20,7 @@ function getValidConfigs(){
         'font_temp_label',
         'theme',
         'moondata_api_URL',
+        'timezone',
         // we accept these two. listing it here commented out for completeness. see getConfig() below
         // servers_*
         // labels_*
@@ -71,6 +72,7 @@ function getConfig($baseDir = '../', $die = true)
 
         }
         $YANPIWS['cache_bust'] = '0.11.2';
+        date_default_timezone_set($YANPIWS['timezone']);
     } elseif ($die) {
         die(
             '<h3>Error</h3><p>No config.csv!  Copy config.dist.csv to config.csv</p>'.
