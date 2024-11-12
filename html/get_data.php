@@ -432,7 +432,7 @@ function fetchRemoteApiDataAndSave($type){
     if ($type === 'moon') {
         $cache = $YANPIWS['dataPath'] . 'moondata.cache';
         $url = getMoondataUrl();
-        $timeAgo = time() - (60*60*12); // 60 seconds x 60 minutes * 12 = 12 hours
+        $timeAgo = time() - (60*60); // 60 minutes
     } elseif ($type === 'weather') {
         $cache = $YANPIWS['dataPath'] . 'forecast.cache';
         $timeAgo = time() - (60*60); // 60 minutes, ~144 API calls/month
@@ -499,8 +499,9 @@ function getMoondataUrl($useTestLatLong = false){
         $lon = $YANPIWS['lon'];
     }
     $date = date('Y-m-d', time());
-//    https://aa.usno.navy.mil/api/rstt/oneday?date=2016-12-1&coords=41.89,12.48
-    return $YANPIWS['moondata_api_URL'] . '?date=' . $date . '&coords=' . $lat . ',' . $lon;
+    // hard code this to time zone zero (tz=0) and then in fetch_json() we'll run setTimezone
+    // to put it in their desired timezone
+    return $YANPIWS['moondata_api_URL'] . '?tz=0&date=' . $date . '&coords=' . $lat . ',' . $lon;
 }
 
 /**
