@@ -721,8 +721,16 @@ function fetch_json($content, $animate = null, $tempID = null){
                 }
                 foreach ($moondata->properties->data->moondata as $moonItem){
                     if ($moonItem->phen && $moonItem->phen === $search){
-                        $time = date('g:i A', strtotime($moonItem->time));;
-                        return json_encode(array((string) $content => $time));
+                        // times are always returned UTC, so start there and then set timezone according to config
+                        $dt = DateTimeImmutable::createFromFormat(
+                            'G:i',
+                            $moonItem->time,
+                            new DateTimeZone('Europe/London')
+                        );
+                        $dt = $dt->setTimezone(new DateTimeZone($YANPIWS['timezone']));
+                        $content = (string) $content;
+                        $time = $dt->format('g:i A');
+                        return json_encode(array($content => $time));
                     }
                 }
 
