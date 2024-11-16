@@ -68,11 +68,25 @@ if($YANPIWS['animate'] === 'true'){
         </div>
     </div>
     <div class="row suntimes big_clock_hide">
-        <span><img src="images/sun.svg" class="sun" alt="Sunrise Time"/>
-            <span id="sunrise" ><?= get_json_inline('sunrise') ?></span>
+        <span>
+            <span id="sunrise" ><?= get_json_inline('sunrise') ?></span> ↑
         </span>
-        <span><img src="images/moon.svg" class="moon" alt="Sunset Time"/>
-            <span id="sunset" ><?= get_json_inline('sunset') ?></span>
+        <span><img src="images/sun.svg" class="sun" alt="Sunrise Time"/>
+             ↓ <span id="sunset" ><?= get_json_inline('sunset') ?></span>
+        </span>
+
+        <span class="moontimes">
+            <span class="time">
+                  ↓ <span id="moonset" ><?= get_json_inline('moonset') ?></span>
+            </span>
+            <span class="moonphase">
+                <span class="light hemisphere"></span>
+                <span class="dark hemisphere"></span>
+                <span class="divider"></span>
+            </span>
+            <span class="time">
+               <span id="moonrise" ><?= get_json_inline('moonrise') ?></span>  ↑
+            </span>
         </span>
     </div>
 </div>
@@ -94,6 +108,8 @@ if($YANPIWS['animate'] === 'true'){
         //          Endpoint        DOM Location    callback
         refreshData('sunrise',      '#sunrise');
         refreshData('sunset',       '#sunset');
+        refreshData('moonrise',     '#moonrise');
+        refreshData('moonset',      '#moonset');
         refreshData('wind_now',     '#wind_now');
         refreshData('date',         '#date');
         refreshData('time',         '#time');
@@ -102,9 +118,11 @@ if($YANPIWS['animate'] === 'true'){
         refreshData('last_ajax',    '#last_ajax');
 <?=     $refreshTempJS ?>
         setClockSize(clockState, <?= $YANPIWS['font_time_date_wind']?>);
+        setMoonRotation('<?= get_json_inline('moonphase') ?>'); // todo - make this dynamic
     }
 <?= $animateJS ?>
     setInterval ( refreshAll, 60000 );
+    setMoonRotation('<?= get_json_inline('moonphase') ?>');
 </script>
 </body>
 </html>

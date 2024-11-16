@@ -17,7 +17,7 @@
 <?php
 require_once 'get_data.php';
 getConfig('../../');
-$forecast = getForecastData();
+$forecast = fetchRemoteApiDataAndSave('weather');
 $status = configIsValid();
 
 // get two days worth of data and merge them so we can ensure we have a

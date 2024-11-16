@@ -60,6 +60,30 @@ function refreshData(endpoint, target, callback = false, keyname = false){
     });
 }
 
+
+// thanks!! thormeier:
+// - http://buymeacoffee.com/pthormeier
+// - https://dev.to/thormeier
+// - https://jsfiddle.net/jfhsywzd/3/
+const setMoonRotation = deg => {
+    document.querySelector('.divider').style.transform = `rotate3d(0, 1, 0, ${deg}deg)`
+    const hemispheres = document.querySelectorAll('.hemisphere')
+    if (deg < 180) {
+        // Left
+        hemispheres[0].classList.remove('dark')
+        hemispheres[0].classList.add('light')
+
+        hemispheres[1].classList.add('dark')
+        hemispheres[1].classList.remove('light')
+    } else {
+        hemispheres[0].classList.add('dark')
+        hemispheres[0].classList.remove('light')
+
+        hemispheres[1].classList.remove('dark')
+        hemispheres[1].classList.add('light')
+    }
+}
+
 /**
  * start the dark sky canvas DOM elements animating. intended to call if
  * canvas elements have been updated from refreshForecast()

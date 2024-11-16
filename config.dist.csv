@@ -3,6 +3,9 @@
 lat,31.775554
 lon,-81.822436
 
+# check https://www.php.net/manual/en/timezones.php for available timezones
+timezone,America/Los_Angeles
+
 # set your forecast API token from either Dark Sky or Pirate Weather
 forecast_api_token,aabbccddeeffgghhiijj112233445566
 
@@ -26,11 +29,14 @@ font_time_date_wind,35
 font_temp,50
 font_temp_label,25
 
+# set dark or light theme. if unset or unrecognized, defaults to dark
+theme,dark
+
 # likely this won't need to change if you're following default install instructions.
 dataPath,/home/pi/YANPIWS/data/
 
-# set dark or light theme. if unset or unrecognized, defaults to dark
-theme,dark
+# there's only one of these, so likely this won't change
+moondata_api_URL,https://aa.usno.navy.mil/api/rstt/oneday
 
 # unless you're deploying a lot of nodes reporting back to a central server, don't touch these ;)
 # api_password very likely should match servers_0_password unless, again, you know what you're doing ;)
