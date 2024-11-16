@@ -90,6 +90,7 @@ full screen (some of which may be installed already):
    sudo apt-get install -y curl git chromium-browser apache2 php php-curl php-xml unclutter sed rtl-433
    ```
    **RTL Note:** If your distro doesn't have the `rtl_433` package available via `apt`, follow these compile/download steps: Download, compile and install [rtl_433](https://github.com/merbanan/rtl_433) or use the faster method cited on [tech.borpin.co.uk](https://tech.borpin.co.uk/2019/12/17/install-a-package-from-the-testing-repository/) which involves adding a testing apt repo.  Note that the last apt call should be `apt install rtl-433` with a dash not an underscore.  Also on that page note that `/etc/apt/preferences` should be `/etc/apt/preferences.d/`. 
+   **PHP Note:** You need to ensure you install PHP 8.3 or later 
 1. With your wireless temp sensor(s) powered up and the USB Dongle attached, make sure your 
 sensors are read with `rtl_433`. Let it run for a while an note the IDs returned for the later step
 of creating your own config file.  Here we see ID 231:
@@ -133,10 +134,15 @@ animated ones, set 'animate' to `false` instead of `true` like below. Here's a s
     lat,31.775554
     lon,-81.822436
     
-    # set your forecast API token - should be a 32-40 char alpha numeric
+    # check https://www.php.net/manual/en/timezones.php for available timezones
+    timezone,America/Los_Angeles
+    
+    # set your forecast API token from either Dark Sky or Pirate Weather
     forecast_api_token,aabbccddeeffgghhiijj112233445566
-   
-    # set your forecast API URL
+    
+    # set your provider for forecasts (must end in an:
+    #   pirate weather: https://api.pirateweather.net
+    #   dark sky: https://api.darksky.net
     forecast_api_url,https://api.pirateweather.net
     
     # should we show animated icons for forecast? should be "true" or "false"
@@ -144,6 +150,7 @@ animated ones, set 'animate' to `false` instead of `true` like below. Here's a s
     
     # label ID map to human name. Format is "labels_" + ID + "," + NAME
     labels_211,In
+    labels_109,Out
     
     # How many temperatures to show on the screen (tested with 1, 2 or 3 - watch out if you do more!)
     temp_count,2
@@ -153,8 +160,14 @@ animated ones, set 'animate' to `false` instead of `true` like below. Here's a s
     font_temp,50
     font_temp_label,25
     
+    # set dark or light theme. if unset or unrecognized, defaults to dark
+    theme,dark
+    
     # likely this won't need to change if you're following default install instructions.
     dataPath,/home/pi/YANPIWS/data/
+    
+    # there's only one of these, so likely this won't change
+    moondata_api_URL,https://aa.usno.navy.mil/api/rstt/oneday
     
     # unless you're deploying a lot of nodes reporting back to a central server, don't touch these ;)
     # api_password very likely should match servers_0_password unless, again, you know what you're doing ;)
@@ -341,6 +354,10 @@ Use your IDE of choice to edit and point your browser at ``localhost:8000``
 PRs and Issues welcome!
 
 ## Version History
+* 0.12.0 - Nov 15, 2024
+  * adds phases of moon and set and rise times for same per #114
+  * also fixed a bunch of error handling that was failing, also in #114
+  * requires PHP >8.3!
 * 0.11.2 - Dec 29,2023
   * fixes temps not updating per #112
 * 0.11.1 - Dec 28,2023

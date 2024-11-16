@@ -71,7 +71,8 @@ function getConfig($baseDir = '../', $die = true)
             }
 
         }
-        $YANPIWS['cache_bust'] = '0.11.2';
+        $YANPIWS['release'] = '0.12.0';
+        $YANPIWS['cache_bust'] = $YANPIWS['release'];
         date_default_timezone_set($YANPIWS['timezone']);
     } elseif ($die) {
         die(
