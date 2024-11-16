@@ -16,6 +16,7 @@ if (isset($_SERVER['SERVER_ADDR'])) {
 }
 
 $cachetime= getCacheAge();
+$cacheMoontime= getCacheAge(false,'moon');
 ?>
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/html">
@@ -29,10 +30,12 @@ $cachetime= getCacheAge();
         <p>
             <a href="/" class="homeLink"><-  Weather</a>
         </p>
-        <a href="https://github.com/mrjones-plip/YANPIWS">YANPIWS 0.11.2</a> - Released Dec 29, 2023<br />
+        <a href="https://github.com/mrjones-plip/YANPIWS">YANPIWS 0.11.3</a> - Released Nov 15, 2024<br />
         <a href="http://pirateweather.net/en/latest/#introduction/">Powered by Pirate Weather</a><br />
+        <a href="https://aa.usno.navy.mil/about/mission">Powered by Astronomical Applications Department, U.S. Naval Observatory </a><br />
         <?php echo $currentTempHtml ?>
         Forecast Cache Age: <?php echo $cachetime ?><br/>
+        Mooncast Cache Age: <?php echo $cacheMoontime ?><br/>
         IP: <?php echo $address ?>
     </div>
 </div>

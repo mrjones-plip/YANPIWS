@@ -354,10 +354,15 @@ function getHumidityHtml($tempLine, $useLabel = false)
  * Get the age in human time (sec, min, hour etc) of the Forecast cache
  * @param $returnSeconds boolean to return int of seconds if true, otherwise string of human time
  */
-function getCacheAge($returnSeconds = false){
+function getCacheAge(bool $returnSeconds = false, string $type = 'weather'): int|string
+{
     global $YANPIWS;
-    $path = $YANPIWS['dataPath'];
-    $forecast_cache_time =  filemtime($path . 'forecast.cache');
+    if ($type === 'weather') {
+        $file = 'forecast.cache';
+    } else {
+        $file = 'moondata.cache';
+    }
+    $forecast_cache_time =  filemtime($YANPIWS['dataPath'] . 'forecast.cache');
     if (!$returnSeconds) {
         return getHumanTime(time() - $forecast_cache_time);
     } else {
@@ -424,7 +429,6 @@ function getSunriseHtml($time)
  */
 function fetchRemoteApiDataAndSave($type){
     global $YANPIWS;
-
     $noDataFound = new stdClass();
     $noDataFound->daily = null;
     $noDataFound->currently = null;
@@ -468,11 +472,10 @@ function fetchRemoteApiDataAndSave($type){
 }
 
 /**
- * Simple wrapper to concat the string for the Forecast API endpoint
- *
- * @return string of URL
+ * @param $useTestLatLong boolean to use test data or not
+ * @return array
  */
-function getForecastUrl($useTestLatLong = false){
+function getLatLon($useTestLatLong){
     global $YANPIWS;
     if ($useTestLatLong){
         $lat = "31.775554";
@@ -481,6 +484,17 @@ function getForecastUrl($useTestLatLong = false){
         $lat = $YANPIWS['lat'];
         $lon = $YANPIWS['lon'];
     }
+    return array('lat' => $lat, 'lon' => $lon);
+}
+
+/**
+ * Simple wrapper to concat the string for the Forecast API endpoint
+ *
+ * @return string of URL
+ */
+function getForecastUrl($useTestLatLong = false){
+    global $YANPIWS;
+    extract(getLatLon($useTestLatLong));
     return $YANPIWS['forecast_api_url'] . '/forecast/' . $YANPIWS['forecast_api_token'] . '/' . $lat . ',' . $lon;
 }
 
@@ -491,17 +505,10 @@ function getForecastUrl($useTestLatLong = false){
  */
 function getMoondataUrl($useTestLatLong = false){
     global $YANPIWS;
-    if ($useTestLatLong){
-        $lat = "31.775554";
-        $lon = "81.822436";
-    } else {
-        $lat = $YANPIWS['lat'];
-        $lon = $YANPIWS['lon'];
-    }
     $date = date('Y-m-d', time());
-    // hard code this to time zone zero (tz=0) and then in fetch_json() we'll run setTimezone
-    // to put it in their desired timezone
-    return $YANPIWS['moondata_api_URL'] . '?tz=0&date=' . $date . '&coords=' . $lat . ',' . $lon;
+    extract(getLatLon($useTestLatLong));
+    $hoursOffset = ((float) date('Z')/60/60);
+    return $YANPIWS['moondata_api_URL'] . '?tz=' . $hoursOffset . '&date=' . $date . '&coords=' . $lat . ',' . $lon;
 }
 
 /**
@@ -726,9 +733,8 @@ function fetch_json($content, $animate = null, $tempID = null){
                         $dt = DateTimeImmutable::createFromFormat(
                             'G:i',
                             $moonItem->time,
-                            new DateTimeZone('Europe/London')
+                            new DateTimeZone($YANPIWS['timezone'])
                         );
-                        $dt = $dt->setTimezone(new DateTimeZone($YANPIWS['timezone']));
                         $content = (string) $content;
                         $time = $dt->format('g:i A');
                         return json_encode(array($content => $time));
