@@ -665,7 +665,7 @@ function getConfigValue($key){
  */
 function get_json_inline($content, $tempID = null){
     $result = fetch_json($content, 'false', $tempID);
-    if ( $content === null || $result === null || !json_validate($result) ) {
+    if ( $content === null || $result === null || json_decode($result) === null || json_decode($result) === false ) {
         return null;
     }
     $fetchResults = json_decode($result);

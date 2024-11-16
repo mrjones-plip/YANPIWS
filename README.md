@@ -89,9 +89,7 @@ full screen (some of which may be installed already):
    ```
    sudo apt-get install -y curl git chromium-browser apache2 php php-curl php-xml unclutter sed rtl-433
    ```
-   **RTL Note:** If your distro doesn't have the `rtl_433` package available via `apt`, follow these compile/download steps: Download, compile and install [rtl_433](https://github.com/merbanan/rtl_433) or use the faster method cited on [tech.borpin.co.uk](https://tech.borpin.co.uk/2019/12/17/install-a-package-from-the-testing-repository/) which involves adding a testing apt repo.  Note that the last apt call should be `apt install rtl-433` with a dash not an underscore.  Also on that page note that `/etc/apt/preferences` should be `/etc/apt/preferences.d/`.
-   
-   **PHP Note:** You need to ensure you install PHP 8.3 or later 
+   **RTL Note:** If your distro doesn't have the `rtl_433` package available via `apt`, follow these compile/download steps: Download, compile and install [rtl_433](https://github.com/merbanan/rtl_433) or use the faster method cited on [tech.borpin.co.uk](https://tech.borpin.co.uk/2019/12/17/install-a-package-from-the-testing-repository/) which involves adding a testing apt repo.  Note that the last apt call should be `apt install rtl-433` with a dash not an underscore.  Also on that page note that `/etc/apt/preferences` should be `/etc/apt/preferences.d/`. 
 1. With your wireless temp sensor(s) powered up and the USB Dongle attached, make sure your 
 sensors are read with `rtl_433`. Let it run for a while an note the IDs returned for the later step
 of creating your own config file.  Here we see ID 231:
@@ -358,7 +356,6 @@ PRs and Issues welcome!
 * 0.12.0 - Nov 15, 2024
   * adds phases of moon and set and rise times for same per #114
   * also fixed a bunch of error handling that was failing, also in #114
-  * requires PHP >8.3!
 * 0.11.2 - Dec 29,2023
   * fixes temps not updating per #112
 * 0.11.1 - Dec 28,2023
