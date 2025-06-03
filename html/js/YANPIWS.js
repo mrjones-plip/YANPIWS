@@ -60,14 +60,24 @@ function refreshData(endpoint, target, callback = false, keyname = false){
     });
 }
 
+function setMoonExtra() {
+
+    $.getJSON( './ajax.php?content=moonall', function( json ) {
+        const data = json['moonall'];
+        $('#moonall').html(
+            "Current: " + data.curphase + " " + data.fracillum + " <br/>" +
+            "Closest: " + data.closestphase.description
+        );
+    });
+}
 
 // thanks!! thormeier:
 // - http://buymeacoffee.com/pthormeier
 // - https://dev.to/thormeier
 // - https://jsfiddle.net/jfhsywzd/3/
-const setMoonRotation = deg => {
-    document.querySelector('.divider').style.transform = `rotate3d(0, 1, 0, ${deg}deg)`
-    const hemispheres = document.querySelectorAll('.hemisphere')
+const setMoonRotation = (deg, domSelector) => {
+    document.querySelector( domSelector + ' .divider').style.transform = `rotate3d(0, 1, 0, ${deg}deg)`
+    const hemispheres = document.querySelectorAll( domSelector + ' .hemisphere')
     if (deg < 180) {
         // Left
         hemispheres[0].classList.remove('dark')

@@ -125,7 +125,7 @@ a.yellow {
     font-weight: bold;
 }
 
-#time:hover{
+#time:hover, #date:hover, .moontimes:hover, .bigmoon:hover {
     cursor: pointer;
 }
 .wind_now {
@@ -179,6 +179,13 @@ input {
     margin: 0 20px 0 20px;
 }
 
+.bigmoon .moonphase {
+    width: 200px;
+    height: 200px;
+    float: left;
+    margin-right: 40px;
+}
+
 .moontimes>span {
     float: right;
 }
@@ -188,6 +195,9 @@ input {
 }
 .moontimes .time {
     margin-top: 24px;
+}
+.bigmoon {
+    display: none;
 }
 .hemisphere {
     width: 50%;
@@ -210,6 +220,13 @@ input {
     transform-style: preserve-3d;
     backface-visibility: hidden;
 }
+
+.bigmoon  .divider,
+.bigmoon .divider:after {
+    width: 200px;
+    height: 200px;
+}
+
 .divider {
     background-color: #575851;
 }

@@ -672,6 +672,26 @@ function get_json_inline($content, $tempID = null){
     return $fetchResults->$content;
 }
 
+function get_formatted_time($raw){
+    global $YANPIWS;
+
+    $dt = DateTimeImmutable::createFromFormat(
+        'G:i',
+        $raw,
+        new DateTimeZone($YANPIWS['timezone'])
+    );
+    return $dt->format('g:i A'); # cooked ;)
+}
+function get_formatted_date($raw){
+    global $YANPIWS;
+
+    $dt = DateTimeImmutable::createFromFormat(
+        'j n X',
+        $raw,
+        new DateTimeZone($YANPIWS['timezone'])
+    );
+    return $dt->format('F jS'); # cooked ;)
+}
 /**
  * fetch JSON contentfor use on the main DOM to render content
  *
@@ -730,18 +750,40 @@ function fetch_json($content, $animate = null, $tempID = null){
                 }
                 foreach ($moondata->properties->data->moondata as $moonItem){
                     if ($moonItem->phen && $moonItem->phen === $search){
-                        // times are always returned UTC, so start there and then set timezone according to config
-                        $dt = DateTimeImmutable::createFromFormat(
-                            'G:i',
-                            $moonItem->time,
-                            new DateTimeZone($YANPIWS['timezone'])
-                        );
+                        $time = get_formatted_time($moonItem->time);
                         $content = (string) $content;
-                        $time = $dt->format('g:i A');
                         return json_encode(array($content => $time));
                     }
                 }
 
+            }
+            break;
+
+        case "moonall":
+            if (isset($moondata->properties->data->moondata)){
+                $data = $moondata->properties->data;
+                foreach ($data->moondata as $moonItem){
+                    if ($moonItem->time){
+                        $moonItem->time = get_formatted_time($moonItem->time);
+                    }
+                }
+
+                if (isset($data->closestphase->time)){
+                    $data->closestphase->time = get_formatted_time(
+                        $data->closestphase->time
+                    );
+                    $data->closestphase->description =
+                        $data->closestphase->phase  . " " .
+                        get_formatted_date(
+                            $data->closestphase->day  . " " .
+                            $data->closestphase->month . " " .
+                            $data->closestphase->year
+                        );
+                } else {
+                    $data->closestphase->description = "";
+                }
+                unset($data->sundata);
+                return json_encode(array('moonall' => $data));
             }
             break;
 
