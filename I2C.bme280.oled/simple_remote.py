@@ -83,17 +83,17 @@ def get_remote_forecast():
 def get_remote_sun():
     data = json.loads(get_string_from_url(yanpiws_ajax_url + "sunrise"))
     data.update(json.loads(get_string_from_url(yanpiws_ajax_url + "sunset")))
-    return "☀" + str(data['sunrise']) + " ○" + str(data['sunset'])
+    return "☀ ↑" + str(data['sunrise']) + " ↓" + str(data['sunset'])
 
 
 def get_remote_moon():
     data = json.loads(get_string_from_url(yanpiws_ajax_url + "moonset"))
     data.update(json.loads(get_string_from_url(yanpiws_ajax_url + "moonrise")))
-    result = '☾'
+    result = '○'
     if data['moonrise']:
-        result = result + "🡡" + data['moonrise']
+        result = result + " ↑" + data['moonrise']
     if data['moonset']:
-        result = result + " 🡣" + data['moonset']
+        result = result + " ↓" + data['moonset']
 
     my_logger.debug('moon data debug: ' + result)
     return result
@@ -123,7 +123,7 @@ def show_info(wait):
         second_line = str(int(float(humid_and_temp1[0]['temp']))) + '°' + humid_and_temp1[0]['label']
 
     if no_error and moon_all:
-        first_line2 = "↑ ↓ ☀ " + moon_all
+        first_line2 = moon_all
 
     if no_error and forecast[0]:
         third_line = str(int(float(forecast[0]['temperatureMax']))) + '°' + forecast[0]['icon']
