@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+from json.decoder import JSONArray
 
 from luma.core.interface.serial import i2c
 from luma.core.render import canvas
@@ -85,37 +86,57 @@ def get_remote_sun():
     return "☀" + str(data['sunrise']) + " ○" + str(data['sunset'])
 
 
+def get_remote_moon():
+    data = json.loads(get_string_from_url(yanpiws_ajax_url + "moonset"))
+    data.update(json.loads(get_string_from_url(yanpiws_ajax_url + "moonrise")))
+    result = '☾'
+    if data['moonrise']:
+        result = result + "🡡" + data['moonrise']
+    if data['moonset']:
+        result = result + " 🡣" + data['moonset']
+
+    my_logger.debug('moon data debug: ' + result)
+    return result
+
+
 def show_info(wait):
 
     # fetch the cooked up json -> strings
     forecast = {}
     humid_and_temp1 = {}
+    moon_all = ''
+    second_line = ''
+    first_line2 = ''
+    third_line = ''
     try:
         no_error = True
         humid_and_temp1 = get_remote_humid_and_temp(yanpiws_temp_1)
+        moon_all = get_remote_moon()
         forecast = get_remote_forecast()
         first_line = get_remote_sun()
-    except:
-        first_line = 'Error - check logs :('
+    except Exception as e:
+        first_line = 'Err ' + str(time.time())
         no_error = False
-
-    second_line = ''
-    third_line = ''
+        my_logger.debug(f"Weathercaster error on boot: " + str(e))
 
     if no_error and humid_and_temp1[0]['temp'] != 'NA':
         second_line = str(int(float(humid_and_temp1[0]['temp']))) + '°' + humid_and_temp1[0]['label']
 
-    if no_error  and  forecast[0]:
+    if no_error and moon_all:
+        first_line2 = "↑ ↓ ☀ " + moon_all
+
+    if no_error and forecast[0]:
         third_line = str(int(float(forecast[0]['temperatureMax']))) + '°' + forecast[0]['icon']
 
     full_path = os.path.dirname(os.path.abspath(__file__)) + "/"
-    font2 = ImageFont.truetype(full_path + "Lato-Heavy.ttf", 14)
-    font1 = ImageFont.truetype(full_path + "Lato-Heavy.ttf", 20)
+    font2 = ImageFont.truetype(full_path + "Lato-Heavy.ttf", 13)
+    font1 = ImageFont.truetype(full_path + "Lato-Heavy.ttf", 19)
 
     with canvas(device) as draw:
-        draw.text((0, 0), first_line, font=font2, fill="white")
-        draw.text((0, 17), second_line, font=font1, fill="white")
-        draw.text((0, 41), third_line, font=font1, fill="white")
+        draw.text((0, 4), first_line, font=font2, fill="white")
+        draw.text((0, 16), first_line2, font=font2, fill="white")
+        draw.text((0, 30), second_line, font=font1, fill="white")
+        draw.text((0, 46), third_line, font=font1, fill="white")
 
     my_logger.debug(f"Weathercaster: simple Updated screen, posted {last_seen_temp} temp. Waiting {wait} seconds to update again.")
 
