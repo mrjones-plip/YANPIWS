@@ -92,11 +92,7 @@ a.yellow {
     width: 100%;
 }
 .sun {
-    width:33px;
-}
-.moon {
-    width:25px;
-    padding-left:20px;
+    width:53px;
 }
 
 .label, .wind_now {
@@ -129,7 +125,7 @@ a.yellow {
     font-weight: bold;
 }
 
-#time:hover{
+#time:hover, #date:hover, .moontimes:hover, .bigmoon:hover {
     cursor: pointer;
 }
 .wind_now {
@@ -170,6 +166,77 @@ input {
 #last_ajax {
     display: none;
 }
+
+/* moon phase */
+.moonphase {
+    border-radius: 100%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    overflow: hidden;
+    align-items: center;
+    position: relative;
+    margin: 0 20px 0 20px;
+}
+
+.bigmoon .moonphase {
+    width: 200px;
+    height: 200px;
+    float: left;
+    margin-right: 40px;
+}
+
+.moontimes>span {
+    float: right;
+}
+.moontimes #moonphase {
+    margin-right: 20px;
+    margin-left: 20px;
+}
+.moontimes .time {
+    margin-top: 24px;
+}
+.bigmoon {
+    display: none;
+}
+.hemisphere {
+    width: 50%;
+    height: 100%;
+}
+.light {
+    background-color: #F4F6F0;
+}
+.dark {
+    background-color: #575851;
+}
+.divider,
+.divider:after {
+    top: 0;
+    left: 0;
+    width: 50px;
+    height: 50px;
+    position: absolute;
+    border-radius: 100%;
+    transform-style: preserve-3d;
+    backface-visibility: hidden;
+}
+
+.bigmoon  .divider,
+.bigmoon .divider:after {
+    width: 200px;
+    height: 200px;
+}
+
+.divider {
+    background-color: #575851;
+}
+.divider:after {
+    content: '';
+    background-color: #F4F6F0;
+    transform: rotateY(180deg);
+}
+
+
 @media only screen and (max-width : 480px) {
     body {
         font-size: 15pt;

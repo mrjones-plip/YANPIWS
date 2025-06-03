@@ -19,6 +19,8 @@ function getValidConfigs(){
         'font_temp',
         'font_temp_label',
         'theme',
+        'moondata_api_URL',
+        'timezone',
         // we accept these two. listing it here commented out for completeness. see getConfig() below
         // servers_*
         // labels_*
@@ -28,17 +30,18 @@ function getValidConfigs(){
 /**
  * Generate status HTML with error if config is not valid
  *
- * @param $status boolean from configIsValid
+ * @param $status array from configIsValid
  * @return string of html to show upon error, returns empty if no error
  */
-function getStatusHTML($status){
-    if ($status != true) {
+function getStatusHTML(array $status): string
+{
+    if ($status['valid'] === false && isset($status['reason'])) {
         $statusHtml = "<div class='error'>ERROR: {$status['reason']}</div>";
         $statusHtml .= "<style>.temp,.suntimes{display:none;}</style>";
+        return $statusHtml;
     } else {
-        $statusHtml = '';
+        return '';
     }
-    return $statusHtml;
 }
 
 /**
@@ -53,6 +56,9 @@ function getConfig($baseDir = '../', $die = true)
         $options = getValidConfigs();
         $YANPIWStmp = array_map('str_getcsv', file($fullPath));
         foreach ($YANPIWStmp as $config){
+            if(!isset($config[0])){
+                continue;
+            }
 
             if (substr($config[0],0,6) === 'labels'){
                 $label = explode('_',$config[0]);
@@ -65,7 +71,9 @@ function getConfig($baseDir = '../', $die = true)
             }
 
         }
-        $YANPIWS['cache_bust'] = '0.11.2';
+        $YANPIWS['release'] = '0.12.0';
+        $YANPIWS['cache_bust'] = $YANPIWS['release'];
+        date_default_timezone_set($YANPIWS['timezone']);
     } elseif ($die) {
         die(
             '<h3>Error</h3><p>No config.csv!  Copy config.dist.csv to config.csv</p>'.
@@ -154,6 +162,9 @@ function configIsValid($validateApi = false)
     if (!isset($YANPIWS['dataPath']) || !is_writable($YANPIWS['dataPath'])){
         $valid['valid'] = false;
         $valid['reason'] .= 'DataPath does not exist or is not writable. ';
+    } elseif (sizeof(getTodaysData()) === 0) {
+        $valid['valid'] = false;
+        $valid['reason'] .= 'Failed to get data for today. Check DataPath for valid data.';
     }
     if ($validateApi){
         $http = curl_init(getForecastUrl(true));
@@ -169,6 +180,16 @@ function configIsValid($validateApi = false)
     return $valid;
 }
 
+function getTodaysData(){
+    global $YANPIWS;
+    $date = date('Y-m-d', time());
+    return getData($YANPIWS['dataPath'] . $date);
+}
+function getYesterdaysData(){
+    global $YANPIWS;
+    $date = date('Y-m-d', strtotime('yesterday'));
+    return getData($YANPIWS['dataPath'] . $date);
+}
 /**
  * Assuming a CSV of this structure:
  *  2017-03-22 23:11:43,211,72.5,34
@@ -250,24 +271,20 @@ function convertDataToHourly($data){
     foreach ($counts as $hour => $count){
         $result[$hour] = $result[$hour]/$counts[$hour];
     }
-//    die('daily temps:'.print_r($result,1));
     return $result;
 }
 
 /**
- * assuming theere's many temps for a day for a given sensor, get an array of the most current
+ * assuming there's many temps for a day for a given sensor, get an array of the most current
  *
  * @param $id int of ID of the sensor
  * @param null $date string in YEAR-MO-DAY format, defaults to today if none passed
  * @return array of results - if no data found, array of "No Data Found" returned
  */
-function getMostRecentTemp($id, $date = null)
+function getMostRecentTemp($id)
 {
     global $YANPIWS;
-    if ($date == null) {
-        $date = date('Y-m-d', time());
-    }
-    $allData = getData($YANPIWS['dataPath'] . $date);
+    $allData = getTodaysData();
     if (isset($allData[$id])) {
         $result = array_pop($allData[$id]);
 
@@ -299,12 +316,12 @@ function getMostRecentTemp($id, $date = null)
  */
 function getTempHtml($tempLine)
 {
-    if (isset($tempLine['temp']) && $tempLine != null) {
+    if (isset($tempLine['temp']) && is_numeric($tempLine['temp'])) {
         $temp = number_format($tempLine['temp'], 0);
         return "<span class='degrees'>{$temp}°</span>" .
             "<span class='label'>{$tempLine['label']}</span>\n";
     } else {
-        return "NA\n";
+        return "NA";
     }
 }
 /**
@@ -330,7 +347,7 @@ function getHumidityHtml($tempLine, $useLabel = false)
         }
         return $result;
     } else {
-        return "NA\n";
+        return "NA";
     }
 }
 
@@ -338,10 +355,15 @@ function getHumidityHtml($tempLine, $useLabel = false)
  * Get the age in human time (sec, min, hour etc) of the Forecast cache
  * @param $returnSeconds boolean to return int of seconds if true, otherwise string of human time
  */
-function getCacheAge($returnSeconds = false){
+function getCacheAge(bool $returnSeconds = false, string $type = 'weather'): int|string
+{
     global $YANPIWS;
-    $path = $YANPIWS['dataPath'];
-    $forecast_cache_time =  filemtime($path . 'forecast.cache');
+    if ($type === 'weather') {
+        $file = 'forecast.cache';
+    } else {
+        $file = 'moondata.cache';
+    }
+    $forecast_cache_time =  filemtime($YANPIWS['dataPath'] . 'forecast.cache');
     if (!$returnSeconds) {
         return getHumanTime(time() - $forecast_cache_time);
     } else {
@@ -403,41 +425,67 @@ function getSunriseHtml($time)
 
 /**
  * get data from Forecast API.  will cache data and refresh it every 10 minutes
- *
- * @return stdClass of either resutls or very lightly populated error object
+ * @param $type string of either `moon` or `weather`
+ * @return stdClass of either results or very lightly populated error object
  */
-function getForecastData()
-{
+function fetchRemoteApiDataAndSave($type){
     global $YANPIWS;
-    $path = $YANPIWS['dataPath'];
-    $cache = $path . 'forecast.cache';
-    $hourAgo = time() - (60*60); // 60 minutes, ~144 API calls/month
+    $noDataFound = new stdClass();
+    $noDataFound->daily = null;
+    $noDataFound->currently = null;
+
+    if ($type === 'moon') {
+        $cache = $YANPIWS['dataPath'] . 'moondata.cache';
+        $url = getMoondataUrl();
+        $timeAgo = time() - (60*60); // 60 minutes
+    } elseif ($type === 'weather') {
+        $cache = $YANPIWS['dataPath'] . 'forecast.cache';
+        $timeAgo = time() - (60*60); // 60 minutes, ~144 API calls/month
+        $url = getForecastUrl();
+    } else {
+        return $noDataFound;
+    }
+
     $data = false;
     $configStatus = configIsValid();
     if($configStatus['valid'] === true) {
-        if ((!is_file($cache) || filectime($cache) < $hourAgo)) {
-            $http = curl_init(getForecastUrl());
+        if ((!is_file($cache) || filectime($cache) < $timeAgo)) {
+            $http = curl_init($url);
             curl_setopt($http, CURLOPT_RETURNTRANSFER, 1);
             $dataFromRemote = curl_exec($http);
             $http_status = curl_getinfo($http, CURLINFO_HTTP_CODE);
             if ($http_status == 200){
                 file_put_contents($cache, serialize(json_decode($dataFromRemote)));
             } else {
-                error_log('[ERROR] Tried to get info from ' . getForecastUrl() . ', did not get 200 HTTP Code, instead got: ' . $http_status);
+                error_log('[ERROR] Tried to get info from ' . $url . ', did not get 200 HTTP Code, instead got: ' . $http_status);
             }
         }
 
-        // alwasy vetch from
+        // always fetch from file if present
         if (is_file($cache)) {
             $data = unserialize(file_get_contents($cache));
         }
     }
     if ($data === false || $data === null) {
-        $data = new stdClass();
-        $data->daily = null;
-        $data->currently = null;
+        $data = $noDataFound;
     }
     return $data;
+}
+
+/**
+ * @param $useTestLatLong boolean to use test data or not
+ * @return array
+ */
+function getLatLon($useTestLatLong){
+    global $YANPIWS;
+    if ($useTestLatLong){
+        $lat = "31.775554";
+        $lon = "81.822436";
+    } else {
+        $lat = $YANPIWS['lat'];
+        $lon = $YANPIWS['lon'];
+    }
+    return array('lat' => $lat, 'lon' => $lon);
 }
 
 /**
@@ -447,21 +495,28 @@ function getForecastData()
  */
 function getForecastUrl($useTestLatLong = false){
     global $YANPIWS;
-    if ($useTestLatLong){
-        $lat = "31.775554";
-        $lon = "81.822436";
-    } else {
-        $lat = $YANPIWS['lat'];
-        $lon = $YANPIWS['lon'];
-    }
+    extract(getLatLon($useTestLatLong));
     return $YANPIWS['forecast_api_url'] . '/forecast/' . $YANPIWS['forecast_api_token'] . '/' . $lat . ',' . $lon;
 }
 
 /**
- * /**
- * expects the $data->daily object from getForecastData(), returns $days (default 5) of forecast HTML
+ * Simple wrapper to concat the string for the Forecast API endpoint
  *
- * @param null $daily $data->daily object from getForecastData()
+ * @return string of URL
+ */
+function getMoondataUrl($useTestLatLong = false){
+    global $YANPIWS;
+    $date = date('Y-m-d', time());
+    extract(getLatLon($useTestLatLong));
+    $hoursOffset = ((float) date('Z')/60/60);
+    return $YANPIWS['moondata_api_URL'] . '?tz=' . $hoursOffset . '&date=' . $date . '&coords=' . $lat . ',' . $lon;
+}
+
+/**
+ * /**
+ * expects the $data->daily object from fetchRemoteApiDataAndSave('weather'), returns $days (default 5) of forecast HTML
+ *
+ * @param null $daily $data->daily object from fetchRemoteApiDataAndSave('weather')
  * @param int $days how many days of forecast to return
  * @param string $animate show animation or not: 'true' or 'false' literal string
  * @return string of HTML
@@ -507,9 +562,9 @@ function getDailyForecastHtml($daily = null, $days = 5, $animate = null)
 }
 
 /**
- * expects the $data->daily object from getForecastData(), returns $days (default 5) of forecast HTML
+ * expects the $data->daily object from fetchRemoteApiDataAndSave('weather'), returns $days (default 5) of forecast HTML
  *
- * @param null $daily $data->daily object from getForecastData()
+ * @param null $daily $data->daily object from fetchRemoteApiDataAndSave('weather')
  * @param int $days how many days of forecast to return
  * @return string of HTML
  */
@@ -580,9 +635,9 @@ function getHumanTime($s)
 
 
 /**
- * expects the $data->currently object from getForecastData(), returns windspeed HTML
+ * expects the $data->currently object from fetchRemoteApiDataAndSave('weather'), returns windspeed HTML
  *
- * @param null $daily $data->currently object from getForecastData()
+ * @param null $daily $data->currently object from fetchRemoteApiDataAndSave('weather')
  * @return string of HTML
  */
 function getCurrentWind($currentlyObject)
@@ -609,11 +664,34 @@ function getConfigValue($key){
  * @return mixed
  */
 function get_json_inline($content, $tempID = null){
-    global $YANPIWS;
-    $tmp = json_decode(fetch_json($content, 'false', $tempID));
-    return $tmp->$content;
+    $result = fetch_json($content, 'false', $tempID);
+    if ( $content === null || $result === null || json_decode($result) === null || json_decode($result) === false ) {
+        return null;
+    }
+    $fetchResults = json_decode($result);
+    return $fetchResults->$content;
 }
 
+function get_formatted_time($raw){
+    global $YANPIWS;
+
+    $dt = DateTimeImmutable::createFromFormat(
+        'G:i',
+        $raw,
+        new DateTimeZone($YANPIWS['timezone'])
+    );
+    return $dt->format('g:i A'); # cooked ;)
+}
+function get_formatted_date($raw){
+    global $YANPIWS;
+
+    $dt = DateTimeImmutable::createFromFormat(
+        'j n X',
+        $raw,
+        new DateTimeZone($YANPIWS['timezone'])
+    );
+    return $dt->format('F jS'); # cooked ;)
+}
 /**
  * fetch JSON contentfor use on the main DOM to render content
  *
@@ -624,7 +702,8 @@ function get_json_inline($content, $tempID = null){
 function fetch_json($content, $animate = null, $tempID = null){
     global $YANPIWS;
     $time = date('g:i A', time());
-    $forecast = getForecastData();
+    $forecast = fetchRemoteApiDataAndSave('weather');
+    $moondata = fetchRemoteApiDataAndSave('moon');
     if(isset($_GET['id'])){
         $tempID = $_GET['id'];
     }
@@ -658,6 +737,60 @@ function fetch_json($content, $animate = null, $tempID = null){
             if (isset($forecast->daily->data[0]->sunriseTime)){
                 $time = date('g:i A', $forecast->daily->data[0]->sunriseTime);
                 return json_encode(array('sunrise' => $time));
+            }
+            break;
+
+        case "moonrise":
+        case "moonset":
+            if (isset($moondata->properties->data->moondata)){
+                if($content === 'moonset'){
+                    $search = 'Set';
+                } else {
+                    $search = 'Rise';
+                }
+                foreach ($moondata->properties->data->moondata as $moonItem){
+                    if ($moonItem->phen && $moonItem->phen === $search){
+                        $time = get_formatted_time($moonItem->time);
+                        $content = (string) $content;
+                        return json_encode(array($content => $time));
+                    }
+                }
+
+            }
+            break;
+
+        case "moonall":
+            if (isset($moondata->properties->data->moondata)){
+                $data = $moondata->properties->data;
+                foreach ($data->moondata as $moonItem){
+                    if ($moonItem->time){
+                        $moonItem->time = get_formatted_time($moonItem->time);
+                    }
+                }
+
+                if (isset($data->closestphase->time)){
+                    $data->closestphase->time = get_formatted_time(
+                        $data->closestphase->time
+                    );
+                    $data->closestphase->description =
+                        $data->closestphase->phase  . " " .
+                        get_formatted_date(
+                            $data->closestphase->day  . " " .
+                            $data->closestphase->month . " " .
+                            $data->closestphase->year
+                        );
+                } else {
+                    $data->closestphase->description = "";
+                }
+                unset($data->sundata);
+                return json_encode(array('moonall' => $data));
+            }
+            break;
+
+        case "moonphase":
+            if (isset($forecast->daily->data[0]->moonPhase)){
+                $moonPhase = 360 - floor($forecast->daily->data[0]->moonPhase * 360);
+                return json_encode(array('moonphase' => $moonPhase));
             }
             break;
 

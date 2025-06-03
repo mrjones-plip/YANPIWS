@@ -10,8 +10,7 @@ $refreshTempJS = '';
 $tempsHtml = '';
 $animateJS = '';
 
-$status = configIsValid();
-$statusHtml = getStatusHTML($status['valid']);
+$statusHtml = getStatusHTML(configIsValid());
 if(isset($_GET['toggle_theme'])){
     $cssToggleQuery = '&toggle_theme=1';
 } else {
@@ -68,12 +67,37 @@ if($YANPIWS['animate'] === 'true'){
             </div>
         </div>
     </div>
-    <div class="row suntimes big_clock_hide">
-        <span><img src="images/sun.svg" class="sun" alt="Sunrise Time"/>
-            <span id="sunrise" ><?= get_json_inline('sunrise') ?></span>
+
+    <span class="bigmoon">
+        <span class="moonphase">
+            <span class="light hemisphere"></span>
+            <span class="dark hemisphere"></span>
+            <span class="divider"></span>
         </span>
-        <span><img src="images/moon.svg" class="moon" alt="Sunset Time"/>
-            <span id="sunset" ><?= get_json_inline('sunset') ?></span>
+        <span id="moonall">
+
+        </span>
+    </span>
+    <div class="row suntimes big_clock_hide">
+        <span>
+            <span id="sunrise" ><?= get_json_inline('sunrise') ?></span> ↑
+        </span>
+        <span><img src="images/sun.svg" class="sun" alt="Sunrise Time"/>
+             ↓ <span id="sunset" ><?= get_json_inline('sunset') ?></span>
+        </span>
+
+        <span class="moontimes">
+            <span class="time">
+                  ↓ <span id="moonset" ><?= get_json_inline('moonset') ?></span>
+            </span>
+            <span class="moonphase">
+                <span class="light hemisphere"></span>
+                <span class="dark hemisphere"></span>
+                <span class="divider"></span>
+            </span>
+            <span class="time">
+               <span id="moonrise" ><?= get_json_inline('moonrise') ?></span>  ↑
+            </span>
         </span>
     </div>
 </div>
@@ -84,6 +108,7 @@ if($YANPIWS['animate'] === 'true'){
 <script>
     let clockState = 'small';
     $( "#datetime" ).click(function() {
+        $('.big_clock_hide').toggle();
         if (clockState === 'small'){
             clockState = 'big';
         } else {
@@ -91,21 +116,40 @@ if($YANPIWS['animate'] === 'true'){
         }
         setClockSize(clockState, <?= $YANPIWS['font_time_date_wind']?>);
     });
+    $( ".moontimes" ).click(function() {
+        $('.big_clock_hide').toggle();
+        $('#datetimewind').toggle();
+        $(".bigmoon").toggle();
+    });
+    $( ".bigmoon" ).click(function() {
+        $('.big_clock_hide').toggle();
+        $('#datetimewind').toggle();
+        $(".bigmoon").toggle();
+    });
     function refreshAll() {
         //          Endpoint        DOM Location    callback
         refreshData('sunrise',      '#sunrise');
         refreshData('sunset',       '#sunset');
+        refreshData('moonrise',     '#moonrise');
+        refreshData('moonset',      '#moonset');
         refreshData('wind_now',     '#wind_now');
         refreshData('date',         '#date');
         refreshData('time',         '#time');
         refreshData('forecast',     '#forecast',   animateForecast);
         refreshData('age',          '#age');
         refreshData('last_ajax',    '#last_ajax');
-<?=     $refreshTempJS ?>
+        <?php  print($refreshTempJS) ?>
         setClockSize(clockState, <?= $YANPIWS['font_time_date_wind']?>);
+        // todo - make get_json_inline dynamic
+        setMoonRotation('<?= get_json_inline('moonphase') ?>', '.moontimes .moonphase ');
+        setMoonRotation('<?= get_json_inline('moonphase') ?>', '.bigmoon .moonphase ');
+        setMoonExtra();
     }
-<?= $animateJS ?>
+    <?php  print($animateJS) ?>
     setInterval ( refreshAll, 60000 );
+    setMoonRotation('<?= get_json_inline('moonphase') ?>', '.moontimes .moonphase ');
+    setMoonRotation('<?= get_json_inline('moonphase') ?>', '.bigmoon .moonphase ');
+    setMoonExtra();
 </script>
 </body>
 </html>

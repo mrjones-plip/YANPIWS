@@ -17,13 +17,13 @@
 <?php
 require_once 'get_data.php';
 getConfig('../../');
-$forecast = getForecastData();
+$forecast = fetchRemoteApiDataAndSave('weather');
 $status = configIsValid();
 
 // get two days worth of data and merge them so we can ensure we have a
 // a rolling 24 hours of data
-$data1 = getData($YANPIWS['dataPath'] . '/' . date('Y-m-d', time()));
-$data2 = getData($YANPIWS['dataPath'] . '/' . date('Y-m-d', strtotime('yesterday')));
+$data1 = getTodaysData();
+$data2 = getYesterdaysData();
 $data = mergeDayData($data1 ,$data2, $YANPIWS['labels']);
 // todo - mergeDayData doesn't percolate up correctly to the graph to offer more
 // than 
