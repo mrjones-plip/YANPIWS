@@ -9,7 +9,7 @@ import argparse
 import logging.handlers
 import smbus2
 import bme280
-import os
+import pathlib
 import time
 from dateutil import tz
 import requests
@@ -92,9 +92,10 @@ def show_info(yanpiws_ajax_url, yanpiws_temp_1, device):
     if no_error and forecast[0]:
         third_line = str(int(float(forecast[0]['temperatureMax']))) + '°' + forecast[0]['icon']
 
-    full_path = os.path.dirname(os.path.abspath(__file__)) + "/"
-    font2 = ImageFont.truetype(full_path + "Lato-Heavy.ttf", 13)
-    font1 = ImageFont.truetype(full_path + "Lato-Heavy.ttf", 19)
+    # full_path = os.path.dirname(os.path.abspath(__file__)) + "/"
+    font_file = f'{pathlib.Path(__file__).parent.resolve()}/Lato-Heavy.ttf'
+    font2 = ImageFont.truetype(font_file, 13)
+    font1 = ImageFont.truetype(font_file, 19)
 
     with canvas(device) as draw:
         draw.text((0, 4), first_line, font=font2, fill="white")
