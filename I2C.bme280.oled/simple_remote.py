@@ -15,6 +15,7 @@ from dateutil import tz
 import requests
 from datetime import datetime
 
+WAIT = 120
 
 def post_to_yanpiws():
     data = bme280.sample(bus, address, calibration_params)
@@ -60,7 +61,7 @@ def get_remote_moon():
     return result
 
 
-def show_info(wait):
+def show_info():
 
     # fetch the cooked up json -> strings
     forecast = {}
@@ -99,14 +100,14 @@ def show_info(wait):
         draw.text((0, 30), second_line, font=font1, fill="white")
         draw.text((0, 46), third_line, font=font1, fill="white")
 
-    my_logger.debug(f"Weathercaster: simple Updated screen, posted {last_seen_temp} temp. Waiting {wait} seconds to update again.")
+    my_logger.debug(f"Weathercaster: simple Updated screen, posted {last_seen_temp} temp. Waiting {WAIT} seconds to update again.")
 
 
 def full_stack():
     import traceback, sys
     exc = sys.exc_info()[0]
     stack = traceback.extract_stack()[:-1]  # last one would be full_stack()
-    if exc is not None:  # i.e. an exception is present
+    if not exc:  # i.e. an exception is present
         del stack[-1]  # remove call of full_stack, the printed exception
         # will contain the caught exception caller instead
     trc = 'Traceback (most recent call last):\n'
@@ -118,10 +119,9 @@ def full_stack():
 
 def main(device):
     while True:
-        wait = 120
         post_to_yanpiws()
-        show_info(wait)
-        time.sleep(wait)
+        show_info()
+        time.sleep(WAIT)
 
 
 if __name__ == "__main__":
