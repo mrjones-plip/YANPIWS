@@ -21,7 +21,7 @@ def post_to_yanpiws():
     data = bme280.sample(bus, address, calibration_params)
     temperature_celsius = data.temperature
     temperature_fahrenheit = round((temperature_celsius * 9 / 5) + 32, 2)
-    url = 'http://' + str(yanpiws_ip) + '/parse_and_save.php'
+    url = f'http://{str(yanpiws_ip)}/parse_and_save.php'
     data = {
         "model" : "BMP280",
         "time" : datetime.now(tz=tz.tzlocal()).strftime("%Y-%m-%d %H:%M:%S"),
@@ -33,6 +33,7 @@ def post_to_yanpiws():
     last_seen_temp = temperature_fahrenheit
     requests.post(url, data=data)
 
+
 def get_string_from_url(url):
     import urllib.request
     raw_html = urllib.request.urlopen(url).read().decode('utf-8').rstrip()
@@ -40,31 +41,29 @@ def get_string_from_url(url):
 
 
 def get_remote_humid_and_temp(id):
-    forecast_url = yanpiws_ajax_url + 'humidity&id=' + str(id)
+    forecast_url = f'{yanpiws_ajax_url}humidity&id={str(id)}'
     return json.loads(get_string_from_url(forecast_url))
 
 
 def get_remote_forecast():
-    forecast_url = yanpiws_ajax_url + 'forecast_full_json'
+    forecast_url = f'{yanpiws_ajax_url}forecast_full_json'
     return json.loads(get_string_from_url(forecast_url))
 
 
 def get_remote_sun():
-    data = json.loads(get_string_from_url(yanpiws_ajax_url + "sunrise"))
-    data.update(json.loads(get_string_from_url(yanpiws_ajax_url + "sunset")))
-    return "☀ ↑" + str(data['sunrise']) + " ↓" + str(data['sunset'])
+    data = json.loads(get_string_from_url(f'{yanpiws_ajax_url}sunrise'))
+    data.update(json.loads(get_string_from_url(f'{yanpiws_ajax_url}sunset')))
+    return f'☀ ↑{str(data["sunrise"])} ↓{str(data["sunset"])}'
 
 
 def get_remote_moon():
-    data = json.loads(get_string_from_url(yanpiws_ajax_url + "moonset"))
-    data.update(json.loads(get_string_from_url(yanpiws_ajax_url + "moonrise")))
+    data = json.loads(get_string_from_url(f'{yanpiws_ajax_url}moonset'))
+    data.update(json.loads(get_string_from_url(f'{yanpiws_ajax_url}moonrise')))
     result = '○'
     if data['moonrise']:
-        result = result + " ↑" + data['moonrise']
+        result += f' ↑{data["moonrise"]}'
     if data['moonset']:
-        result = result + " ↓" + data['moonset']
-
-    my_logger.debug('moon data debug: ' + result)
+        result += f' ↓{data["moonset"]}'
     return result
 
 
@@ -84,9 +83,9 @@ def show_info(wait):
         forecast = get_remote_forecast()
         first_line = get_remote_sun()
     except Exception as e:
-        first_line = 'Err ' + str(time.time())
+        first_line = 'Error - check logs :( '
         no_error = False
-        my_logger.debug(f"Weathercaster error on boot: " + str(e))
+        my_logger.debug(f'Weathercaster error on boot: {str(e)}')
 
     if no_error and humid_and_temp1[0]['temp'] != 'NA':
         second_line = str(int(float(humid_and_temp1[0]['temp']))) + '°' + humid_and_temp1[0]['label']
@@ -149,7 +148,7 @@ if __name__ == "__main__":
         parser.add_argument('--temp_id1', '-id1', default='143', type=int, help='remote temp ID #1, defaults to 143')
 
         args = parser.parse_args()
-        
+
         # Build URL and set some vars
         yanpiws_ip = args.remote_ip
         yanpiws_temp_1 = args.temp_id1
