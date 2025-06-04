@@ -14,7 +14,8 @@ import os
 import time
 from dateutil import tz
 import requests
-from datetime import datetime, timezone, timedelta
+from datetime import datetime
+import urllib.request
 
 
 def post_to_yanpiws():
@@ -35,7 +36,6 @@ def post_to_yanpiws():
 
 
 def get_string_from_url(url):
-    import urllib.request
     raw_html = urllib.request.urlopen(url).read().decode('utf-8').rstrip()
     return raw_html
 
