@@ -6,7 +6,6 @@ from luma.core.render import canvas
 from luma.oled.device import ssd1306
 from PIL import ImageFont
 import argparse
-import json
 import logging.handlers
 import smbus2
 import bme280
@@ -34,30 +33,25 @@ def post_to_yanpiws():
     requests.post(url, data=data)
 
 
-def get_string_from_url(url):
-    raw_html = requests.get(url).content
-    return raw_html
-
-
 def get_remote_humid_and_temp(id):
     forecast_url = f'{yanpiws_ajax_url}humidity&id={str(id)}'
-    return json.loads(get_string_from_url(forecast_url))
+    return requests.get(forecast_url).json()
 
 
 def get_remote_forecast():
     forecast_url = f'{yanpiws_ajax_url}forecast_full_json'
-    return json.loads(get_string_from_url(forecast_url))
+    return requests.get(forecast_url).json()
 
 
 def get_remote_sun():
-    data = json.loads(get_string_from_url(f'{yanpiws_ajax_url}sunrise'))
-    data.update(json.loads(get_string_from_url(f'{yanpiws_ajax_url}sunset')))
+    data = requests.get(f'{yanpiws_ajax_url}sunrise').json()
+    data.update(requests.get(f'{yanpiws_ajax_url}sunset').json())
     return f'☀ ↑{str(data["sunrise"])} ↓{str(data["sunset"])}'
 
 
 def get_remote_moon():
-    data = json.loads(get_string_from_url(f'{yanpiws_ajax_url}moonset'))
-    data.update(json.loads(get_string_from_url(f'{yanpiws_ajax_url}moonrise')))
+    data = requests.get(f'{yanpiws_ajax_url}moonset').json()
+    data.update(requests.get(f'{yanpiws_ajax_url}moonrise').json())
     result = '○'
     if data['moonrise']:
         result += f' ↑{data["moonrise"]}'
