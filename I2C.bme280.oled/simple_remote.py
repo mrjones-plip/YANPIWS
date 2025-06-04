@@ -34,8 +34,8 @@ def post_to_yanpiws(yanpiws_ip, calibration_params, bus, address):
     requests.post(url, data=data)
 
 
-def get_remote_humid_and_temp(yanpiws_ajax_url, id):
-    forecast_url = f'{yanpiws_ajax_url}humidity&id={str(id)}'
+def get_remote_humid_and_temp(yanpiws_ajax_url, temp_id):
+    forecast_url = f'{yanpiws_ajax_url}humidity&id={str(temp_id)}'
     return requests.get(forecast_url).json()
 
 
