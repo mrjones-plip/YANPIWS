@@ -17,7 +17,7 @@ from datetime import datetime
 
 WAIT = 120
 
-def post_to_yanpiws():
+def post_to_yanpiws(yanpiws_ip, calibration_params, bus, address):
     data = bme280.sample(bus, address, calibration_params)
     temperature_celsius = data.temperature
     temperature_fahrenheit = round((temperature_celsius * 9 / 5) + 32, 2)
@@ -34,23 +34,23 @@ def post_to_yanpiws():
     requests.post(url, data=data)
 
 
-def get_remote_humid_and_temp(id):
+def get_remote_humid_and_temp(yanpiws_ajax_url, id):
     forecast_url = f'{yanpiws_ajax_url}humidity&id={str(id)}'
     return requests.get(forecast_url).json()
 
 
-def get_remote_forecast():
+def get_remote_forecast(yanpiws_ajax_url):
     forecast_url = f'{yanpiws_ajax_url}forecast_full_json'
     return requests.get(forecast_url).json()
 
 
-def get_remote_sun():
+def get_remote_sun(yanpiws_ajax_url):
     data = requests.get(f'{yanpiws_ajax_url}sunrise').json()
     data.update(requests.get(f'{yanpiws_ajax_url}sunset').json())
     return f'☀ ↑{str(data["sunrise"])} ↓{str(data["sunset"])}'
 
 
-def get_remote_moon():
+def get_remote_moon(yanpiws_ajax_url):
     data = requests.get(f'{yanpiws_ajax_url}moonset').json()
     data.update(requests.get(f'{yanpiws_ajax_url}moonrise').json())
     result = '○'
@@ -61,7 +61,7 @@ def get_remote_moon():
     return result
 
 
-def show_info():
+def show_info(yanpiws_ajax_url, yanpiws_temp_1, device):
 
     # fetch the cooked up json -> strings
     forecast = {}
@@ -72,10 +72,10 @@ def show_info():
     third_line = ''
     try:
         no_error = True
-        humid_and_temp1 = get_remote_humid_and_temp(yanpiws_temp_1)
-        moon_all = get_remote_moon()
-        forecast = get_remote_forecast()
-        first_line = get_remote_sun()
+        humid_and_temp1 = get_remote_humid_and_temp(yanpiws_ajax_url, yanpiws_temp_1)
+        moon_all = get_remote_moon(yanpiws_ajax_url)
+        forecast = get_remote_forecast(yanpiws_ajax_url)
+        first_line = get_remote_sun(yanpiws_ajax_url)
     except Exception as e:
         first_line = 'Error - check logs :( '
         no_error = False
@@ -100,6 +100,7 @@ def show_info():
         draw.text((0, 30), second_line, font=font1, fill="white")
         draw.text((0, 46), third_line, font=font1, fill="white")
 
+    global last_seen_temp
     my_logger.debug(f"Weathercaster: simple Updated screen, posted {last_seen_temp} temp. Waiting {WAIT} seconds to update again.")
 
 
@@ -117,15 +118,8 @@ def full_stack():
     return stackstr
 
 
-def main(device):
+def main():
     while True:
-        post_to_yanpiws()
-        show_info()
-        time.sleep(WAIT)
-
-
-if __name__ == "__main__":
-    try:
         parser = argparse.ArgumentParser()
 
         # Rev 2 Pi, Pi 2 & Pi 3 uses bus 1
@@ -146,23 +140,31 @@ if __name__ == "__main__":
         yanpiws_ip = args.remote_ip
         yanpiws_temp_1 = args.temp_id1
         yanpiws_ajax_url = 'http://' + str(yanpiws_ip) + '/ajax.php?content='
+        global last_seen_temp
         last_seen_temp = 0.0
-
-        # set up syslog logging
-        my_logger = logging.getLogger('MyLogger')
-        my_logger.setLevel(logging.DEBUG)
-        handler = logging.handlers.SysLogHandler(address='/dev/log')
-        my_logger.addHandler(handler)
 
         # BME280 sensor address (default address), Initialize I2C bus and calibration
         address = 0x76  # can also be 0x77 - check  i2cdetect -y 1 or i2cdetect -y 0
         bus = smbus2.SMBus(1)  # can also be 0, depends on where you found device on per i2cdetect
         calibration_params = bme280.load_calibration_params(bus, address)
 
-        my_logger.debug('Weathercaster: simple Starting ')
         serial = i2c(port=args.bus, address=0x3C)
         device = ssd1306(serial)
-        main(device)
+        post_to_yanpiws(yanpiws_ip, calibration_params, bus, address)
+        show_info(yanpiws_ajax_url, yanpiws_temp_1, device)
+        time.sleep(WAIT)
+
+
+if __name__ == "__main__":
+    try:
+        # set up syslog logging
+        my_logger = logging.getLogger('MyLogger')
+        my_logger.setLevel(logging.DEBUG)
+        handler = logging.handlers.SysLogHandler(address='/dev/log')
+        my_logger.addHandler(handler)
+        my_logger.debug('Weathercaster: simple Starting ')
+
+        main()
 
 
     except KeyboardInterrupt:
