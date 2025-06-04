@@ -19,7 +19,7 @@ import traceback, sys
 WAIT = 120
 ADDRESS = 0x76  # can also be 0x77 - check  i2cdetect -y 1 or i2cdetect -y 0
 
-def post_to_yanpiws(yanpiws_ip, calibration_params, bus):
+def post_to_yanpiws(yanpiws_ip, calibration_params, bus, local_id):
     data = bme280.sample(bus, ADDRESS, calibration_params)
     temperature_celsius = data.temperature
     temperature_fahrenheit = round((temperature_celsius * 9 / 5) + 32, 2)
@@ -27,7 +27,7 @@ def post_to_yanpiws(yanpiws_ip, calibration_params, bus):
     data = {
         "model" : "BMP280",
         "time" : datetime.now(tz=tz.tzlocal()).strftime("%Y-%m-%d %H:%M:%S"),
-        "id" : 71, # E bedroom, todo - not hardcode
+        "id" : local_id,
         "temperature_F" : temperature_fahrenheit,
         "password" : "boxcar-spinning-problem-rockslide-scored"  # default pass, todo - not hardcode
     }
@@ -46,10 +46,14 @@ def get_remote_forecast(yanpiws_ajax_url):
     return requests.get(forecast_url).json()
 
 
+def strip_am_pm(string):
+    return str(string).replace(" AM","A").replace(" PM","P")
+
+
 def get_remote_sun(yanpiws_ajax_url):
     data = requests.get(f'{yanpiws_ajax_url}sunrise').json()
     data.update(requests.get(f'{yanpiws_ajax_url}sunset').json())
-    return f'☀ ↑{str(data["sunrise"])} ↓{str(data["sunset"])}'
+    return f'☀ ↑{strip_am_pm(data["sunrise"])} ↓{strip_am_pm(data["sunset"])}'
 
 
 def get_remote_moon(yanpiws_ajax_url):
@@ -57,13 +61,13 @@ def get_remote_moon(yanpiws_ajax_url):
     data.update(requests.get(f'{yanpiws_ajax_url}moonrise').json())
     result = '○'
     if data['moonrise']:
-        result += f' ↑{data["moonrise"]}'
+        result += f' ↑{strip_am_pm(data["moonrise"])}'
     if data['moonset']:
-        result += f' ↓{data["moonset"]}'
+        result += f' ↓{strip_am_pm(data["moonset"])}'
     return result
 
 
-def show_info(yanpiws_ajax_url, yanpiws_temp_1, device):
+def show_info(yanpiws_ajax_url, yanpiws_temp_1, device, local_id):
 
     # fetch the cooked up json -> strings
     forecast = {}
@@ -92,7 +96,6 @@ def show_info(yanpiws_ajax_url, yanpiws_temp_1, device):
     if no_error and forecast[0]:
         third_line = str(int(float(forecast[0]['temperatureMax']))) + '°' + forecast[0]['icon']
 
-    # full_path = os.path.dirname(os.path.abspath(__file__)) + "/"
     font_file = f'{pathlib.Path(__file__).parent.resolve()}/Lato-Heavy.ttf'
     font2 = ImageFont.truetype(font_file, 13)
     font1 = ImageFont.truetype(font_file, 19)
@@ -104,7 +107,7 @@ def show_info(yanpiws_ajax_url, yanpiws_temp_1, device):
         draw.text((0, 46), third_line, font=font1, fill="white")
 
     global last_seen_temp
-    my_logger.debug(f"Weathercaster: simple Updated screen, posted {last_seen_temp} temp. Waiting {WAIT} seconds to update again.")
+    my_logger.debug(f"Weathercaster: simple Updated screen, posted {last_seen_temp} temp under ID {local_id}. Waiting {WAIT} seconds to update again.")
 
 
 def full_stack():
@@ -133,14 +136,18 @@ def main():
         parser.add_argument('--remote_ip', '-ip', default='192.168.68.105', type=str,
                             help=f'Temp sensor ID, defaults to {ADDRESS}')
 
-        # ID from your YANPIWS config.csv of temp 1
-        parser.add_argument('--temp_id1', '-id1', default='143', type=int, help='remote temp ID #1, defaults to 143')
+        # ID from your YANPIWS config.csv of temp 1, will fetch this ID and show on screen
+        parser.add_argument('--temp_id1', '-id1', default='143', type=int, help='ID from your YANPIWS config.csv of temp 1, will fetch this ID and show on screen, defaults to 143')
+
+        # ID to upload your local temp with to YANPIWS server
+        parser.add_argument('--temp_id2', '-id2', default='71', type=int, help='ID to upload your local temp with to YANPIWS server, defaults to 71')
 
         args = parser.parse_args()
 
         # Build URL and set some vars
         yanpiws_ip = args.remote_ip
         yanpiws_temp_1 = args.temp_id1
+        yanpiws_temp_2 = args.temp_id2
         yanpiws_ajax_url = 'http://' + str(yanpiws_ip) + '/ajax.php?content='
         global last_seen_temp
         last_seen_temp = 0.0
@@ -151,8 +158,8 @@ def main():
 
         serial = i2c(port=args.bus, address=0x3C)
         device = ssd1306(serial)
-        post_to_yanpiws(yanpiws_ip, calibration_params, bus)
-        show_info(yanpiws_ajax_url, yanpiws_temp_1, device)
+        post_to_yanpiws(yanpiws_ip, calibration_params, bus, yanpiws_temp_2)
+        show_info(yanpiws_ajax_url, yanpiws_temp_1, device, yanpiws_temp_2)
         time.sleep(WAIT)
 
 
