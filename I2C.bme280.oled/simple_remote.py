@@ -14,6 +14,7 @@ import time
 from dateutil import tz
 import requests
 from datetime import datetime
+import traceback, sys
 
 WAIT = 120
 
@@ -105,7 +106,6 @@ def show_info(yanpiws_ajax_url, yanpiws_temp_1, device):
 
 
 def full_stack():
-    import traceback, sys
     exc = sys.exc_info()[0]
     stack = traceback.extract_stack()[:-1]  # last one would be full_stack()
     if not exc:  # i.e. an exception is present
