@@ -353,6 +353,9 @@ Use your IDE of choice to edit and point your browser at ``localhost:8000``
 PRs and Issues welcome!
 
 ## Version History
+* 0.13.0 - Jun 4, 2025
+  * add new I2C screen per #116
+  * clean up moon info  per #120
 * 0.12.0 - Nov 15, 2024
   * adds phases of moon and set and rise times for same per #114
   * also fixed a bunch of error handling that was failing, also in #114
