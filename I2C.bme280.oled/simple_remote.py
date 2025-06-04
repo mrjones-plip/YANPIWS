@@ -16,37 +16,6 @@ from dateutil import tz
 import requests
 from datetime import datetime, timezone, timedelta
 
-parser = argparse.ArgumentParser()
-
-# Rev 2 Pi, Pi 2 & Pi 3 uses bus 1
-# Rev 1 Pi uses bus 0
-# Orange Pi Zero uses bus 0 for pins 1-5 (other pins for bus 1 & 2)
-parser.add_argument('--bus', '-b', default=0, type=int, help='Bus Number, defaults to 0')
-
-# IP address of your YANPIWS device you want to show data from
-parser.add_argument('--remote_ip', '-ip', default='192.168.68.105', type=str, help='Temp sensor ID, defaults to 0x76')
-
-# ID from your YANPIWS config.csv of temp 1
-parser.add_argument('--temp_id1', '-id1', default='143', type=int, help='remote temp ID #1, defaults to 143')
-
-args = parser.parse_args()
-
-# Build URL and set some vars
-yanpiws_ip = args.remote_ip
-yanpiws_temp_1 = args.temp_id1
-yanpiws_ajax_url = 'http://' + str(yanpiws_ip) + '/ajax.php?content='
-last_seen_temp= 0.0
-
-# set up syslog logging
-my_logger = logging.getLogger('MyLogger')
-my_logger.setLevel(logging.DEBUG)
-handler = logging.handlers.SysLogHandler(address='/dev/log')
-my_logger.addHandler(handler)
-
-# BME280 sensor address (default address), Initialize I2C bus and calibration
-address = 0x76 # can also be 0x77 - check  i2cdetect -y 1 or i2cdetect -y 0
-bus = smbus2.SMBus(1) # can also be 0, depends on where you found device on per i2cdetect
-calibration_params = bme280.load_calibration_params(bus, address)
 
 def post_to_yanpiws():
     data = bme280.sample(bus, address, calibration_params)
@@ -165,6 +134,39 @@ def main(device):
 
 if __name__ == "__main__":
     try:
+        parser = argparse.ArgumentParser()
+
+        # Rev 2 Pi, Pi 2 & Pi 3 uses bus 1
+        # Rev 1 Pi uses bus 0
+        # Orange Pi Zero uses bus 0 for pins 1-5 (other pins for bus 1 & 2)
+        parser.add_argument('--bus', '-b', default=0, type=int, help='Bus Number, defaults to 0')
+
+        # IP address of your YANPIWS device you want to show data from
+        parser.add_argument('--remote_ip', '-ip', default='192.168.68.105', type=str,
+                            help='Temp sensor ID, defaults to 0x76')
+
+        # ID from your YANPIWS config.csv of temp 1
+        parser.add_argument('--temp_id1', '-id1', default='143', type=int, help='remote temp ID #1, defaults to 143')
+
+        args = parser.parse_args()
+        
+        # Build URL and set some vars
+        yanpiws_ip = args.remote_ip
+        yanpiws_temp_1 = args.temp_id1
+        yanpiws_ajax_url = 'http://' + str(yanpiws_ip) + '/ajax.php?content='
+        last_seen_temp = 0.0
+
+        # set up syslog logging
+        my_logger = logging.getLogger('MyLogger')
+        my_logger.setLevel(logging.DEBUG)
+        handler = logging.handlers.SysLogHandler(address='/dev/log')
+        my_logger.addHandler(handler)
+
+        # BME280 sensor address (default address), Initialize I2C bus and calibration
+        address = 0x76  # can also be 0x77 - check  i2cdetect -y 1 or i2cdetect -y 0
+        bus = smbus2.SMBus(1)  # can also be 0, depends on where you found device on per i2cdetect
+        calibration_params = bme280.load_calibration_params(bus, address)
+
         my_logger.debug('Weathercaster: simple Starting ')
         serial = i2c(port=args.bus, address=0x3C)
         device = ssd1306(serial)
