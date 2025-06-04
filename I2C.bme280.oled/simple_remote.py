@@ -131,7 +131,7 @@ def main():
 
         # IP address of your YANPIWS device you want to show data from
         parser.add_argument('--remote_ip', '-ip', default='192.168.68.105', type=str,
-                            help='Temp sensor ID, defaults to 0x76')
+                            help=f'Temp sensor ID, defaults to {ADDRESS}')
 
         # ID from your YANPIWS config.csv of temp 1
         parser.add_argument('--temp_id1', '-id1', default='143', type=int, help='remote temp ID #1, defaults to 143')
@@ -167,9 +167,8 @@ if __name__ == "__main__":
 
         main()
 
-
     except KeyboardInterrupt:
         my_logger.debug("Weathercaster: simple Stopping(Ctrl + C) ")
 
-    finally:
+    except:
         my_logger.debug("Weathercaster simple exit trace: " + full_stack())
