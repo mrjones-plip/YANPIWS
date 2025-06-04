@@ -17,9 +17,10 @@ from datetime import datetime
 import traceback, sys
 
 WAIT = 120
+ADDRESS = 0x76  # can also be 0x77 - check  i2cdetect -y 1 or i2cdetect -y 0
 
-def post_to_yanpiws(yanpiws_ip, calibration_params, bus, address):
-    data = bme280.sample(bus, address, calibration_params)
+def post_to_yanpiws(yanpiws_ip, calibration_params, bus):
+    data = bme280.sample(bus, ADDRESS, calibration_params)
     temperature_celsius = data.temperature
     temperature_fahrenheit = round((temperature_celsius * 9 / 5) + 32, 2)
     url = f'http://{str(yanpiws_ip)}/parse_and_save.php'
@@ -144,13 +145,12 @@ def main():
         last_seen_temp = 0.0
 
         # BME280 sensor address (default address), Initialize I2C bus and calibration
-        address = 0x76  # can also be 0x77 - check  i2cdetect -y 1 or i2cdetect -y 0
         bus = smbus2.SMBus(1)  # can also be 0, depends on where you found device on per i2cdetect
-        calibration_params = bme280.load_calibration_params(bus, address)
+        calibration_params = bme280.load_calibration_params(bus, ADDRESS)
 
         serial = i2c(port=args.bus, address=0x3C)
         device = ssd1306(serial)
-        post_to_yanpiws(yanpiws_ip, calibration_params, bus, address)
+        post_to_yanpiws(yanpiws_ip, calibration_params, bus)
         show_info(yanpiws_ajax_url, yanpiws_temp_1, device)
         time.sleep(WAIT)
 
