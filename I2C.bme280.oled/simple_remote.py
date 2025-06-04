@@ -173,8 +173,6 @@ if __name__ == "__main__":
 
     except KeyboardInterrupt:
         my_logger.debug("Weathercaster: simple Stopping(Ctrl + C) ")
-        pass
-
 
     finally:
         my_logger.debug("Weathercaster simple exit trace: " + full_stack())
