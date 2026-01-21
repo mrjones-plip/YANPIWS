@@ -180,10 +180,21 @@ function configIsValid($validateApi = false)
     return $valid;
 }
 
-function getTodaysData(){
+/**
+ * Get sensor readings for a specific date
+ *
+ * @param string|null $date Date in Y-m-d format, defaults to today
+ * @return array Multi-dimensional array keyed by sensor_id => timestamp => reading
+ */
+function getDataForDate($date = null){
     global $YANPIWS;
-    $startDate = date('Y-m-d') . ' 00:00:00';
-    $endDate = date('Y-m-d') . ' 23:59:59';
+
+    if ($date === null) {
+        $date = date('Y-m-d');
+    }
+
+    $startDate = $date . ' 00:00:00';
+    $endDate = $date . ' 23:59:59';
 
     $result = [];
     if (isset($YANPIWS['labels'])) {
@@ -196,21 +207,13 @@ function getTodaysData(){
     }
     return $result;
 }
-function getYesterdaysData(){
-    global $YANPIWS;
-    $startDate = date('Y-m-d', strtotime('yesterday')) . ' 00:00:00';
-    $endDate = date('Y-m-d', strtotime('yesterday')) . ' 23:59:59';
 
-    $result = [];
-    if (isset($YANPIWS['labels'])) {
-        foreach (array_keys($YANPIWS['labels']) as $sensorId) {
-            $readings = getReadings($sensorId, $startDate, $endDate);
-            foreach ($readings as $reading) {
-                $result[$sensorId][$reading[0]] = $reading;
-            }
-        }
-    }
-    return $result;
+function getTodaysData(){
+    return getDataForDate(date('Y-m-d'));
+}
+
+function getYesterdaysData(){
+    return getDataForDate(date('Y-m-d', strtotime('yesterday')));
 }
 
 /**
