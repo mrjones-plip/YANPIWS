@@ -164,10 +164,8 @@ function configIsValid($validateApi = false)
     if (!isset($YANPIWS['dataPath']) || !is_writable($YANPIWS['dataPath'])){
         $valid['valid'] = false;
         $valid['reason'] .= 'DataPath does not exist or is not writable. ';
-    } elseif (sizeof(getTodaysData()) === 0) {
-        $valid['valid'] = false;
-        $valid['reason'] .= 'Failed to get data for today. Check DataPath for valid data.';
     }
+    // Note: Removed check for today's data - SQLite will work even with empty database
     if ($validateApi){
         $http = curl_init(getForecastUrl(true));
         curl_setopt($http, CURLOPT_NOBODY  , true);
