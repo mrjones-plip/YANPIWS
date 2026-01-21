@@ -20,14 +20,18 @@ getConfig();
 $forecast = fetchRemoteApiDataAndSave('weather');
 $status = configIsValid();
 
-// get two days worth of data and merge them so we can ensure we have a
-// a rolling 24 hours of data
-$data1 = getTodaysData();
-$data2 = getYesterdaysData();
-$data = mergeDayData($data1 ,$data2, $YANPIWS['labels']);
-// todo - mergeDayData doesn't percolate up correctly to the graph to offer more
-// than 
-//die('<pre>eeew $data:' .print_r($data,1));
+// Get 24 hours of data using SQLite
+$endDate = date('Y-m-d H:i:s');
+$startDate = date('Y-m-d H:i:s', strtotime('-24 hours'));
+
+$data = [];
+foreach ($YANPIWS['labels'] as $id => $label) {
+    $readings = getReadings($id, $startDate, $endDate);
+    foreach ($readings as $reading) {
+        $data[$id][$reading[0]] = $reading;
+    }
+}
+
 $colors = array(null,'white','red','yellow','blue');
 ?>
 <div class="col">
@@ -53,7 +57,7 @@ $colors = array(null,'white','red','yellow','blue');
     $tempsJsSeries = "\n";
     foreach ($YANPIWS['labels'] as $id => $label){
         $color = $colors[$count];
-        $hourlyTemps = convertDataToHourly($data[$id]);
+        $hourlyTemps = isset($data[$id]) ? convertDataToHourly($data[$id]) : [];
         $tempsJsArray .= "\n[";
         foreach ($hourlyTemps as $hour => $temp) {
             $tempsJsArray .= "[$hour,$temp],";
