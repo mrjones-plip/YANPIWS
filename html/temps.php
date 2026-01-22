@@ -16,7 +16,7 @@
 <body>
 <?php
 require_once 'get_data.php';
-getConfig('../../');
+getConfig();
 $forecast = fetchRemoteApiDataAndSave('weather');
 $status = configIsValid();
 
