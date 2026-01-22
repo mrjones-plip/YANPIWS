@@ -1,4 +1,6 @@
 <?php
+require_once 'database.php';
+
 /**
  * get all the valid config options required to bootstrap YANPIWS
  *
@@ -162,10 +164,8 @@ function configIsValid($validateApi = false)
     if (!isset($YANPIWS['dataPath']) || !is_writable($YANPIWS['dataPath'])){
         $valid['valid'] = false;
         $valid['reason'] .= 'DataPath does not exist or is not writable. ';
-    } elseif (sizeof(getTodaysData()) === 0) {
-        $valid['valid'] = false;
-        $valid['reason'] .= 'Failed to get data for today. Check DataPath for valid data.';
     }
+    // Note: Removed check for today's data - SQLite will work even with empty database
     if ($validateApi){
         $http = curl_init(getForecastUrl(true));
         curl_setopt($http, CURLOPT_NOBODY  , true);
@@ -180,132 +180,51 @@ function configIsValid($validateApi = false)
     return $valid;
 }
 
+/**
+ * Get sensor readings for a specific date
+ *
+ * @param string|null $date Date in Y-m-d format, defaults to today
+ * @return array Multi-dimensional array keyed by sensor_id => timestamp => reading
+ */
+function getDataForDate($date = null){
+    global $YANPIWS;
+
+    if ($date === null) {
+        $date = date('Y-m-d');
+    }
+
+    $startDate = $date . ' 00:00:00';
+    $endDate = $date . ' 23:59:59';
+
+    $result = [];
+    if (isset($YANPIWS['labels'])) {
+        foreach (array_keys($YANPIWS['labels']) as $sensorId) {
+            $readings = getReadings($sensorId, $startDate, $endDate);
+            foreach ($readings as $reading) {
+                $result[$sensorId][$reading[0]] = $reading;
+            }
+        }
+    }
+    return $result;
+}
+
 function getTodaysData(){
-    global $YANPIWS;
-    $date = date('Y-m-d', time());
-    return getData($YANPIWS['dataPath'] . $date);
+    return getDataForDate(date('Y-m-d'));
 }
+
 function getYesterdaysData(){
-    global $YANPIWS;
-    $date = date('Y-m-d', strtotime('yesterday'));
-    return getData($YANPIWS['dataPath'] . $date);
-}
-/**
- * Assuming a CSV of this structure:
- *  2017-03-22 23:11:43,211,72.5,34
- * Return a multi-dimensional array like this:
- *
- *Array(
- *    [211] => Array(
- *        [2017-03-22 23:08:31] => Array(
- *                    [0] => 2017-03-22 23:08:31
- *                    [1] => 211
- *                    [2] => 72.5
- *                    [3] => 34
- *               )
- *
- * @param  string $file where CSV data is
- * @return array of formatted CSV data
- */
-function getData($file)
-{
-    if (is_file($file) && is_readable($file)) {
-        $data = file($file);
-        $goodData = array();
-        foreach ($data as $line){
-            $lineArray = explode(",", $line);
-            if(isset($lineArray[1])){
-                $goodData[$lineArray[1]][$lineArray[0]] = $lineArray;
-            }
-        }
-        foreach (array_keys($goodData) as $id){
-            asort($goodData[$id]);
-        }
-
-        return $goodData;
-    } else {
-        return array();
-    }
-}
-
-/**
- * @param $data1
- * @param $data2
- * @param $ids
- * @return array
- */
-function mergeDayData($data1, $data2, $ids){
-    $result = array();
-    foreach ($ids as $id => $label) {
-        if (isset($data1[$id]) && is_array($data1[$id])){
-            foreach ($data1[$id] as $date => $temps) {
-                $result[$id][$date] = $temps;
-            }
-        }
-        if (isset($data2[$id]) && is_array($data2[$id])){
-            foreach ($data2[$id] as $date => $temps) {
-                $result[$id][$date] = $temps;
-            }
-        }
-    }
-    return $result;
-}
-/**
- * given the result from getData(), format the temps into averages by hour for last 24 hours.
- * @param $data array from getData()
- * @return array of up to 24 temps, 1 average per hour in log() scale
- */
-function convertDataToHourly($data){
-    $result = array();
-    $counts = array();
-    foreach ($data as $tempArray){
-        $epoch = strtotime($tempArray[0]);
-        $hour = date('G', $epoch);
-        if(!isset($result[$hour])){
-            $result[$hour] = 0;
-            $counts[$hour] = 0;
-        }
-        $result[$hour] = $tempArray[2] + $result[$hour];
-        $counts[$hour]++;
-    }
-    foreach ($counts as $hour => $count){
-        $result[$hour] = $result[$hour]/$counts[$hour];
-    }
-    return $result;
+    return getDataForDate(date('Y-m-d', strtotime('yesterday')));
 }
 
 /**
  * assuming there's many temps for a day for a given sensor, get an array of the most current
  *
  * @param $id int of ID of the sensor
- * @param null $date string in YEAR-MO-DAY format, defaults to today if none passed
  * @return array of results - if no data found, array of "No Data Found" returned
  */
 function getMostRecentTemp($id)
 {
-    global $YANPIWS;
-    $allData = getTodaysData();
-    if (isset($allData[$id])) {
-        $result = array_pop($allData[$id]);
-
-        $label = '';
-        if (isset($YANPIWS['labels'][$id])) {
-            $label = $YANPIWS['labels'][$id];
-        }
-
-        $finalResult['date'] = trim($result[0]);
-        $finalResult['id'] = trim($result[1]);
-        $finalResult['temp'] = trim($result[2]);
-        $finalResult['label'] = $label;
-        $finalResult['humidity'] = trim($result[3]);
-    } else {
-        $finalResult['date'] = 'NA';
-        $finalResult['id'] = 'No Data Found';
-        $finalResult['temp'] = 'NA';
-        $finalResult['label'] = 'NA';
-        $finalResult['humidity'] = 'NA';
-    }
-    return $finalResult;
+    return getLatestReading($id);
 }
 
 /**
