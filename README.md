@@ -353,6 +353,8 @@ Use your IDE of choice to edit and point your browser at ``localhost:8000``
 PRs and Issues welcome!
 
 ## Version History
+* 0.13.1 - Jan 21 2026
+  * Fix Graph per #122 
 * 0.13.0 - Jun 4, 2025
   * add new I2C screen per #116
   * clean up moon info  per #120
