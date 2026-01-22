@@ -30,7 +30,7 @@ $cacheMoontime= getCacheAge(false,'moon');
         <p>
             <a href="/" class="homeLink"><-  Weather</a>
         </p>
-        <a href="https://github.com/mrjones-plip/YANPIWS">YANPIWS <?php print $YANPIWS['release'] ?></a> - Released Nov 15, 2024<br />
+        <a href="https://github.com/mrjones-plip/YANPIWS">YANPIWS <?php print $YANPIWS['release'] ?></a> - Released Jan 21, 2026<br />
         <a href="http://pirateweather.net/en/latest/#introduction/">Powered by Pirate Weather</a><br />
         <a href="https://aa.usno.navy.mil/about/mission">Powered by Astronomical Applications Department, U.S. Naval Observatory </a><br />
         <?php echo $currentTempHtml ?>
