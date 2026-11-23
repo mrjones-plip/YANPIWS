@@ -10,7 +10,9 @@
     <link rel="stylesheet" href="css/jquery.jqplot.min.css">
     <style>
         .chart { height: 98%; width:70%; float:left;}
-        .temp, .temp .label { font-size: 15pt; float: right; clear: right;}
+        .temp, .temp .label { font-size: 15pt; float: right; clear: right; width: 30%;}
+        .temp .degrees { text-align: right; }
+        .temp .label { text-align: left; }
     </style>
 </head>
 <body>
@@ -26,9 +28,10 @@ $data1 = getTodaysData();
 $data2 = getYesterdaysData();
 $data = mergeDayData($data1 ,$data2, $YANPIWS['labels']);
 // todo - mergeDayData doesn't percolate up correctly to the graph to offer more
-// than 
-//die('<pre>eeew $data:' .print_r($data,1));
-$colors = array(null,'white','red','yellow','blue');
+// than prior 24 hrs
+
+// we start count at 1, so null pad array to skip 0th element
+$colors = array(null,'white','red','yellow','blue','green','orange','brown','grey');
 ?>
 <div class="col">
     <div class="row">
@@ -41,7 +44,10 @@ $colors = array(null,'white','red','yellow','blue');
             echo "<div class='temp' id='temp{$count}' style='color:$color'></div>";
             $count++;
         }
-        ?>
+        
+        echo "<div class='temp' id='temp{$count}' style='font-size:25pt' > <a href='/'><br /><- Weather</a></div>";
+        ?> 
+
     </div>
 </div>
 
