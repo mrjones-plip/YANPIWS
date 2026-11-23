@@ -896,3 +896,23 @@ function validateFontSize($fontSize) {
 function validateLatLong($lat, $long) {
     return preg_match('/^[-]?(([0-8]?[0-9])\.(\d+))|(90(\.0+)?),[-]?((((1[0-7][0-9])|([0-9]?[0-9]))\.(\d+))|180(\.0+)?)$/', $lat.','.$long);
 }
+
+/**
+ * Scans the ./html/pics/* directory and returns an array in javascript
+ * 
+ * @return string of javascript array
+ */
+function get_photos_js_array(){
+    $js = array();
+    foreach (new DirectoryIterator("./pics") as $file) {
+        if ($file->isDot()) {
+            continue;
+        }
+        $js[] = $file->getFilename();
+    }
+    if(count($js) === 0) {
+        $js[] = "../images/no-images-found.png";
+    }
+    $jsStrAry = 'const photos = ["' . implode('","', $js) . '"];';
+    return $jsStrAry;
+}

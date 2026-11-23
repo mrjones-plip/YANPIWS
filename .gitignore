@@ -6,3 +6,6 @@ datadarksky.cache
 forecast.cache
 nbproject
 .project
+html/pics/*jpg
+html/pics/*png
+html/pics/*jpeg
