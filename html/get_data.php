@@ -54,7 +54,11 @@ function getConfig($baseDir = '../', $die = true)
     if(is_file($fullPath)) {
         global $YANPIWS ;
         $options = getValidConfigs();
-        $YANPIWStmp = array_map('str_getcsv', file($fullPath));
+        // use anonymous function wrapper because PHP 8.4 requires str_getcsv 
+        // to have escape char explicitly declared
+        $YANPIWStmp = array_map(function($d) {
+            return str_getcsv($d, ",", "\"","\\");
+        }, file($fullPath));
         foreach ($YANPIWStmp as $config){
             if(!isset($config[0])){
                 continue;
